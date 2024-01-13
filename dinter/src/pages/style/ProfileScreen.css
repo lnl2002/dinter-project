@@ -1,0 +1,19 @@
+p {
+  margin: 0;
+}
+
+.nav-bound {
+  border-width: 1px 0px 0px 0px;
+  border-color: rgba(89, 89, 89, 0.384);
+  border-style: solid;
+}
+
+.chosenNav {
+  border-width: 1px 0px 0px 0px;
+  border-color: black;
+  border-style: solid;
+}
+
+.unChosenNav {
+  border: none;
+}
