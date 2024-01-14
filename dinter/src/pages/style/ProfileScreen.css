@@ -1,3 +1,7 @@
+
+.container {
+  background-color: white;
+}
 p {
   margin: 0;
 }
@@ -16,4 +20,71 @@ p {
 
 .unChosenNav {
   border: none;
+}
+
+.regtangle-box{
+  position: relative;
+  width: 50%;
+  overflow: hidden;
+  background: white;
+}
+.regtangle-box:before{
+  content: "";
+  display: block;
+  padding-top: 150%;
+}
+
+.square-box{
+  position: relative;
+  width: 50%;
+  overflow: hidden;
+  background: white;
+}
+
+.square-box:before{
+  content: "";
+  display: block;
+  padding-top: 100%;
+}
+.square-content{
+  position:  absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  color: white;
+  text-align: center;
+  padding:3px
+}
+
+/* Hide the info-effect div by default */
+.info-effect {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 99%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3); /* You can change the background color and opacity */
+  color: white; /* You can change the text color */
+}
+
+/* Show the info-effect div when the square-content div is hovered */
+.square-content:hover .info-effect {
+  display: flex;
+}
+
+.square-content:hover .views-layout {
+  display: none;
+}
+
+.views-layout {
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 99%;
+  height: 100%;
+  background: linear-gradient(0deg, rgba(0,0,0,0.4766281512605042) 0%, rgba(0,0,0,0) 25%);
+  color: white; /* You can change the text color */
 }
