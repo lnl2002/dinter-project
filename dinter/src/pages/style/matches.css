@@ -1,0 +1,88 @@
+
+.card-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.user-card{
+    height: 450px;
+    width: 300px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+
+.user-card img{
+    height: 100%;
+    width: 100%;
+}
+
+.user-card-info{
+    background-color: rgba(255, 255, 255, 0.421);
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding-left: 10px;
+    padding-top: 10px;
+}
+
+.user-card-info p:first-child{
+    font-weight: bold;
+    font-size: 30px;
+}
+
+
+.direction{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.icon{
+    height: 60px;
+    width: 60px;
+    padding: 7px;
+    font-size: 40px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.icon:hover{
+    background-color: aliceblue;
+}
+
+.emotional-container{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.emotion{
+    width: 50px;
+    height: 50px;
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.emotion:first-child{
+    background-color: #fd297b;
+    margin-right: 20px;
+}
+
+.emotion:first-child:hover{
+    background-color: #fc0061;
+}
+.emotion:last-child{
+    background-color: hsl(98, 78%, 47%);
+}
+.emotion:last-child:hover{
+    background-color: hsl(98, 98%, 37%);
+}
+.emotion ion-icon{
+    font-size: 30px;
+    color: white;
+}

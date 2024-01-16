@@ -2,7 +2,7 @@ import React from 'react';
 import { Container } from 'react-bootstrap';
 function HeaderHome(props) {
     return (
-        <Container fluid style={{backgroundColor: "#fff", padding: "10px 0", position: "fixed"}}>
+        <Container fluid style={{backgroundColor: "#fff", padding: "10px 0", position: "fixed"}} className='headerContainer'>
             <Container className=" d-flex justify-content-between header align-items-center">
                 <div className='header-logo poin pointer'>
                     <img src='images/common/dinter-logo.png' alt='logo' width={"30px"}/>
