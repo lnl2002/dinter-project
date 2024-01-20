@@ -1,0 +1,30 @@
+.text-app-bold{
+  color: #555555;
+  margin: 0;
+  font-weight: 550;
+  font-size: 0.9rem;
+}
+
+.text-app-comment-normal{
+  color: #555555;
+  margin: 0;
+  font-weight: 450;
+  font-size: 0.9rem;
+}
+
+.text-app-medium{
+  font-size: 0.7rem;
+  color: #8b8b8b;
+  margin: 0;
+  font-weight: 550
+}
+
+.text-app-light{
+  font-size: 0.7rem;
+  color: #8b8b8b;
+  margin: 0;
+  font-weight: 250
+}
+.btn-app-func{
+  background-color: transparent;
+}
