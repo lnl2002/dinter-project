@@ -7,20 +7,20 @@ config();
 
 const createUser = (newUser) => {
   return new Promise(async (resolve, reject) => {
-    const { name, email, password } = newUser;
+    const { username, email, password } = newUser;
     try {
       const checkUser = await User.findOne({
         email: email,
       });
       if (checkUser !== null) {
-        resolve({
+        reject({
           status: "ERR",
           message: "The email is already existed",
         });
       }
       const hash = bcrypt.hashSync(password, 10);
       const createdUser = await User.create({
-        name,
+        username,
         email,
         password: hash,
       });
@@ -46,14 +46,11 @@ const login = (userInfo) => {
           bcrypt.compare(password, user.password, (err, result) => {
             if (result) {
               const accessToken = generalAccessToken({
-                "email": user.email,
-                "name": user.name,
-                "_id": user._id,
-                "avatar": user.avatar ? user.avatar : "images/common/avatar.jpg",
+                id: user._id
               });
 
               const refreshToken = generalRefreshToken({
-                "_id": user._id,
+                id: user._id
               });
 
               resolve({
@@ -63,14 +60,14 @@ const login = (userInfo) => {
                 refreshToken: refreshToken
               });
             } else {
-              resolve({
+              reject({
                 status: "ERR",
                 message: "Wrong password",
               });
             }
           });
         } else {
-          resolve({
+          reject({
             status: "ERR",
             message: "Wrong email",
           });

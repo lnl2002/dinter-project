@@ -24,22 +24,20 @@ const generalRefreshToken = (payload) => {
     return refreshToken;
 }
 
-const refreshToken = (token) => {
+const refreshToken = (refreshToken) => {
     return new Promise((resolve, reject) => {
         try {
-            console.log('token', token);
-            jwt.verify(token, process.env.PRIVATE_KEY_REFRESH, (err, user) => {
+            jwt.verify(refreshToken, process.env.PRIVATE_KEY_REFRESH, (err, user) => {
                 if (err) {
-                    resolve({
+                    reject({
                         status: "ERR",
                         message: "The authentication"
                     })
                 } 
 
-                const {payload} = user;
+                const {id} = user;
                 const accessToken = generalAccessToken({
-                    id: payload?.id,
-                    isAdmin: payload?.isAdmin
+                    id: id
                 });
 
                 resolve({
