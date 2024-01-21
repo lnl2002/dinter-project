@@ -1,0 +1,51 @@
+.modal-90w {
+  max-width: none!important;
+  width: fit-content!important;
+}
+.close-button{
+  position: fixed;
+  background-color: transparent;
+  right:20px;
+  top: 10px;
+  padding: 10px;
+  margin-right: 10px;
+}
+.top-bar-comment-box{
+  border-width: 0px 0px 1px 0px;
+  border-color: #7c7c7c30;
+  border-style: solid;
+  padding-bottom: 20px;
+  margin-bottom: 0px;
+}
+
+.interact-comment-box{
+  border-width: 1px 0px 1px 0px;
+  border-color: #7c7c7c30;
+  border-style: solid;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-top: 5px;
+}
+.comments-box{
+  overflow-y: scroll;
+  height: 50vh;
+  padding-top: 20px;
+}
+.comments-box::-webkit-scrollbar {
+  display: none;
+}
+.input-comment-box{
+  padding-top: 10px;
+}
+.btn-app-func{
+  background-color: transparent;
+}
+.model-content{
+  overflow: hidden;
+}
+.post-btn-title{
+ color: rgb(0, 149, 246);
+ font-size: 0.9rem;
+ margin: 0;
+ font-weight: 550
+}
