@@ -2,7 +2,7 @@ import React from 'react';
 import { Modal } from 'react-bootstrap';
 import CommentsFrameLayout from '../Comments_frame_layout/CommentsFrameLayout';
 import '../PostDetail/PostDetail.css'
-import { UserPosts } from './PostMockData';
+import { UserPosts } from '../../pages/ProfileScreen';
 
 
 function PostDetail({
