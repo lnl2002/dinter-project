@@ -1,9 +1,7 @@
 
-.container {
-  /* background-color: #ffffff; */
-}
-p {
-  margin: 0;
+
+.container-app-p {
+  background-color: white;
 }
 
 .nav-bound {
