@@ -86,3 +86,7 @@
     font-size: 30px;
     color: white;
 }
+
+.dragging {
+    opacity: 0.5;
+}
