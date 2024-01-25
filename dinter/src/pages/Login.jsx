@@ -3,6 +3,7 @@ import './style/login.css'
 import RegisterForm from '../components/Login_Register/RegisterForm';
 import LoginForm from '../components/Login_Register/LoginForm';
 import $ from 'jquery'
+import { ToastContainer } from 'react-toastify';
 
 function Login(props) {
     $(document).ready(() => {
@@ -11,7 +12,6 @@ function Login(props) {
         const container = document.getElementById('container');
         
         signUpButton.addEventListener('click', () => {
-            debugger
             container.classList.add("right-panel-active");
         });
     
@@ -21,6 +21,7 @@ function Login(props) {
     })
     return (
         <div className='login-body'>
+            <ToastContainer />
             <div className="login-container" id="container">
 
                 <RegisterForm/>
