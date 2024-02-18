@@ -162,7 +162,7 @@ function HomePage(props) {
                 </div>
 
                 <div className="photo">
-                    <img src="images/common/anhbia.jpg" alt="" width={527}/>
+                    <img src="images/common/anhbia.jpg" alt="" width={650}/>
                 </div>
                 
                 <div className="action-buttons">
@@ -211,7 +211,7 @@ function HomePage(props) {
                 </div>
 
                 <div className="photo">
-                    <img src="images/common/anhbia.jpg" alt="" width={527}/>
+                    <img src="images/common/anhbia.jpg" alt="" width={650}/>
                 </div>
                 
                 <div className="action-buttons">
