@@ -70,8 +70,30 @@ const refreshToken = async (req, res) => {
   }
 }
 
+const getUserInfoByAccessToken = async (req, res) => {
+  try {
+      console.log('headers',req.headers);
+      const token = req.headers.token.split(' ')[1];
+      console.log('token',token);
+      if(!token) {
+        return res.status(404).json({
+          status: "ERR",
+          message: "Invalid token"
+        })
+      } 
+
+      const response = await UserService.getUserInfoByAccessToken(token);
+      res.status(200).json(response);
+      
+    
+  } catch (error) {
+    return res.status(404).json(error)
+  }
+}
+
 module.exports = {
   createUser,
   login,
   refreshToken,
+  getUserInfoByAccessToken
 };

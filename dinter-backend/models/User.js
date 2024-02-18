@@ -24,6 +24,9 @@ const userSchema = new mongoose.Schema({
   hobby: {
     type: [String] // Một mảng các sở thích, ví dụ: ["reading", "traveling"]
   },
+  isAdmin: {
+    type: Boolean
+  }
 //   listFriend: {
 //     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] // Mảng các đối tượng User là bạn bè
 //   },
