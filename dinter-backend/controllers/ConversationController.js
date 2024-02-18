@@ -1,4 +1,5 @@
-const Conversations = require('../models/Conversations');
+import Conversations from '../models/Conversation.js';
+
 
 //createChat
 const createChat = async (req,res) => {
@@ -54,7 +55,13 @@ const findChat = async (req, res) => {
     }
 };
 
-module.exports = {
+export {
+    createChat,
+    findUserChats,
+    findChat
+}
+
+export default {
     createChat,
     findUserChats,
     findChat

@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const { Schema } = mongoose;
-const User = require('./User.js');
+import mongoose, { Schema } from 'mongoose';
+import User from './User.js';
+
 
 const conversationSchema = new mongoose.Schema({
     members: [
@@ -15,4 +15,4 @@ const conversationSchema = new mongoose.Schema({
 
 const Conversations = mongoose.model('Conversations', conversationSchema);
 
-module.exports = Conversations;
+export default Conversations;

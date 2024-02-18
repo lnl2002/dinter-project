@@ -1,5 +1,5 @@
-const UserService = require("../services/UserService");
-const JwtService = require("../services/JwtService");
+import UserService from '../services/UserService.js';
+import JwtService from '../services/JwtService.js';
 
 
 const createUser = async (req, res) => {
@@ -91,7 +91,14 @@ const getUserInfoByAccessToken = async (req, res) => {
   }
 }
 
-module.exports = {
+export {
+  createUser,
+  login,
+  refreshToken,
+  getUserInfoByAccessToken
+};
+
+export default {
   createUser,
   login,
   refreshToken,

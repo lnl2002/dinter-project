@@ -1,8 +1,15 @@
-const User = require("../models/User");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { config } = require('dotenv');
-const { generalRefreshToken, generalAccessToken } = require("./JwtService");
+// const User = require("../models/User");
+// const bcrypt = require("bcrypt");
+// const jwt = require("jsonwebtoken");
+// const { config } = require('dotenv');
+// const { generalRefreshToken, generalAccessToken } = require("./JwtService");
+
+import User from '../models/User.js';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { config } from 'dotenv';
+import { generalRefreshToken, generalAccessToken } from './JwtService.js';
+
 config();
 
 const createUser = (newUser) => {
@@ -123,7 +130,13 @@ const getUserInfoByAccessToken = (accessToken) => {
   })
 }
 
-module.exports = {
+export {
+  createUser,
+  login,
+  getUserInfoByAccessToken
+};
+
+export default {
   createUser,
   login,
   getUserInfoByAccessToken

@@ -1,5 +1,5 @@
-const Conversations = require('../models/Conversations');
-const message = require('../models/Messages');
+import message from '../models/Message.js';
+
 
 //create a new message
 const createMessage = async (req, res) => {
@@ -27,7 +27,7 @@ const createMessage = async (req, res) => {
 //getMessagess
 const getMessages = async (req, res) => {
     const {conversationId} = req.params;
-
+    console.log(conversationId);
     try {
         const messages = await message.find({
             conversationId: conversationId
@@ -38,7 +38,12 @@ const getMessages = async (req, res) => {
     }
 };
 
-module.exports = {
+export {
+    createMessage,
+    getMessages
+}
+
+export default{
     createMessage,
     getMessages
 }

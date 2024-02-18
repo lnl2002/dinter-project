@@ -25,7 +25,7 @@ function MessagePage() {
     const [socket, setSocket] = useState(null);
     const [onlineUsers, setOnlineUsers] = useState([]);
 
-    console.log('onlineUsers', onlineUsers);
+    console.log('currentConversation', currentConversation);
     //init socket
     useEffect(() => {
         const newSocket = io("http://localhost:3002");
@@ -113,7 +113,6 @@ function MessagePage() {
                 .catch(error => console.log(error));
         }
     }
-    console.log(currentConversation);
 
     useEffect(() => {
         axios.get(`http://localhost:3008/api/v1/conversation/find-user-chats/${user.id}`, {
@@ -147,7 +146,7 @@ function MessagePage() {
             }
         })
             .then(response => {
-                console.log('currentConversation', response.data);
+                console.log('currentConversation2', response.data);
                 setCurrentConversation(response.data);
             })
             .catch(error => console.log(error));

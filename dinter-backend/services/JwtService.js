@@ -1,5 +1,7 @@
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
+// const jwt = require('jsonwebtoken');
+// const dotenv = require('dotenv');
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 dotenv.config();
 
 const generalAccessToken = (payload) => {
@@ -52,7 +54,13 @@ const refreshToken = (refreshToken) => {
     })
 }
 
-module.exports = {
+export {
+    generalAccessToken,
+    generalRefreshToken,
+    refreshToken
+};
+
+export default {
     generalAccessToken,
     generalRefreshToken,
     refreshToken

@@ -274,7 +274,7 @@ function ProfileScreen(props) {
     <div>
       <PostDetail visible={showPostDetail} onHideCallBack={() => setShowPostDetail(false)} postId={chosenPostId} user={userData}></PostDetail>
       <div
-        className="container"
+        className="container container-app-p"
       >
 
         <div className='row d-flex justify-content-center pt-5'>
@@ -464,7 +464,7 @@ const AvatarDiv = ({ image }) => {
 
 const LinkWeb = ({ url }) => {
   return (
-    <a style={{ textDecoration: 'none' }} href='www.ozgame.com.vn'><p style={{ margin: 0, marginLeft: "5px" }}>{url}</p></a>
+    <a style={{ textDecoration: 'none' }} href='www.ozgame.com.vn'><p className='m-0' style={{ margin: 0, marginLeft: "5px" }}>{url}</p></a>
   )
 }
 
@@ -476,7 +476,7 @@ const ButtonWeb = ({ title, onClick }) => {
 
 const TextWeb = ({ text, style }) => {
   return (
-    <p style={{ margin: 0, ...style }}>{text}</p>
+    <p className='m-0' style={{ margin: 0, ...style }}>{text}</p>
   )
 }
 
