@@ -7,7 +7,7 @@ import { AuthContext } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 
-function Login(props) {
+function Login({handleShow}) {
     const nav = useNavigate();
     const {setUser} = useContext(AuthContext);
     
@@ -95,7 +95,7 @@ function Login(props) {
                     />
                 </Form.Group>
                 
-                <a className='login-a' href="#">Forgot your password?</a>
+                <a className='login-a' href="#" onClick={handleShow}>Forgot your password?</a>
                 <button type='submit' className='login-button'>Sign In</button>
             </Form>
         </div>
