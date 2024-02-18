@@ -1,0 +1,210 @@
+.story {
+    height: 68px;
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+
+.story:hover {
+    background-color: rgb(71, 71, 71);
+}
+
+.story-list {
+    color: white;
+    overflow: auto;
+    height: 100vh;
+}
+
+.story-image {
+    height: 55px;
+    width: 55px;
+    margin-right: 20px;
+    border-radius: 50%;
+    padding: 2px;
+    border: 5px solid white;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.story-image img {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+}
+
+.story-info {
+    color: white;
+    margin-right: 40%;
+}
+
+.story-info .story-user-name {
+    font-weight: bold;
+}
+
+.add-story {
+    height: 40px;
+    width: 40px;
+    font-size: 30px;
+    border-radius: 50%;
+    background-color: rgb(71, 71, 71);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.story-tags {
+    color: #fd297b;
+}
+
+.story-other {
+    border-color: #fd297b;
+}
+
+.story-other-info {
+    margin-right: 0;
+}
+
+.story-video {
+    height: 100%;
+    width: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+}
+
+.story-video-2 {
+    height: 100%;
+    width: 90%;
+    margin-top: 30px;
+    position: relative;
+}
+
+.video-container {
+    background-color: black;
+    height: 100vh;
+}
+
+.video-box {
+    height: 80%;
+    width: 100%;
+    background-color: #242526;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.add-story-box {
+    height: 80%;
+    width: 100%;
+    background-color: #242526;
+    border-radius: 10px;
+    overflow: hidden;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+    padding-top: 200px;
+    color: white;
+}
+
+.add-story-box button {
+    width: 200px;
+    background-color: #fd297b;
+    border-radius: 10px;
+    height: 30px;
+    color: white;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+.story-video video {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.story-react {
+    display: flex;
+    align-items: center;
+    height: 40px;
+}
+
+.story-react input {
+    padding: 8px 12px;
+    border-radius: 19px;
+    width: 250px;
+}
+
+.story-react button {
+    font-size: 30px;
+    height: 30px;
+    color: white;
+    background-color: black;
+    margin-left: 30px;
+    display: flex;
+    align-items: center;
+}
+
+.story-react button:hover {
+    color: gray
+}
+
+.video-controls {
+    position: absolute;
+    top: 40px;
+    right: 49px;
+    color: white;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.video-audio {
+    position: absolute;
+    top: 40px;
+    right: 19px;
+    color: white;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.move-left .move-right {
+    position: relative;
+}
+
+.move-left:hover, .move-right:hover{
+    cursor: pointer;
+}
+
+.move-left:hover div,
+.move-right:hover div {
+    background-color: #515355;
+}
+
+.move-left div,
+.move-right div {
+    height: 50px;
+    width: 50px;
+    background-color: #242526;
+    color: white;
+    font-size: 30px;
+    padding: 6px;
+    text-align: center;
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+
+.move-left div {
+    position: absolute;
+    top: 40%;
+    right: 55%;
+}
+
+.move-right div {
+    position: absolute;
+    top: 40%;
+    right: 20%;
+}
