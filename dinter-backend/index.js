@@ -1,9 +1,16 @@
-const express = require('express');
-const { config } = require('dotenv');
-const mongoose = require('mongoose');
-const routes = require('./routes/index');
-const bodyParser = require("body-parser");
-const cors = require('cors');
+// const express = require('express');
+// const { config } = require('dotenv');
+// const mongoose = require('mongoose');
+// const routes = require('./routes/index');
+// const bodyParser = require("body-parser");
+// const cors = require('cors');
+
+import express from 'express';
+import { config } from 'dotenv';
+import mongoose from 'mongoose';
+import routes from './routes/index.js';
+import bodyParser from 'body-parser';
+import cors from 'cors';
 config();
 
 

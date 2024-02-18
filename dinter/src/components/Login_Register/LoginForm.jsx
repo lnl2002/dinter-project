@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import axios from 'axios'
 import { Bounce, toast } from 'react-toastify';
 import { setTokenToCookies } from '../../common/Token';
 import {Form} from 'react-bootstrap'
+import { AuthContext } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 
 function Login(props) {
-
+    const nav = useNavigate();
+    const {setUser} = useContext(AuthContext);
+    
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [validated, setValidated] = useState(false);
@@ -23,7 +27,9 @@ function Login(props) {
             axios.post('http://localhost:3008/api/v1/user/login', {email, password})
                 .then(response => {
                     setTokenToCookies(response.data.accessToken, response.data.refreshToken);
-                    window.location.href = '/';
+                    localStorage.setItem('User', JSON.stringify(response.data.data)); 
+                    setUser(response.data.data);
+                    nav('/');
                 })
                 .catch(error => {
                     if(error.response.status === 404) {

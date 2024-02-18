@@ -1,10 +1,13 @@
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
 dotenv.config();
 
 const authMiddleware = (req, res, next) => {
     try {
+        console.log(req.headers.token);
         const token = req.headers.token.split(' ')[1];
+
         jwt.verify(token, process.env.PRIVATE_KEY, (err, user) => {
             if(err) {
                 return res.status(404).json({
@@ -47,6 +50,6 @@ const authUserMiddleware = (req, res, next) => {
     })
 }
 
-module.exports = {
+export {
     authMiddleware
 }

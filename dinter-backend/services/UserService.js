@@ -1,8 +1,15 @@
-const User = require("../models/User");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { config } = require('dotenv');
-const { generalRefreshToken, generalAccessToken } = require("./JwtService");
+// const User = require("../models/User");
+// const bcrypt = require("bcrypt");
+// const jwt = require("jsonwebtoken");
+// const { config } = require('dotenv');
+// const { generalRefreshToken, generalAccessToken } = require("./JwtService");
+
+import User from '../models/User.js';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { config } from 'dotenv';
+import { generalRefreshToken, generalAccessToken } from './JwtService.js';
+
 config();
 
 const createUser = (newUser) => {
@@ -57,7 +64,12 @@ const login = (userInfo) => {
                 status: "OK",
                 message: "SUCCESS",
                 accessToken: accessToken,
-                refreshToken: refreshToken
+                refreshToken: refreshToken,
+                data: {
+                  id : user._id,
+                  username: user.username,
+                  avatar: user.avatar, 
+                }
               });
             } else {
               reject({
@@ -79,9 +91,53 @@ const login = (userInfo) => {
   })
 }
 
+const getUserInfoByAccessToken = (accessToken) => {
+  return new Promise( async (resolve, reject) => {
+    try {
+      jwt.verify(accessToken, process.env.PRIVATE_KEY, async (err, user) => {
+        if (err) {
+            reject({
+                status: "ERR",
+                message: "The authentication"
+            })
+        } 
+        const {id} = user;
+        const userInfo = await User.findOne({
+          _id: id
+        })
 
+        if(userInfo) {
+          resolve({
+              status: "OK",
+              message: "SUCCESS",
+              data: {
+                username: userInfo.username,
+                avatar: userInfo.avatar,
+                isAdmin: userInfo.isAdmin
+              }
+          })
+        } 
 
-module.exports = {
+        reject({
+            status: "ERR",
+            message: "The authentication"
+        })
+        
+      })
+    } catch (error) {
+      reject(error);
+    }
+  })
+}
+
+export {
   createUser,
   login,
+  getUserInfoByAccessToken
+};
+
+export default {
+  createUser,
+  login,
+  getUserInfoByAccessToken
 };
