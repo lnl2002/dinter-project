@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose, {Schema}  from "mongoose";
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
   username: {
     type: String,
     required: true
@@ -14,32 +14,22 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  avatar: {
-    type: String // Có thể lưu đường dẫn của hình ảnh avatar
-  },
   gender: {
-    type: String, // Có thể là "male", "female", "other", etc.
+    type: String,
     enum: ['male', 'female', 'other']
   },
-  hobby: {
-    type: [String] // Một mảng các sở thích, ví dụ: ["reading", "traveling"]
+  dateOfBirth: {
+    type: Date,
+    required: true
   },
-//   listFriend: {
-//     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] // Mảng các đối tượng User là bạn bè
-//   },
-//   listPost: {
-//     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }] // Mảng các đối tượng Post của người dùng
-//   },
-//   listMessage: {
-//     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }] // Mảng các đối tượng Message
-//   },
-//   notificationList: {
-//     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Notification' }] // Mảng các đối tượng Notification
-//   }
-}, {
-  timestamps: true,
+  avatar: String,
+  bio: String,
+  address: String,
+  friends: [{ type: Schema.Types.ObjectId, ref: 'Users' }],
+  isAdmin: Boolean,
+  hobbies: [{ type: Schema.Types.ObjectId, ref: 'Hobbies' }]
 });
 
 const User = mongoose.model('Users', userSchema);
 
-module.exports = User;
+export default User;

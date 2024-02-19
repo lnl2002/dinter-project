@@ -1,18 +1,156 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import HeaderHome from '../components/HeaderComponents/HeaderHome'
 import MatchesPage from './MatchesPage';
+import $ from 'jquery';
 import './style/messages.css'
+import axios from 'axios';
+import { AuthContext } from '../context/AuthContext';
+import { getAccessToken } from '../common/Token';
+import InputEmoji from 'react-input-emoji';
+import { io } from "socket.io-client";
+
 function MessagePage() {
+
+    const { user } = useContext(AuthContext);
+
     const [options, setOptions] = useState(1);
     const [currentFriend, setCurrentFriend] = useState(0);
-    const [viewInfo, setViewInfo] = useState(true)
+    const [viewInfo, setViewInfo] = useState(true);
+    const [listConversation, setListConversation] = useState([]);
+    const [currentConversationId, setCurrentConversationId] = useState(null);
+    const [currentConversation, setCurrentConversation] = useState({});
+    const [recipientUser, setRecipientUser] = useState({});
+    const [textMessage, setTextMessage] = useState("");
+    const [newMessage, setNewMessage] = useState("");
+    const [socket, setSocket] = useState(null);
+    const [onlineUsers, setOnlineUsers] = useState([]);
+
+    console.log('currentConversation', currentConversation);
+    //init socket
+    useEffect(() => {
+        const newSocket = io("http://localhost:3002");
+        setSocket(newSocket);
+
+        return () => {
+            newSocket.disconnect();
+        }
+    }, [user]);
+
+    // add online users
+    useEffect(() => {
+        if(socket === null) return;
+        
+        socket.emit("addNewUser", user?.id);
+        socket.on("getOnlineUsers", (res) => {
+            setOnlineUsers(res);
+        })
+    },[socket])
+
+     // send message
+     useEffect(() => {
+        if(socket === null) return;
+
+        socket.emit("sendMessage", {...newMessage, recipientId: recipientUser._id })
+    },[newMessage])
+
+    // receive Message
+    useEffect(() => {
+        if(socket === null) return;
+
+        socket.on("getMessage", (res) => {
+            console.log("getMessage",res);
+            if(currentConversationId != res.conversationId) return;
+
+            setCurrentConversation([ res, ...currentConversation]);
+        })
+
+        return () => {
+            socket.off("getMessage");
+        }
+    },[socket, currentConversation])
+
     const handleChooseOption = (option) => {
         setOptions(option);
     }
-    const handleSetCurFri = (cf) => {
+    const handleSetCurFri = (cf, conversationId) => {
         setCurrentFriend(cf);
+        setTextMessage("");
+        setCurrentConversationId(conversationId);
+        console.log(conversationId);
+
+        let temp = listConversation.find(conversation => conversation.conversationId == conversationId);
+        setRecipientUser(temp.info);
     }
-    console.log(options);
+    
+    const handleKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    };
+
+    const sendMessage = () => {
+        if(textMessage != "" || textMessage != null) {
+            console.log(currentConversationId, user.id, textMessage);
+            axios.post(
+                `http://localhost:3008/api/v1/message/create-message`, 
+                JSON.stringify({
+                    conversationId: currentConversationId,
+                    senderId: user.id,
+                    text: textMessage
+                }),
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        token: 'Bearer ' + getAccessToken()
+                    }
+                }
+            )
+                .then(response => {
+                    setNewMessage(response.data);
+                    setCurrentConversation([ response.data, ...currentConversation]);
+                    setTextMessage("");
+                })
+                .catch(error => console.log(error));
+        }
+    }
+
+    useEffect(() => {
+        axios.get(`http://localhost:3008/api/v1/conversation/find-user-chats/${user.id}`, {
+            headers: {
+                token: 'Bearer ' + getAccessToken()
+            }
+        })
+            .then(response => {
+                const conversations = response.data;
+                var conversationList = [];
+                let i = 0;
+                conversations.forEach(conversation => {
+                    let conversationTemp = {};
+                    conversationTemp.number = i++;
+                    conversationTemp.info = conversation.members.find( member => member._id != user.id )
+                    conversationTemp.updatedAt = conversation.updatedAt;
+                    conversationTemp.conversationId = conversation._id;
+                    conversationList.push(conversationTemp);
+                });
+                conversationList.sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt))
+                setListConversation(conversationList);
+            })
+            .catch(error => console.log(error));
+    },[])
+
+    useEffect(() => {
+        console.log(currentConversationId);
+        axios.get(`http://localhost:3008/api/v1/message/get-messages/${currentConversationId}`, {
+            headers: {
+                token: 'Bearer ' + getAccessToken()
+            }
+        })
+            .then(response => {
+                console.log('currentConversation2', response.data);
+                setCurrentConversation(response.data);
+            })
+            .catch(error => console.log(error));
+    }, [currentConversationId])
     return (
         <div>
             <HeaderHome />
@@ -27,24 +165,40 @@ function MessagePage() {
                             <div className={options === 2 ? 'active' : ''} onClick={() => handleChooseOption(2)}><span>Messages</span></div>
                         </div>
                         <div className='mp-user-list'>
-                            <div className={`${currentFriend === 0 && 'mg-active'} mp-user`} onClick={() => handleSetCurFri(0)}>
-                                <div className='mp-avartar'>
-                                    <img src='images/common/avatar.png' alt='error-img' />
-                                </div>
-                                <div className='mp-info'>
-                                    <p>Ha Trang</p>
-                                    <p>Lo</p>
-                                </div>
-                            </div>
-                            <div className={`${currentFriend === 1 && 'mg-active'} mp-user`} onClick={() => handleSetCurFri(1)}>
-                                <div className='mp-avartar'>
-                                    <img src='images/common/avatar.png' alt='error-img' />
-                                </div>
-                                <div className='mp-info'>
-                                    <p>Ha Trang</p>
-                                    <p>Lo</p>
-                                </div>
-                            </div>
+                            {
+                                listConversation.map(conversation => (
+                                    <div className={`${currentFriend === conversation.number && 'mg-active'} mp-user`} onClick={() => handleSetCurFri(conversation.number, conversation.conversationId)}
+                                        >
+                                        <div className='mp-avartar'>
+                                            <div style={{position: "relative"}}>
+                                                <img src={conversation.info.avatar} alt='error-img' />
+                                                {
+                                                    onlineUsers.some((u) => u?.userId == conversation.info._id ) ?
+                                                    (
+                                                        <div 
+                                                            style={{
+                                                                width: "8px",
+                                                                height: "8px",
+                                                                background: "#00FF00",
+                                                                borderRadius: "99px",
+                                                                position: "absolute",
+                                                                right: "54px",
+                                                                bottom: "0",
+                                                            }}>
+                                                        </div>
+                                                    ) : 
+                                                    (<></>)
+                                                }
+                                                
+                                            </div>
+                                        </div>
+                                        <div className='mp-info'>
+                                            <p>{conversation.info.username}</p>
+                                            <p>Lo</p>
+                                        </div>
+                                    </div>
+                                ))
+                            }
                         </div>
                     </div>
                     {
@@ -54,10 +208,10 @@ function MessagePage() {
                                     <div className='mg-boxchat-header'>
                                         <div className='mg-user-info'>
                                             <div className='mg-avatar-boxchat'>
-                                                <img src='images/common/avatar.png' alt='error-img' />
+                                                <img src={recipientUser.avatar} alt='error-img' />
                                             </div>
                                             <div>
-                                                <p>Ha Trang</p>
+                                                <p>{recipientUser.username}</p>
                                                 <p>Đang hoạt động</p>
                                             </div>
                                         </div>
@@ -67,72 +221,28 @@ function MessagePage() {
                                             <ion-icon name="alert-circle" onClick={() => setViewInfo(!viewInfo)}></ion-icon>
                                         </div>
                                     </div>
-                                    <div className="chat-messages">
-                                        <div className='other-messages-container'>
-                                            <img src='images/common/avatar.png' alt='error' />
-                                            <div className="message other-message">
-                                                <div className="message-text">Older Message 4</div>
-                                            </div>
-                                        </div>
-                                        <div className='other-messages-container non-img'>
-                                            <div className="message other-message">
-                                                <div className="message-text">This establishes the main-axis, thus defining the direction flex items are placed in the flex container. Flexbox is (aside from optional wrapping) a single-direction layout of flex items as primarily laying out either in horizontal rows or vertical columns.</div>
-                                            </div>
-                                        </div>
-                                        <div className="message my-message">
-                                            <div className="message-text">Older Message 5</div>
-                                        </div>
-                                        <div className="message my-message">
-                                            <div className="message-text">This establishes the main-axis, thus defining the direction flex items are placed in the flex container. Flexbox is (aside from optional wrapping) a single-direction layout of flex items as primarily laying out either in horizontal rows or vertical columns.</div>
-                                        </div>
-                                        <div className='other-messages-container'>
-                                            <img src='images/common/avatar.png' alt='error' />
-                                            <div className="message other-message">
-                                                <div className="message-text">Older Message 4</div>
-                                            </div>
-                                        </div>
-                                        <div className="message my-message">
-                                            <div className="message-text">Older Message 5</div>
-                                        </div>
-                                        <div className="message my-message">
-                                            <div className="message-text">This establishes the main-axis, thus defining the direction flex items are placed in the flex container. Flexbox is (aside from optional wrapping) a single-direction layout of flex items as primarily laying out either in horizontal rows or vertical columns.</div>
-                                        </div>
-                                        <div className='other-messages-container'>
-                                            <img src='images/common/avatar.png' alt='error' />
-                                            <div className="message other-message">
-                                                <div className="message-text">Older Message 4</div>
-                                            </div>
-                                        </div>
-                                        <div className="message my-message">
-                                            <div className="message-text">Older Message 5</div>
-                                        </div>
-                                        <div className="message my-message">
-                                            <div className="message-text">This establishes the main-axis, thus defining the direction flex items are placed in the flex container. Flexbox is (aside from optional wrapping) a single-direction layout of flex items as primarily laying out either in horizontal rows or vertical columns.</div>
-                                        </div>
-                                        <div className='other-messages-container'>
-                                            <img src='images/common/avatar.png' alt='error' />
-                                            <div className="message other-message">
-                                                <div className="message-text">Older Message 4</div>
-                                            </div>
-                                        </div>
-                                        <div className="message my-message">
-                                            <div className="message-text">Older Message 5</div>
-                                        </div>
-                                        <div className="message my-message">
-                                            <div className="message-text">This establishes the main-axis, thus defining the direction flex items are placed in the flex container. Flexbox is (aside from optional wrapping) a single-direction layout of flex items as primarily laying out either in horizontal rows or vertical columns.</div>
-                                        </div>
-                                        <div className='other-messages-container'>
-                                            <img src='images/common/avatar.png' alt='error' />
-                                            <div className="message other-message">
-                                                <div className="message-text">Older Message 4</div>
-                                            </div>
-                                        </div>
-                                        <div className="message my-message">
-                                            <div className="message-text">Older Message 5</div>
-                                        </div>
-                                        <div className="message my-message">
-                                            <div className="message-text">This establishes the main-axis, thus defining the direction flex items are placed in the flex container. Flexbox is (aside from optional wrapping) a single-direction layout of flex items as primarily laying out either in horizontal rows or vertical columns.</div>
-                                        </div>
+                                    <div className="chat-messages" id='chat-box'>
+                                        {
+                                            currentConversation && currentConversation.map((message, index) => {
+                                                if(message.senderId == user.id) {
+                                                    return (
+                                                        <div className="message my-message">
+                                                            <div className="message-text">{message.text}</div>
+                                                        </div>
+                                                    )
+                                                } else {
+                                                    return (
+                                                        <div className='other-messages-container'>
+                                                            <img src='images/common/avatar.png' alt='error' />
+                                                            <div className="message other-message">
+                                                                <div className="message-text">{message.text}</div>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                }
+                                            })
+                                        }
+                                        
                                     </div>
                                     <div className='send-messages'>
                                         <div className='chat-feature'>
@@ -140,12 +250,14 @@ function MessagePage() {
                                             <div><ion-icon name="images-outline"></ion-icon></div>
                                             <div><ion-icon name="images-outline"></ion-icon></div>
                                         </div>
-                                        <div className='chat-input'>
-                                            <input type='text' placeholder='Aa' />
-                                            <ion-icon name="logo-flickr"></ion-icon>
-                                        </div>
-                                        <div className='liked-button'>
-                                            <ion-icon name="heart"></ion-icon>
+                                        <div className='w-100'>
+                                            <InputEmoji 
+                                                value={textMessage} 
+                                                onChange={setTextMessage} 
+                                                fontFamily='nunito' 
+                                                borderColor='rgba(72, 112, 223, 0.2)'
+                                                onKeyDown={handleKeyPress}
+                                                />
                                         </div>
                                     </div>
                                 </div>

@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './style/login.css'
 import RegisterForm from '../components/Login_Register/RegisterForm';
 import LoginForm from '../components/Login_Register/LoginForm';
 import $ from 'jquery'
 import { ToastContainer } from 'react-toastify';
+import ForgotPassword from '../components/ForgotPassword/ForgotPassword';
 
 function Login(props) {
     $(document).ready(() => {
@@ -19,13 +20,27 @@ function Login(props) {
             container.classList.remove("right-panel-active");
         });
     })
+
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
     return (
         <div className='login-body'>
             <ToastContainer />
+            <ForgotPassword props={
+                {
+                    show,
+                    setShow,
+                    handleClose,
+                    handleShow
+                }
+            } />
             <div className="login-container" id="container">
 
                 <RegisterForm/>
-                <LoginForm/>
+                <LoginForm handleShow={handleShow} />
                 
                 <div className="overlay-container">
                 <div className="overlay">
