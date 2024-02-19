@@ -1,0 +1,24 @@
+.cls-button {
+    background: none;
+}
+
+.hobby-bound {
+    background-color: #fd297b;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 2px;
+    padding-bottom: 5px;
+    margin: 3px;
+}
+
+.hobby-bound-box {
+    --mask: 
+    linear-gradient(-90deg,#0000 10px,#000 0) 5px,
+    radial-gradient(5px,#000 98%,#0000) 50%/10px 9.25px space repeat;
+  -webkit-mask: var(--mask);
+          mask: var(--mask);
+}
+
+.ant-picker-dropdown{
+    z-index: 10000;
+}
