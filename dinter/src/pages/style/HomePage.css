@@ -41,7 +41,7 @@
 }
 
 .stories .story:nth-child(1){
-    background: url("https://scontent.fhan18-1.fna.fbcdn.net/v/t39.30808-6/419732901_909514297212257_2793304951596360622_n.jpg?stp=dst-jpg_p526x296&_nc_cat=111&ccb=1-7&_nc_sid=dd5e9f&_nc_ohc=Qn_634Ntb0cAX-X2r0c&_nc_ht=scontent.fhan18-1.fna&oh=00_AfDEa7wmeo1FqfnG8iC79XxNkWKBaRAneaVNd09z-fMzfw&oe=65B0DA38") 
+    background: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlhShh3crYBy5XM_l6Z54cRmkFP_tN_slgIA&usqp=CAU") 
     no-repeat center center/cover;
     
 }
@@ -100,7 +100,7 @@
 }
 
 .feed .photo{
-    border-radius: 10px ;
+    border-radius: 20px ;
     overflow: hidden;
     margin: 0.7rem 0;
 }
