@@ -2,8 +2,10 @@ import HomePage from "../pages/HomePage";
 import Login from "../pages/Login";
 import MessagePage from "../pages/MessagePage";
 import ProfileScreen from "../pages/ProfileScreen";
+import RequestFriend from "../pages/RequestFriend";
 import ProfileSetup from "../pages/ProfileSetup";
 import Story from "../pages/Story";
+
 
 const routes = [
     {
@@ -25,6 +27,10 @@ const routes = [
     {
         path: '/profile',
         element: ProfileScreen
+    },
+    {
+        path: '/request-friend',
+        element: RequestFriend
     },
     {
         path: '/story',
