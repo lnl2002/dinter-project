@@ -1,5 +1,5 @@
-const UserService = require("../services/UserService");
-const JwtService = require("../services/JwtService");
+import UserService from '../services/UserService.js';
+import JwtService from '../services/JwtService.js';
 
 
 const createUser = async (req, res) => {
@@ -70,8 +70,37 @@ const refreshToken = async (req, res) => {
   }
 }
 
-module.exports = {
+const getUserInfoByAccessToken = async (req, res) => {
+  try {
+      console.log('headers',req.headers);
+      const token = req.headers.token.split(' ')[1];
+      console.log('token',token);
+      if(!token) {
+        return res.status(404).json({
+          status: "ERR",
+          message: "Invalid token"
+        })
+      } 
+
+      const response = await UserService.getUserInfoByAccessToken(token);
+      res.status(200).json(response);
+      
+    
+  } catch (error) {
+    return res.status(404).json(error)
+  }
+}
+
+export {
   createUser,
   login,
   refreshToken,
+  getUserInfoByAccessToken
+};
+
+export default {
+  createUser,
+  login,
+  refreshToken,
+  getUserInfoByAccessToken
 };

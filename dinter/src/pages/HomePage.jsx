@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import HeaderHome from "../components/HeaderComponents/HeaderHome";
 import "./style/HomePage.css";
 import { Col, Container, Form, Row } from "react-bootstrap";
@@ -47,7 +47,8 @@ function HomePage(props) {
                   >
                     <ion-icon name="home-outline"></ion-icon>
                     <span style={{ marginLeft: "20px", fontWeight: "700" }}>
-                      Explore
+                      
+                      <a href="/messages">Message</a>
                     </span>
                   </div>
                   <div
@@ -162,7 +163,7 @@ function HomePage(props) {
                 </div>
 
                 <div className="photo">
-                    <img src="images/common/anhbia.jpg" alt="" width={527}/>
+                    <img src="images/common/anhbia.jpg" alt="" width={650}/>
                 </div>
                 
                 <div className="action-buttons">
@@ -211,7 +212,7 @@ function HomePage(props) {
                 </div>
 
                 <div className="photo">
-                    <img src="images/common/anhbia.jpg" alt="" width={527}/>
+                    <img src="images/common/anhbia.jpg" alt="" width={650}/>
                 </div>
                 
                 <div className="action-buttons">
