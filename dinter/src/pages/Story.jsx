@@ -54,7 +54,7 @@ function Story() {
     // }
 
     const handleChangeStory = (num) => {
-        if(num >= 0 && num < listVideo.length){
+        if(num >= 0 && num <= listVideo.length){
             setCurrentVideo(num);  
         }
         setStart(false);
