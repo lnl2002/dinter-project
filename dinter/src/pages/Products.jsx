@@ -13,6 +13,7 @@ export default function Product() {
     "price": 0,
     "description": ""
   });
+  const [listOfImg, setListOfImg] = useState([]);
   const [comments, setComments] = useState();
   useEffect(() => {
     axios.get("http://localhost:8080/product/" + params.id)
@@ -46,18 +47,7 @@ export default function Product() {
       price: newProduct.price,
       category: "65daeedc0cae7e88aa67ddd4",
       description: newProduct.description,
-      // images: [
-      //   {
-      //     _id: "65dc08083e6c2804cd3baeea",
-      //     id: 45,
-      //     url: "tennisracket1.jpg"
-      //   },
-      //   {
-      //     _id: "65dc08083e6c2804cd3baeeb",
-      //     id: 46,
-      //     url: "tennisracket2.jpg"
-      //   }
-      // ]
+      images: listOfImg
     };
 
     // The options for the Axios request
@@ -78,6 +68,32 @@ export default function Product() {
       // Handle the error, such as displaying a message or logging it
       console.error(error.message);
     }
+  }
+
+  const handleImageFile = async (e) => {
+    // Get the selected file from the input element
+    let file = e.target.files[0];
+    // Create a URL from the file object
+    let url = URL.createObjectURL(file);
+
+    // Create a new FileReader object
+    let reader = new FileReader();
+
+    let base64
+    // Define a callback function that will run when the reader finishes reading the file
+     reader.onload = function () {
+      // Get the data URL from the reader result
+      let dataURL = reader.result;
+
+      // Assign the data URL to a variable
+      base64 = dataURL;
+      
+    };
+
+    setListOfImg([{
+      urlfile: url,
+      url: url
+    }, ...listOfImg])
   }
 
   const handleSubmitComment = async () => {
@@ -170,18 +186,19 @@ export default function Product() {
                   <h3>Price: </h3><input type='number' onChange={(event) => setField(event.target.value, "price")} className='form-control' value={newProduct.price}></input>
                   <h3>Description:</h3> <input onChange={(event) => setField(event.target.value, "desc")} className='form-control mb-5' value={newProduct.description}></input>
                   {
-                    product.images.map(i =>
-                      <div className='d-flex row'>
+
+                    listOfImg.map(li =>
+                      <div className='row mb-5'>
                         <div class="mb-3 col-md-6" >
-                          <input class="form-control form-control-sm" id="formFileSm" type="file" />
+                          <input onChange={(e) => handleImageFile(e)} class="form-control form-control-sm" id="formFileSm" type="file" />
                         </div>
                         <div className='col-md-6'>
-                          <img width={'100%'} src={i.url}></img>
+                          <img width={'100%'} src={li.urlfile}></img>
                         </div>
-                      </div>
-                    )
+                      </div>)
                   }
-                  <button className='btn btn-primary' onClick={{}}>Add image</button>
+
+                  <button className='btn btn-primary' onClick={() => setListOfImg([{}, ...listOfImg])}>Add image</button>
                 </div>
               </div>
               <div class="modal-footer">
