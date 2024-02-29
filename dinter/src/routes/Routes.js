@@ -6,6 +6,7 @@ import RequestFriend from "../pages/RequestFriend";
 import ProfileSetup from "../pages/ProfileSetup";
 import Story from "../pages/Story";
 import Dashboard from "../pages/Dashboard";
+import ResetPassword from "../pages/ResetPassword";
 
 
 const routes = [
@@ -40,6 +41,10 @@ const routes = [
     {
         path: '/dashboard',
         element: Dashboard,
+    },
+    {
+        path: '/reset-password',
+        element: ResetPassword,
     }
 ]
 
