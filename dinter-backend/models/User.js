@@ -20,14 +20,16 @@ const userSchema = new Schema({
   },
   dateOfBirth: {
     type: Date,
-    required: true
   },
   avatar: String,
   bio: String,
   address: String,
   friends: [{ type: Schema.Types.ObjectId, ref: 'Users' }],
   isAdmin: Boolean,
-  hobbies: [{ type: Schema.Types.ObjectId, ref: 'Hobbies' }]
+  hobbies: [{ type: Schema.Types.ObjectId, ref: 'Hobbies' }],
+  isSetUpProfile: {
+    type: Boolean,
+  }
 });
 
 const User = mongoose.model('Users', userSchema);
