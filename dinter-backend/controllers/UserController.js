@@ -5,6 +5,7 @@ import JwtService from '../services/JwtService.js';
 const createUser = async (req, res) => {
   try {
     //checkemail
+    console.log(req.body);
     const { username, email, password, confirmPassword } = req.body;
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     const isCheckEmail = reg.test(email);
