@@ -11,7 +11,7 @@ import { io } from "socket.io-client";
 
 function MessagePage() {
 
-    const { user } = useContext(AuthContext);
+    const { user, socket, setSocket, onlineUsers, setOnlineUsers } = useContext(AuthContext);
 
     const [options, setOptions] = useState(1);
     const [currentFriend, setCurrentFriend] = useState(0);
@@ -22,29 +22,7 @@ function MessagePage() {
     const [recipientUser, setRecipientUser] = useState({});
     const [textMessage, setTextMessage] = useState("");
     const [newMessage, setNewMessage] = useState("");
-    const [socket, setSocket] = useState(null);
-    const [onlineUsers, setOnlineUsers] = useState([]);
-
-    console.log('currentConversation', currentConversation);
-    //init socket
-    useEffect(() => {
-        const newSocket = io("http://localhost:3002");
-        setSocket(newSocket);
-
-        return () => {
-            newSocket.disconnect();
-        }
-    }, [user]);
-
-    // add online users
-    useEffect(() => {
-        if(socket === null) return;
-        
-        socket.emit("addNewUser", user?.id);
-        socket.on("getOnlineUsers", (res) => {
-            setOnlineUsers(res);
-        })
-    },[socket])
+    
 
      // send message
      useEffect(() => {

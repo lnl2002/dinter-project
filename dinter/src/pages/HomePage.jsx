@@ -5,6 +5,7 @@ import { Col, Container, Form, Row } from "react-bootstrap";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faBookmark, faComments, faEdit, faEllipsis, faHeader, faHeart, faSearch, faShare, faShareAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import LeftBarHomePage from "../components/LeftBar/LeftBarHomePage";
 
 library.add(faEllipsis,faHeart,faComments,faShareAlt,faBookmark,faEdit,faSearch);
 function HomePage(props) {
@@ -28,48 +29,7 @@ function HomePage(props) {
                     <strong>Lại Ngọc Lâm</strong>
                   </div>
                 </div>
-                <div
-                  className="bg-white circle"
-                  style={{ marginTop: "10px", fontSize: "18px" }}
-                >
-                  <div
-                    className="d-flex align-items-center"
-                    style={{ padding: "30px 35px" }}
-                  >
-                    <ion-icon name="home-outline"></ion-icon>
-                    <span style={{ marginLeft: "20px", fontWeight: "700" }}>
-                      Home
-                    </span>
-                  </div>
-                  <div
-                    className="d-flex align-items-center"
-                    style={{ padding: "30px 35px" }}
-                  >
-                    <ion-icon name="home-outline"></ion-icon>
-                    <span style={{ marginLeft: "20px", fontWeight: "700" }}>
-                      
-                      <a href="/messages">Message</a>
-                    </span>
-                  </div>
-                  <div
-                    className="d-flex align-items-center"
-                    style={{ padding: "30px 35px" }}
-                  >
-                    <ion-icon name="home-outline"></ion-icon>
-                    <span style={{ marginLeft: "20px", fontWeight: "700" }}>
-                      Messagse
-                    </span>
-                  </div>
-                  <div
-                    className="d-flex align-items-center"
-                    style={{ padding: "30px 35px" }}
-                  >
-                    <ion-icon name="home-outline"></ion-icon>
-                    <span style={{ marginLeft: "20px", fontWeight: "700" }}>
-                    Setting
-                    </span>
-                  </div>
-                </div>
+                <LeftBarHomePage/>
               </div>
             </div>
           </Col>
