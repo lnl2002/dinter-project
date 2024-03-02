@@ -1,3 +1,22 @@
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #ffcdcd;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #ff6e6e;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #ff9a9a;
+}
 .modal-90w {
   max-width: none!important;
   width: fit-content!important;
@@ -27,12 +46,10 @@
   margin-top: 5px;
 }
 .comments-box{
-  overflow-y: scroll;
-  height: 50vh;
   padding-top: 20px;
 }
-.comments-box::-webkit-scrollbar {
-  display: none;
+.above-part{
+  overflow-y: scroll;
 }
 .input-comment-box{
   padding-top: 10px;

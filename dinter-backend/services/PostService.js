@@ -12,7 +12,12 @@ const createNewPost = async ({ author, content, images }) => {
 
 const getPost = async (limit, offset) => {
     try {
-        const getPosts = await Post.find({}).sort([['createdAt', -1]]).skip(Number(offset)).limit(Number(limit)).populate('author', 'username').exec();
+        const getPosts = await Post.find({})
+        .sort([['createdAt', -1]])
+        .skip(Number(offset))
+        .limit(Number(limit))
+        .populate('author', 'username')
+        .exec();
         return getPosts;
     } catch (error) {
         throw new Error(error.toString());
@@ -28,6 +33,25 @@ const deletePost = async (id) => {
         throw new Error(error.toString())
     }
 }
+
+const getPostsByUserId = async (limit, offset, userId) => {
+    try {
+        const getPosts = await Post.find({author: userId})
+        .sort([['createdAt', -1]])
+        .skip(Number(offset))
+        .limit(Number(limit))
+        .populate('author', 'username')
+        .populate({
+            path: 'comments.userId',
+            select: 'username',
+        })
+        .exec();
+        return getPosts;
+    } catch (error) {
+        throw new Error(error.toString());
+    }
+}
+
 
 const editPost = async (id, content) => {
     try {
@@ -67,6 +91,7 @@ export default {
     createNewPost,
     getPost,
     deletePost,
+    getPostsByUserId,
     editPost,
     handleLike,
     handleDislike

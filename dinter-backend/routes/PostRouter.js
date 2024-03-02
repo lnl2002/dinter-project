@@ -23,6 +23,7 @@ const upload = multer({
 router.post('/', upload.array("images", 10), postController.createPost)
 .get('/', authMiddleware, postController.getPosts)
 .delete('/:id', postController.deletePost)
+router.get('/all-from/:userId', postController.getPostsByUserId)
 .patch('/:id', postController.editPost)
 .post('/favorite/:id', authMiddleware, postController.handleLike)
 .delete('/favorite/:id', authMiddleware, postController.handleDislike)

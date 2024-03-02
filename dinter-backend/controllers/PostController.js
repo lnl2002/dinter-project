@@ -119,10 +119,33 @@ const handleDislike = async (req, res) => {
         })
     }
 }
+
+const getPostsByUserId = async(req, res) => {
+    try{
+        const userId = req.params.userId;
+
+        if (!userId) {
+            return res.status(400).json({ error: 'userId is required' });
+        }
+
+        const limit = req.query.limit || 3;
+        const offset = req.query.offset || 0;
+        const post = await postService.getPostsByUserId(limit, offset, userId);
+        res.status(200).json({
+            message: "get posts success",
+            data: post
+        })
+    }catch (error) {
+        res.status(500).json({
+            messages: error.toString()
+        })
+    }
+}
 export default {
     createPost,
     getPosts,
     deletePost,
+    getPostsByUserId,
     editPost,
     handleLike,
     handleDislike
