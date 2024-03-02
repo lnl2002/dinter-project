@@ -28,8 +28,46 @@ const deletePost = async (id) => {
         throw new Error(error.toString())
     }
 }
-export default{
+
+const editPost = async (id, content) => {
+    try {
+        await Post.updateOne({ _id: id }, { $set: { content: content } });
+        const post1 = await Post.findById(id).populate('author', 'username').exec();
+        return post1;
+    } catch (error) {
+        throw new Error(error.toString())
+    }
+}
+
+const handleLike = async (postId, userId) => {
+    try {
+        console.log(postId);
+        const favorited = await Post.findOne({ _id: postId }).exec();
+        console.log(favorited);
+        if (favorited.likes.includes(userId)) {
+            throw new Error("The user liked this post!")
+        }
+        const favoritePost = await Post.updateOne({ _id: postId }, { $push: { likes: userId } })
+        return favoritePost;
+    } catch (error) {
+        throw new Error(error.toString())
+    }
+}
+
+const handleDislike = async (postId, userId) => {
+    try {
+        console.log("disslike");
+        const favoritePost = await Post.updateOne({ _id: postId }, { $pull: { likes: userId } })
+        return favoritePost;
+    } catch (error) {
+        throw new Error(error.toString())
+    }
+}
+export default {
     createNewPost,
     getPost,
-    deletePost
+    deletePost,
+    editPost,
+    handleLike,
+    handleDislike
 }

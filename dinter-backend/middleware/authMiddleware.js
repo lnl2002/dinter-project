@@ -15,6 +15,8 @@ const authMiddleware = (req, res, next) => {
                     message: "The authentication"
                 })
             } else {
+                console.log(user);
+                req.userId = user.id;
                 next();
             }
         })
