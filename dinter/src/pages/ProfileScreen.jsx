@@ -1,247 +1,21 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './style/ProfileScreen.css'
-import PostDetail from '../components/PostDetail/PostDetail'
-import ProfileSetting from '../components/ProfileSetting/ProfileSetting'
+import axios from 'axios'
+import { BACK_END_HOST } from '../utils/AppConfig'
+import PostDetail from '../components/PostDetail'
+import ProfileSetting from '../components/ProfileSetting'
+import Lottie from 'react-lottie';
+import * as animationData from '../utils/lottie/socialmedia.json'
 
-/* ====== mock data for user =======*/
-export const UserProfileData = {
-  username: "phuong.than.quang",
-  posts: 102,
-  followers: 371321,
-  following: 44,
-  fullname: "Thân Quang Phương",
-  avatar: "https://yt3.googleusercontent.com/ytc/AGIKgqOEhDpaYA9vBKDtGNDV8d1KFa2GklN592uvVYNw=s900-c-k-c0x00ffffff-no-rj",
-  bio: "This is bio, you can know about me by reading this",
-  links: [
-    "www.ozgame.com.vn",
-    "https://www.facebook.com/phuongtqhe176459.ctvo/"
-  ]
-}
 
-export const UserPosts = [
-  {
-    id: 0,
-    url: "https://i.pinimg.com/564x/c1/9a/1d/c19a1d3823b60a19194fe700f0524ae6.jpg",
-    interaction: {
-      likes: 573,
-      comments: 125
-    },
-    user_data: {
-      username: "phuong.than.quang",
-      avatar: "https://yt3.googleusercontent.com/ytc/AGIKgqOEhDpaYA9vBKDtGNDV8d1KFa2GklN592uvVYNw=s900-c-k-c0x00ffffff-no-rj",
-    },
-    comment_data:
-      [
-        {
-          id: 1,
-          user: {
-            user_name: "fukan.zo",
-            avatar: "https://www.offdek.co/wp-content/uploads/2021/11/37D916F4-6CC0-4A60-A5D0-A48285D4F44D-515x650.jpeg"
-          },
-          content: "that's good",
-          time: "12:23:09 11/03/2023",
-          likes: "1562"
-        },
-        {
-          id: 2,
-          user: {
-            user_name: "ghuhan_08",
-            avatar: "https://img.bingfeng.tw/bingfeng/forum/202208/02/000212d4tcztmm0ric0ykx.jpg"
-          },
-          content: "can't be more pretty",
-          time: "01:23:09 11/01/2024",
-          likes: "432"
-        },
-        {
-          id: 3,
-          user: {
-            user_name: "lamena.zy",
-            avatar: "https://kenh14cdn.com/2019/2/24/3561716420480213454575853861059020806684672n-15510057259571546306615.jpg"
-          },
-          content: "so can we be friends",
-          time: "07:14:09 27/09/2023",
-          likes: "1562"
-        }
-      ]
+const lottieOptions = {
+  loop: true,
+  autoplay: true,
+  animationData: animationData,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice'
   },
-  {
-    id: 1,
-    url: "https://1.bp.blogspot.com/-EjM3TU6SttA/YTDxfrqOS8I/AAAAAAAAPD4/jRoRIhbfTGA3AGIZkiN1OCvEN8A46XQ7wCLcBGAsYHQ/s1351/9.jpg",
-    interaction: {
-      likes: 22332,
-      comments: 1274
-    }
-  },
-  {
-    id: 2,
-    url: "https://pbs.twimg.com/media/E-LRsAXVgAAuIOY?format=jpg&name=large",
-    interaction: {
-      likes: 6865453,
-      comments: 3354
-    }
-  },
-  {
-    id: 3,
-    url: "https://www.offdek.co/wp-content/uploads/2021/11/37D916F4-6CC0-4A60-A5D0-A48285D4F44D-515x650.jpeg",
-    interaction: {
-      likes: 193,
-      comments: 277
-    }
-  },
-  {
-    id: 4,
-    url: "https://cdn.theasianbeauty.com/media/medium_bxy59_96c696154eb4b20b15cf3253598c3e79_df0d4513f8.jpg",
-    interaction: {
-      likes: 89424,
-      comments: 2134
-    }
-  },
-  {
-    id: 5,
-    url: "https://img.bingfeng.tw/bingfeng/forum/202208/02/000212d4tcztmm0ric0ykx.jpg",
-    interaction: {
-      likes: 32109875,
-      comments: 12532
-    }
-  },
-  {
-    id: 6,
-    url: "https://kenh14cdn.com/2019/2/24/3561716420480213454575853861059020806684672n-15510057259571546306615.jpg",
-    interaction: {
-      likes: 78654,
-      comments: 1255
-    }
-  },
-  {
-    id: 7,
-    url: "https://i.pinimg.com/736x/1c/47/b8/1c47b8bbd9c2fcf93808bf1fdec80c0c.jpg",
-    interaction: {
-      likes: 342,
-      comments: 73
-    }
-  },
-  {
-    id: 8,
-    url: "https://i.pinimg.com/originals/8b/a0/20/8ba02036ae1020447ab7b714a1cea757.jpg",
-    interaction: {
-      likes: 687,
-      comments: 32
-    }
-  },
-
-]
-
-export const UserVideos = [
-  {
-    id: 1,
-    url: "https://i.pinimg.com/originals/8b/a0/20/8ba02036ae1020447ab7b714a1cea757.jpg",
-    interaction: {
-      likes: 687,
-      comments: 32,
-      views: 5234
-    }
-  },
-  {
-    id: 10,
-    url: "https://i.pinimg.com/originals/c9/fc/fb/c9fcfb9d5976d73345e599bc1e7b2468.jpg",
-    interaction: {
-      likes: 3473,
-      comments: 154,
-      views: 10043
-    }
-  },
-  {
-    id: 11,
-    url: "https://i.pinimg.com/736x/3b/2f/86/3b2f868f57478ee4964260af6098337e.jpg",
-    interaction: {
-      likes: 9876,
-      comments: 433,
-      views: 18327
-    }
-  },
-  {
-    id: 12,
-    url: "https://www.dungplus.com/wp-content/uploads/2019/12/girl-xinh.jpg",
-    interaction: {
-      likes: 34432,
-      comments: 655,
-      views: 321543
-    }
-  },
-  {
-    id: 2,
-    url: "https://1.bp.blogspot.com/-EjM3TU6SttA/YTDxfrqOS8I/AAAAAAAAPD4/jRoRIhbfTGA3AGIZkiN1OCvEN8A46XQ7wCLcBGAsYHQ/s1351/9.jpg",
-    interaction: {
-      likes: 22332,
-      comments: 1274,
-      views: 654765
-    }
-  },
-  {
-    id: 3,
-    url: "https://pbs.twimg.com/media/E-LRsAXVgAAuIOY?format=jpg&name=large",
-    interaction: {
-      likes: 6865453,
-      comments: 3354,
-      views: 342809754
-    }
-  },
-  {
-    id: 4,
-    url: "https://www.offdek.co/wp-content/uploads/2021/11/37D916F4-6CC0-4A60-A5D0-A48285D4F44D-515x650.jpeg",
-    interaction: {
-      likes: 193,
-      comments: 277,
-      views: 4325
-    }
-  },
-  {
-    id: 5,
-    url: "https://cdn.theasianbeauty.com/media/medium_bxy59_96c696154eb4b20b15cf3253598c3e79_df0d4513f8.jpg",
-    interaction: {
-      likes: 89424,
-      comments: 2134,
-      views: 432987
-    }
-  },
-  {
-    id: 6,
-    url: "https://img.bingfeng.tw/bingfeng/forum/202208/02/000212d4tcztmm0ric0ykx.jpg",
-    interaction: {
-      likes: 32109875,
-      comments: 12532,
-      views: 430278430
-    }
-  },
-  {
-    id: 7,
-    url: "https://kenh14cdn.com/2019/2/24/3561716420480213454575853861059020806684672n-15510057259571546306615.jpg",
-    interaction: {
-      likes: 78654,
-      comments: 1255,
-      views: 324798
-    }
-  },
-  {
-    id: 8,
-    url: "https://i.pinimg.com/736x/1c/47/b8/1c47b8bbd9c2fcf93808bf1fdec80c0c.jpg",
-    interaction: {
-      likes: 3424,
-      comments: 173,
-      views: 43984
-    }
-  },
-  {
-    id: 9,
-    url: "https://www.dungplus.com/wp-content/uploads/2019/12/girl-xinh.jpg",
-    interaction: {
-      likes: 573,
-      comments: 125,
-      views: 3287
-    }
-  }
-]
-
+};
 
 const contentType = {
   post: {
@@ -255,100 +29,135 @@ const contentType = {
 }
 
 function ProfileScreen(props) {
-  const [userData, setUserData] = useState(UserProfileData);
-  const [userMediaDisplay, setUserMediaDisplay] = useState(UserPosts);
+  const [userData, setUserData] = useState([]);
+  const [userMediaDisplay, setUserMediaDisplay] = useState([]);
   const [navOptionArr, setNavOptionArr] = useState(contentType.post.code);
   const [showPostDetail, setShowPostDetail] = useState(false);
   const [showSettingBox, setShowSettingBox] = useState(false);
-  const [chosenPostId, setChosenPostId] = useState(0);
+  const [chosenPostIndex, setChosenPostIndex] = useState(0);
 
-  const LoadContent = (type) => {
+  const LoadUserPosts = async () => {
+    axios.get(BACK_END_HOST + "api/v1/post/").then(res => {
+      setUserMediaDisplay(res.data.data);
+    });
+  }
+
+  const LoadUserVideos = async () => {
+    axios.get(BACK_END_HOST + "api/v1/post/all-from/" + userData._id).then(res => {
+      setUserMediaDisplay(res.data.data);
+    });
+  }
+
+  const LoadContent = async (type) => {
     switch (type) {
-      case contentType.post.code: setUserMediaDisplay(UserPosts); break
-      case contentType.video.code: setUserMediaDisplay(UserVideos); break
-      default: setUserMediaDisplay(UserPosts); break
+      case contentType.post.code: LoadUserPosts(); break;
+      case contentType.video.code: LoadUserVideos(); break
+      default: LoadUserPosts(); break;
     }
   }
 
-  console.log(chosenPostId);
+  const LoadUser = async () => {
+    if (localStorage.getItem('User')) {
+      setUserData(JSON.parse(localStorage.getItem('User')));
+    }
+  }
+
+  useEffect(() => {
+    LoadUser()
+    LoadContent(contentType.post.code);
+  }, [])
+
   return (
-    <div>
-      <PostDetail visible={showPostDetail} onHideCallBack={() => setShowPostDetail(false)} postId={chosenPostId} user={userData}></PostDetail>
-      <ProfileSetting visible={showSettingBox} user={userData} onHideAction={() => setShowSettingBox(false)}></ProfileSetting>
-      <div
-        className="container container-app-p"
-      >
+    userMediaDisplay && userMediaDisplay.length > 0 ?
+      <div>
+        <PostDetail visible={showPostDetail} onHideCallBack={() => setShowPostDetail(false)} post={userMediaDisplay[chosenPostIndex]} user={userData}></PostDetail>
+        <ProfileSetting visible={showSettingBox} user={userData} onHideAction={() => setShowSettingBox(false)}></ProfileSetting>
+        <div
+          className="container container-app-p" style={{ minHeight: '100vh' }}
+        >
 
-        <div className='row d-flex justify-content-center pt-5'>
+          <div className='row d-flex justify-content-center pt-5'>
 
-          <div className='col-md-3'>
-            <div className="App">
-              <AvatarDiv image={userData.avatar} />
+            <div className='col-md-3'>
+              <div className="App">
+                <AvatarDiv image={userData.avatar} />
+              </div>
+            </div>
+
+            <div className="col-md-5 d-flex flex-column" style={{ gap: 20 }}>
+
+              <div className='name-field d-flex flex-row align-content-center' style={{ gap: 10 }}>
+                <h5>{userData.username}</h5>
+                <ButtonWeb onClick={() => setShowSettingBox(true)} title={"Edit profile"}></ButtonWeb>
+                <ButtonWeb title={"View archive"}></ButtonWeb>
+                <button style={{ background: "white" }}>
+                  <svg aria-label="Options" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Options</title><circle cx="12" cy="12" fill="none" r="8.635" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></circle><path d="M14.232 3.656a1.269 1.269 0 0 1-.796-.66L12.93 2h-1.86l-.505.996a1.269 1.269 0 0 1-.796.66m-.001 16.688a1.269 1.269 0 0 1 .796.66l.505.996h1.862l.505-.996a1.269 1.269 0 0 1 .796-.66M3.656 9.768a1.269 1.269 0 0 1-.66.796L2 11.07v1.862l.996.505a1.269 1.269 0 0 1 .66.796m16.688-.001a1.269 1.269 0 0 1 .66-.796L22 12.93v-1.86l-.996-.505a1.269 1.269 0 0 1-.66-.796M7.678 4.522a1.269 1.269 0 0 1-1.03.096l-1.06-.348L4.27 5.587l.348 1.062a1.269 1.269 0 0 1-.096 1.03m11.8 11.799a1.269 1.269 0 0 1 1.03-.096l1.06.348 1.318-1.317-.348-1.062a1.269 1.269 0 0 1 .096-1.03m-14.956.001a1.269 1.269 0 0 1 .096 1.03l-.348 1.06 1.317 1.318 1.062-.348a1.269 1.269 0 0 1 1.03.096m11.799-11.8a1.269 1.269 0 0 1-.096-1.03l.348-1.06-1.317-1.318-1.062.348a1.269 1.269 0 0 1-1.03-.096" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path></svg>
+                </button>
+              </div>
+
+              <div className='d-flex flex-row col-md-9' style={{ gap: 40 }}>
+                <StatisticNumber number={FormatNumber(userData.posts)} text={"posts"}></StatisticNumber>
+                <StatisticNumber number={FormatNumber(userData.followers)} text={"followers"}></StatisticNumber>
+                <StatisticNumber number={FormatNumber(userData.following)} text={"following"}></StatisticNumber>
+              </div>
+
+              <NameTag nameTag={userData.fullname}></NameTag>
+
+              <div className='row d-flex col-md-10'>
+                <TextWeb text={userData.bio}></TextWeb>
+
+              </div>
+
             </div>
           </div>
 
-          <div className="col-md-5 d-flex flex-column" style={{ gap: 20 }}>
+          <div className='row d-flex justify-content-center pt-5'>
 
-            <div className='name-field d-flex flex-row align-content-center' style={{ gap: 10 }}>
-              <h5>{userData.username}</h5>
-              <ButtonWeb onClick={() => setShowSettingBox(true)} title={"Edit profile"}></ButtonWeb>
-              <ButtonWeb title={"View archive"}></ButtonWeb>
-              <button>
-                <svg aria-label="Options" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Options</title><circle cx="12" cy="12" fill="none" r="8.635" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></circle><path d="M14.232 3.656a1.269 1.269 0 0 1-.796-.66L12.93 2h-1.86l-.505.996a1.269 1.269 0 0 1-.796.66m-.001 16.688a1.269 1.269 0 0 1 .796.66l.505.996h1.862l.505-.996a1.269 1.269 0 0 1 .796-.66M3.656 9.768a1.269 1.269 0 0 1-.66.796L2 11.07v1.862l.996.505a1.269 1.269 0 0 1 .66.796m16.688-.001a1.269 1.269 0 0 1 .66-.796L22 12.93v-1.86l-.996-.505a1.269 1.269 0 0 1-.66-.796M7.678 4.522a1.269 1.269 0 0 1-1.03.096l-1.06-.348L4.27 5.587l.348 1.062a1.269 1.269 0 0 1-.096 1.03m11.8 11.799a1.269 1.269 0 0 1 1.03-.096l1.06.348 1.318-1.317-.348-1.062a1.269 1.269 0 0 1 .096-1.03m-14.956.001a1.269 1.269 0 0 1 .096 1.03l-.348 1.06 1.317 1.318 1.062-.348a1.269 1.269 0 0 1 1.03.096m11.799-11.8a1.269 1.269 0 0 1-.096-1.03l.348-1.06-1.317-1.318-1.062.348a1.269 1.269 0 0 1-1.03-.096" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path></svg>
-              </button>
-            </div>
+            <div className='row d-flex col-md-10 nav-bound'>
 
-            <div className='d-flex flex-row col-md-9' style={{ gap: 40 }}>
-              <StatisticNumber number={FormatNumber(userData.posts)} text={"posts"}></StatisticNumber>
-              <StatisticNumber number={FormatNumber(userData.followers)} text={"followers"}></StatisticNumber>
-              <StatisticNumber number={FormatNumber(userData.following)} text={"following"}></StatisticNumber>
-            </div>
+              <div className='row justify-content-center navigate-part'>
 
-            <NameTag nameTag={userData.fullname}></NameTag>
+                <NavButton isChosen={navOptionArr == contentType.post.code} onClick={() => { setNavOptionArr(contentType.post.code); LoadContent(contentType.post.code) }} text={contentType.post.name} svg={<svg aria-label="" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="12" role="img" viewBox="0 0 24 24" width="12"><title></title><rect fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="18" x="3" y="3"></rect><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="9.015" x2="9.015" y1="3" y2="21"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="14.985" x2="14.985" y1="3" y2="21"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="21" x2="3" y1="9.015" y2="9.015"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="21" x2="3" y1="14.985" y2="14.985"></line></svg>} />
 
-            <div className='row d-flex col-md-10'>
-              <TextWeb text={userData.bio}></TextWeb>
-              <div className='d-flex align-items-center'>
-                <svg aria-label="Link icon" class="x1lliihq x1n2onr6 x7l2uk3" fill="currentColor" height="12" role="img" viewBox="0 0 24 24" width="12"><title>Link icon</title><path d="m9.726 5.123 1.228-1.228a6.47 6.47 0 0 1 9.15 9.152l-1.227 1.227m-4.603 4.603-1.228 1.228a6.47 6.47 0 0 1-9.15-9.152l1.227-1.227" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="8.471" x2="15.529" y1="15.529" y2="8.471"></line></svg>
-                <LinkWeb url={userData.links[0]} />
+                <NavButton isChosen={navOptionArr == contentType.video.code} onClick={() => { setNavOptionArr(contentType.video.code); LoadContent(contentType.video.code) }} text={contentType.video.name} svg={<svg aria-label="" class="x1lliihq x1n2onr6 x1roi4f4" fill="currentColor" height="12" role="img" viewBox="0 0 24 24" width="12"><title></title><line fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2" x1="2.049" x2="21.95" y1="7.002" y2="7.002"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="13.504" x2="16.362" y1="2.001" y2="7.002"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="7.207" x2="10.002" y1="2.11" y2="7.002"></line><path d="M2 12.001v3.449c0 2.849.698 4.006 1.606 4.945.94.908 2.098 1.607 4.946 1.607h6.896c2.848 0 4.006-.699 4.946-1.607.908-.939 1.606-2.096 1.606-4.945V8.552c0-2.848-.698-4.006-1.606-4.945C19.454 2.699 18.296 2 15.448 2H8.552c-2.848 0-4.006.699-4.946 1.607C2.698 4.546 2 5.704 2 8.552Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M9.763 17.664a.908.908 0 0 1-.454-.787V11.63a.909.909 0 0 1 1.364-.788l4.545 2.624a.909.909 0 0 1 0 1.575l-4.545 2.624a.91.91 0 0 1-.91 0Z" fill-rule="evenodd"></path></svg>} />
+
               </div>
             </div>
 
           </div>
-        </div>
 
-        <div className='row d-flex justify-content-center pt-5'>
 
-          <div className='row d-flex col-md-10 nav-bound'>
-
-            <div className='row justify-content-center navigate-part'>
-
-              <NavButton isChosen={navOptionArr == contentType.post.code} onClick={() => { setNavOptionArr(contentType.post.code); LoadContent(contentType.post.code) }} text={contentType.post.name} svg={<svg aria-label="" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="12" role="img" viewBox="0 0 24 24" width="12"><title></title><rect fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="18" x="3" y="3"></rect><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="9.015" x2="9.015" y1="3" y2="21"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="14.985" x2="14.985" y1="3" y2="21"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="21" x2="3" y1="9.015" y2="9.015"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="21" x2="3" y1="14.985" y2="14.985"></line></svg>} />
-
-              <NavButton isChosen={navOptionArr == contentType.video.code} onClick={() => { setNavOptionArr(contentType.video.code); LoadContent(contentType.video.code) }} text={contentType.video.name} svg={<svg aria-label="" class="x1lliihq x1n2onr6 x1roi4f4" fill="currentColor" height="12" role="img" viewBox="0 0 24 24" width="12"><title></title><line fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2" x1="2.049" x2="21.95" y1="7.002" y2="7.002"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="13.504" x2="16.362" y1="2.001" y2="7.002"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="7.207" x2="10.002" y1="2.11" y2="7.002"></line><path d="M2 12.001v3.449c0 2.849.698 4.006 1.606 4.945.94.908 2.098 1.607 4.946 1.607h6.896c2.848 0 4.006-.699 4.946-1.607.908-.939 1.606-2.096 1.606-4.945V8.552c0-2.848-.698-4.006-1.606-4.945C19.454 2.699 18.296 2 15.448 2H8.552c-2.848 0-4.006.699-4.946 1.607C2.698 4.546 2 5.704 2 8.552Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M9.763 17.664a.908.908 0 0 1-.454-.787V11.63a.909.909 0 0 1 1.364-.788l4.545 2.624a.909.909 0 0 1 0 1.575l-4.545 2.624a.91.91 0 0 1-.91 0Z" fill-rule="evenodd"></path></svg>} />
-
+          <div className='row d-flex justify-content-center' style={{ padding: 0 }}>
+            <div className='row d-flex col-md-10' style={{ padding: 0 }}>
+              {
+                userMediaDisplay.map((u, index) =>
+                  <ImageItem
+                    onClick={() => (setShowPostDetail(true), setChosenPostIndex(index))}
+                    type={navOptionArr}
+                    image={BACK_END_HOST + u.images[0]}
+                    interaction={{
+                      likes: u.likes.length,
+                      comments: u.comments.length
+                    }} />
+                )
+              }
+              {
+                userMediaDisplay.length > 3 ? '' :
+                  <div className='mt-5 mb-5 d-flex flex-column align-items-center'>
+                    <Lottie options={lottieOptions}
+                      isClickToPauseDisabled="false"
+                      height={400}
+                      width={400} />
+                      <TextWeb style={{fontWeight: 'bolder'}} text={"Your profile page seems still quite empty"}/>
+                      <TextWeb style={{fontWeight: 'bolder'}} text={"Let's update some more moments!"}/>
+                  </div>
+              }
             </div>
           </div>
 
         </div>
-
-
-        <div className='row d-flex justify-content-center' style={{ padding: 0 }}>
-          <div className='row d-flex col-md-10' style={{ padding: 0 }}>
-            {
-              userMediaDisplay.map(u =>
-                <ImageItem
-                  onClick={() => (setShowPostDetail(true), setChosenPostId(u.id))}
-                  type={navOptionArr}
-                  image={u.url}
-                  interaction={u.interaction} />
-              )
-            }
-          </div>
-        </div>
-
-      </div>
-    </div>
+      </div> :
+      ''
   )
 }
 

@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import Comment from "./Comment.js";
 
 const postSchema = new Schema({
     author: { type: Schema.Types.ObjectId, ref: 'Users', required: true },
@@ -8,6 +9,7 @@ const postSchema = new Schema({
         type: String,
         required: true
     }],
+    comments: [Comment.schema]
 }, { timestamps: true });
 
 const Post = mongoose.model('Posts', postSchema);

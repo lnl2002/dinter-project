@@ -24,8 +24,11 @@ function App() {
               <Route key={route.path} 
               path={route.path} 
               element={
-              user ? <route.element/>: <Login/>
-              } />
+              // user ? 
+              <route.element/>
+              // : <Login/>
+              } 
+              />
             ))
           }
         </Routes>

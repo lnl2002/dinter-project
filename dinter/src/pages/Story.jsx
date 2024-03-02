@@ -48,13 +48,15 @@ function Story() {
         }
     }, [currentVideo])
 
-    const handleChangeStory = (index) => {
-        setCurrentVideo(index);
-        setStart(false);
-    }
+    // const handleChangeStory = (index) => {
+    //     setCurrentVideo(index);
+    //     setStart(false);
+    // }
 
-    const handleNextVideo = () => {
-        setCurrentVideo(currentVideo + 1);  
+    const handleChangeStory = (num) => {
+        if(num >= 0 && num <= listVideo.length){
+            setCurrentVideo(num);  
+        }
         setStart(false);
     }
     console.log(listVideo[currentVideo]);
@@ -168,7 +170,7 @@ function Story() {
                         <Col xs={4} style={{ textAlign: "center", height: "100vh" }}>
                             <div className={currentVideo < listVideo.length ? "story-video" : "story-video-2"}>
                                 <div className={currentVideo < listVideo.length ? "video-box" : "add-story-box"}>{
-                                    currentVideo < listVideo.length ? (<video ref={video} autoPlay muted onEnded={() => handleNextVideo()}>
+                                    currentVideo < listVideo.length ? (<video ref={video} autoPlay muted onEnded={() => handleChangeStory()}>
                                         <source src={listVideo[currentVideo]} type='video/mp4' />
                                         Have some problem with your internet
                                     </video>) : (
