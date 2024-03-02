@@ -2,25 +2,24 @@ import React from 'react';
 import { Modal } from 'react-bootstrap';
 import CommentsFrameLayout from '../Comments_frame_layout/CommentsFrameLayout';
 import '../PostDetail/PostDetail.css'
-import { UserPosts } from '../../pages/ProfileScreen';
+import { BACK_END_HOST } from '../../utils/AppConfig';
 
 
 function PostDetail({
   visible,
-  postId,
+  post,
   user,
   onHideCallBack,
 }) {
-  const postDetail = getPostById(postId);
     return (
       <Modal show={visible} onHide={onHideCallBack} contentClassName='model-content' dialogClassName="modal-90w" aria-labelledby="example-custom-modal-styling-title">
         <Modal.Body className='post-detail justify-content-center align-items-center' style={{padding:0}}>
             <div style={{height: '90vh'}} className="d-flex flex-row justify-content-between header align-items-center">
                 <div className='d-flex justify-content-center' style={{padding:0, maxWidth: 750, height:'100%', width: 'fit-content', overflow: 'hidden'}}>
-                  <img alt='post-view' height='100%' src={postDetail.url}/>
+                  <img alt='post-view' height='100%' src={BACK_END_HOST+post.images[0]}/>
                 </div>
                 <div style={{height: '100%', border: '1px solid #7c7c7c30' ,padding:0, width: '35vw' ,maxWidth: 500, minWidth: 405}}>
-                  <CommentsFrameLayout user={user} comments={postDetail.comment_data}></CommentsFrameLayout>
+                  <CommentsFrameLayout user={user} postId={post._id}></CommentsFrameLayout>
                 </div>
             </div>
         </Modal.Body>
@@ -29,10 +28,6 @@ function PostDetail({
         </button>
       </Modal>
     );
-}
-
-const getPostById = (postId)=>{
-  return UserPosts[postId];
 }
 
 export default PostDetail;

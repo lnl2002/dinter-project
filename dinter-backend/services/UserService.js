@@ -113,6 +113,7 @@ const getUserInfoByAccessToken = (accessToken) => {
               status: "OK",
               message: "SUCCESS",
               data: {
+                _id: userInfo._id,
                 username: userInfo.username,
                 avatar: userInfo.avatar,
                 isAdmin: userInfo.isAdmin

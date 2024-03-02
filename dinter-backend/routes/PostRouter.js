@@ -23,5 +23,6 @@ const upload = multer({
 router.post('/', upload.array("images", 10), postController.createPost)
 .get('/', postController.getPosts)
 .delete('/:id', postController.deletePost)
+router.get('/all-from/:userId', postController.getPostsByUserId)
 
 export default router

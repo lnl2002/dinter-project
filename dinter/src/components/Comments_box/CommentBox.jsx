@@ -16,7 +16,7 @@ function CommentBox({
 
         <div className='d-flex flex-row' style={{gap: '10px'}}>
 
-          <AvatarDiv image={user.avatar}></AvatarDiv>
+          <AvatarDiv image={user.avatar ?? 'images/common/card.png'}></AvatarDiv>
 
           <div className='d-flex flex-column  justify-content-center' style={{gap: '5px'}}>
             <div className='d-flex' style={{gap: '5px'}}>

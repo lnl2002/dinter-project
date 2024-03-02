@@ -1,24 +1,38 @@
-import Conversations from '../models/Comment.js';
+import CommentService from "../services/CommentService.js";
+import UserService from "../services/UserService.js";
 
 // Create a new comment
-async function createComment(postId, userId, content) {
+async function createComment(req,res) {
     try {
-        const newComment = new Comment({
-            postId,
-            userId,
-            content,
-        });
-        await newComment.save();
-        console.log('Comment created successfully:', newComment);
+        const token = req.headers.token.split(' ')[1];
+        const { postId, content} = req.body
+        const user = await UserService.getUserInfoByAccessToken(token);
+
+        if(!user){
+            return res.status(400).json({ error: 'userId is required' });
+        }
+        
+        const userId = user.data._id;
+        const newComment = await CommentService.createComment(postId, userId, content);
+
+        return res.status(200).json(newComment);
     } catch (error) {
         console.error('Error creating comment:', error);
     }
 }
 
 // Get comments for a specific post
-async function getCommentsForPost(postId) {
+async function getCommentsForPost(req,res) {
     try {
-        const comments = await Comment.find({ postId }).populate('userId');
+        const postId= req.params.postId;
+        const limit = req.query.limit || 10;
+        const offset = req.query.offset || 0;
+        const comments = await CommentService.getCommentsForPost(postId, limit, offset);
+
+        return res.status(200).json({
+            message: "get comments success",
+            data: comments
+        })
         console.log('Comments for post', postId, ':', comments);
     } catch (error) {
         console.error('Error fetching comments:', error);
@@ -26,7 +40,7 @@ async function getCommentsForPost(postId) {
 }
 
 // Update a comment's content
-async function updateComment(commentId, newContent) {
+async function updateComment(req,res) {
     try {
         const updatedComment = await Comment.findByIdAndUpdate(
             commentId,
@@ -40,7 +54,7 @@ async function updateComment(commentId, newContent) {
 }
 
 // Delete a comment
-async function deleteComment(commentId) {
+async function deleteComment(req,res) {
     try {
         await Comment.findByIdAndDelete(commentId);
         console.log('Comment deleted successfully');
@@ -52,5 +66,6 @@ async function deleteComment(commentId) {
 export default{
     createComment,
     updateComment,
-    deleteComment
+    deleteComment,
+    getCommentsForPost
 }
