@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useInsertionEffect, useRef, useState } from "react";
 import HeaderHome from "../components/HeaderComponents/HeaderHome";
 import "./style/HomePage.css";
 import { Col, Container, Form, Modal, Row } from "react-bootstrap";
@@ -9,18 +9,21 @@ import axios from 'axios'
 import PostCreation from "./PostCreation";
 import SinglePost from "./SinglePost";
 import PostEdition from "./PostEdition";
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
+import "react-loading-skeleton/dist/skeleton.css";
 library.add(faEllipsis, faHeart, faComments, faShareAlt, faBookmark, faEdit, faSearch);
 function HomePage(props) {
   const [listPost, setListPost] = useState([]);
-  const [isLoad, setIsLoad] = useState(1);
+  const [isLoad, setIsLoad] = useState();
   const [offset, setOffset] = useState(0);
   const [currentPost, setCurrentPost] = useState();
   const [indexPost, setIndexPost] = useState();
   const [showCreate, setShowCreate] = useState(false);
   const [showPostOption, setShowPostOption] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
+  const middle = useRef();
+  const pageContent = useRef();
   const modal = useRef();
-
   const handleClose = () => setShowPostOption(false);
   const handleShow = (id, index) => {
     setShowPostOption(true);
@@ -36,7 +39,26 @@ function HomePage(props) {
   }
   useEffect(() => {
     handleGetPost();
+    setIsLoad(false);
+    pageContent.current.addEventListener('scroll', handleScroll);
+    // return () => pageContent.current.removeEventListener('scroll', handleScroll);
   }, [])
+
+  useEffect(() => {
+    setIsLoad(true);
+  }, [offset])
+
+  useEffect(() => {
+    isLoad && handleGetPost();
+  }, [isLoad])
+  const handleScroll = () => {
+    if (
+      window.innerHeight + pageContent.current.scrollTop >= middle.current.offsetHeight - 500
+    ) {
+      pageContent.current.removeEventListener('scroll', handleScroll);
+      setOffset(offset + 3);
+    }
+  }
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -67,19 +89,25 @@ function HomePage(props) {
   }
   const handleGetPost = async () => {
     try {
+      const url = `http://localhost:3008/api/v1/post?limit=3&offset=${offset}`;
+      console.log(url);
       const data = await axios.get(`http://localhost:3008/api/v1/post?limit=3&offset=${offset}`, {
         headers: {
           "Token": `Bearer ${getCookie('access_token')}`
         }
       });
-      const posts = data.data;
-      setListPost(posts.data);
-      setOffset(offset + 3);
+      const posts = [...listPost];
+      posts.push(...data.data.data);
+      setListPost(posts);
+      if (data.data.data.length === 3) {
+        pageContent.current.addEventListener('scroll', handleScroll);
+      }
+      setIsLoad(false);
+
     } catch (error) {
       console.log(error);
     }
   }
-
   const deletePost = async () => {
     try {
       if (currentPost) {
@@ -99,10 +127,10 @@ function HomePage(props) {
     setShowEdit(true);
     setShowPostOption(false);
   }
-
+  console.log(offset);
   console.log(listPost);
   return (
-    <div>
+    <div ref={pageContent} className="home-page">
       <HeaderHome />
       <Container style={{ paddingTop: "80px" }}>
         <Row>
@@ -167,7 +195,7 @@ function HomePage(props) {
             </div>
           </Col>
           {/* Middle */}
-          <Col md={6}>
+          <Col md={6} ref={middle}>
             <Row>
               <Col md={2}>
                 <div className="stories">
@@ -241,12 +269,27 @@ function HomePage(props) {
               listPost.length !== 0 && listPost.map((post, index) => {
                 return (
                   <SinglePost post={post} handleShow={handleShow} showEdit={showEdit} setShowEdit={setShowEdit} operEdit={openEdit}
-                    index={index} />
+                    index={index} key={index} />
                 )
               })
 
             }
-
+            <SkeletonTheme baseColor="#E9EAED" highlightColor="#F8F8F8">
+              <div className="loading-post">
+                <div style={{ display: "flex" }}>
+                  <Skeleton circle width={40} height={40} containerClassName="flex-1" />
+                  <div style={{ width: "30%" }}>
+                    <Skeleton height={10} />
+                    <Skeleton height={10} />
+                  </div>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <Skeleton count={1} width={100} />
+                  <Skeleton count={1} width={100} />
+                  <Skeleton count={1} width={100} />
+                </div>
+              </div>
+            </SkeletonTheme>
           </Col>
 
           {/* Right */}

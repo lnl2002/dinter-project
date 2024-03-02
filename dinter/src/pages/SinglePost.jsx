@@ -10,7 +10,6 @@ function SinglePost({ post, handleShow, index }) {
     const handleSetCurImg = (num) => {
         setCurImg(num + currentImage)
     }
-    console.log(like);
     function getCookie(cname) {
         let name = cname + "=";
         let decodedCookie = decodeURIComponent(document.cookie);
@@ -86,7 +85,7 @@ function SinglePost({ post, handleShow, index }) {
                                 <div className='sg-img-point'>{
                                     post.images.map((image, index) => {
                                         return (
-                                            <div className={index === currentImage ? 'sg-cur-img' : 'sg-img'}>
+                                            <div className={index === currentImage ? 'sg-cur-img' : 'sg-img'} key={index}>
                                             </div>
                                         )
                                     })
@@ -99,7 +98,7 @@ function SinglePost({ post, handleShow, index }) {
                     <div className="action-buttons">
                         <div className="inter-buttons">
                             <span >
-                                <FontAwesomeIcon icon="heart" onClick={handleLike} className={like === true ? 'liked' : ''} /><i> </i>
+                                <FontAwesomeIcon icon="heart" onClick={handleLike} className={`favorite-icon ${like === true ? 'liked' : ''}`} /><i> </i>
                                 <FontAwesomeIcon icon="comments" /><i> </i>
                             </span>
                         </div>
