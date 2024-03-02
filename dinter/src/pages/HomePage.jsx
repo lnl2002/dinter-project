@@ -7,20 +7,25 @@ import { faBookmark, faComments, faEdit, faEllipsis, faHeader, faHeart, faSearch
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios'
 import PostCreation from "./PostCreation";
+import SinglePost from "./SinglePost";
+import PostEdition from "./PostEdition";
 library.add(faEllipsis, faHeart, faComments, faShareAlt, faBookmark, faEdit, faSearch);
 function HomePage(props) {
   const [listPost, setListPost] = useState([]);
   const [isLoad, setIsLoad] = useState(1);
   const [offset, setOffset] = useState(0);
   const [currentPost, setCurrentPost] = useState();
+  const [indexPost, setIndexPost] = useState();
   const [showCreate, setShowCreate] = useState(false);
   const [showPostOption, setShowPostOption] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
   const modal = useRef();
 
   const handleClose = () => setShowPostOption(false);
-  const handleShow = (id) => {
+  const handleShow = (id, index) => {
     setShowPostOption(true);
     setCurrentPost(id);
+    setIndexPost(index)
   }
 
   const handleCreateShow = () => {
@@ -45,9 +50,28 @@ function HomePage(props) {
     };
   }, [modal]);
 
+  function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
   const handleGetPost = async () => {
     try {
-      const data = await axios.get(`http://localhost:3008/api/v1/post?limit=3&offset=${offset}`);
+      const data = await axios.get(`http://localhost:3008/api/v1/post?limit=3&offset=${offset}`, {
+        headers: {
+          "Token": `Bearer ${getCookie('access_token')}`
+        }
+      });
       const posts = data.data;
       setListPost(posts.data);
       setOffset(offset + 3);
@@ -64,12 +88,18 @@ function HomePage(props) {
           return a._id !== currentPost
         });
         setListPost(arr);
+        handleClose();
       }
-      // console.log(currentPost);
     } catch (error) {
       console.log(error);
     }
   }
+
+  const openEdit = () => {
+    setShowEdit(true);
+    setShowPostOption(false);
+  }
+
   console.log(listPost);
   return (
     <div>
@@ -208,57 +238,10 @@ function HomePage(props) {
 
             {/* New Feeds */}
             {
-              listPost.length !== 0 && listPost.map((post) => {
+              listPost.length !== 0 && listPost.map((post, index) => {
                 return (
-                  <div className="feeds" key={post._id}>
-                    <div className="feed">
-                      <div className="head">
-                        <div className="user">
-                          <div className="profile-photo1">
-                            <img src="images/common/avatar.png" alt="" width={50} />
-                          </div>
-                          <div className="ingo">
-                            <h5>{post.author.username}</h5>
-                            <small>{post.createdAt}</small>
-                          </div>
-
-                        </div>
-                        <span className="edit">
-                          <FontAwesomeIcon icon="ellipsis" onClick={() => handleShow(post._id)} />
-                        </span>
-                      </div>
-                      <div style={{ marginTop: "5px", marginLeft: "2px" }}>
-                        <p style={{ whiteSpace: "pre-line" }}>{post.content}</p>
-                      </div>
-                      <div className="photo">
-                        <img src={'http://localhost:3008/' + post.images[0]} alt="" width={650} />
-                      </div>
-
-                      <div className="action-buttons">
-                        <div className="inter-buttons">
-                          <span >
-                            <FontAwesomeIcon icon="heart" /><i> </i>
-                            <FontAwesomeIcon icon="comments" /><i> </i>
-                          </span>
-                        </div>
-                        <div className="booknark">
-                          <span >
-                            <FontAwesomeIcon icon={faBookmark} />
-                          </span>
-                        </div>
-                      </div>
-                      <div className="liked-by">
-                        <span><img src="images/common/avatar.png" alt="" width={25} /></span>
-                        <span><img src="images/common/avatar.png" alt="" /></span>
-                        <span><img src="images/common/avatar.png" alt="" /></span>
-                        <a>Liked by <b>Truong Hung</b> and <b>100 other</b></a>
-                      </div>
-                      <div className="caption">
-                        <a><b>Truong Hung</b> asdhasjdhasjdhjsd <span className="harsh-tag">#hello</span></a>
-                      </div>
-                      <div className="text-muted">View all 277 comment</div>
-                    </div>
-                  </div>
+                  <SinglePost post={post} handleShow={handleShow} showEdit={showEdit} setShowEdit={setShowEdit} operEdit={openEdit}
+                    index={index} />
                 )
               })
 
@@ -391,11 +374,12 @@ function HomePage(props) {
           <ul className="post-option" ref={modal}>
             <li onClick={deletePost}>Delete</li>
             <hr style={{ margin: "0" }}></hr>
-            <li>Edit</li>
+            <li onClick={openEdit}>Edit</li>
           </ul>
         </Modal>
       </Container>
       <PostCreation show={showCreate} close={handleCreateClose} setListPost={setListPost} listPost={listPost} setShowCreate={setShowCreate} />
+      <PostEdition show={showEdit} setShow={setShowEdit} post={listPost[indexPost]} setListPost={setListPost} listPost={listPost} />
     </div>
   );
 }
