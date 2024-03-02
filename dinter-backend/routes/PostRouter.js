@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router();
 import {postController} from '../controllers/index.js';
-
+import { authMiddleware } from '../middleware/authMiddleware.js';
 import multer from 'multer';
 
 const storage = multer.diskStorage({
@@ -21,8 +21,11 @@ const upload = multer({
 
 
 router.post('/', upload.array("images", 10), postController.createPost)
-.get('/', postController.getPosts)
+.get('/', authMiddleware, postController.getPosts)
 .delete('/:id', postController.deletePost)
 router.get('/all-from/:userId', postController.getPostsByUserId)
+.patch('/:id', postController.editPost)
+.post('/favorite/:id', authMiddleware, postController.handleLike)
+.delete('/favorite/:id', authMiddleware, postController.handleDislike)
 
 export default router

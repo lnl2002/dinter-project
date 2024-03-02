@@ -103,6 +103,9 @@
     border-radius: 20px ;
     overflow: hidden;
     margin: 0.7rem 0;
+    position: relative;
+    height: 400px;
+    text-align: center;
 }
 .feed .action-buttons{
     display: flex;

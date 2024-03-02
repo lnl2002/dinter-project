@@ -35,13 +35,11 @@ function PostCreation({ show, close, setListPost, listPost, setShowCreate }) {
         const files = e.target.files;
         if (files) {
             setFiles(files);
-            console.log(files);
             setStage(1);
         }
     };
 
     const handleSetCurImg = (num) => {
-        console.log(curImg + num);
         if (curImg + num >= 0 && curImg + num <= files.length - 1) {
             setCurImg(curImg + num);
         }
@@ -66,10 +64,8 @@ function PostCreation({ show, close, setListPost, listPost, setShowCreate }) {
         formPost.append("content", caption.current.value || "");
         try {
             const newPost = await axios.post("http://localhost:3008/api/v1/post", formPost);
-            console.log(newPost);
             const newListPost = [...listPost];
             newListPost.unshift(newPost.data.post);
-            console.log(newListPost);
             close();
             setListPost(newListPost);
         } catch (error) {
