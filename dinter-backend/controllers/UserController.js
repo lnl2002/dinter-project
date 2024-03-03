@@ -104,7 +104,13 @@ const getUserInfoById = async (req, res) => {
 
 const updateUserBasicInfo = async (req, res) => {
   try {
-    const changes = req.body.changes;
+    let changes = req.body.changes;
+    if (req.files) {
+      changes ={
+        avatar: req.file.path
+      }
+    }
+    console.log(changes);
     const token = req.headers.token.split(' ')[1];
     const authorizedUser = await UserService.getUserInfoByAccessToken(token);
     const updatedData = await UserService.updateUserBasicInfo(authorizedUser.data._id, changes)

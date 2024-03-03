@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import '../ProfileSetting/ProfileSetting.css'
 import { AvatarDiv, ButtonWeb, TextWeb } from '../../pages/ProfileScreen';
@@ -27,6 +27,24 @@ export default function ProfileSetting({
   const isGenderUpdating = useUpdateStore((state) => state.isGenderUpdating)
   const setIsGenderUpdating = useUpdateStore((state) => state.setIsGenderUpdating)
 
+  // Create a ref to the input element
+  const inputRef = useRef(null);
+
+  // Handle the button click
+  const handleUploadClick = () => {
+    // Trigger the input click
+    if(inputRef.current) {
+      inputRef.current.click();
+    }
+  };
+
+  // Handle the file change
+  const handleFileChange = (e) => {
+    // Get the selected file
+    const file = e.target.files[0];
+    // Do the file upload here normally...
+  };
+
   return (
     <Modal show={visible} onHide={onHideAction} contentClassName='model-content' aria-labelledby="example-custom-modal-styling-title">
       <Modal.Header className='d-flex justify-content-between'>
@@ -37,9 +55,10 @@ export default function ProfileSetting({
         </button>
       </Modal.Header>
       <Modal.Body className='post-detail justify-content-center align-items-center' style={{ padding: 0 }}>
-        <div style={{ height: '60vh' }} className="d-flex flex-column">
-          <UpdateFieldLayout title={"Avatar"}>
+        <div className="d-flex flex-column">
+          <UpdateFieldLayout isUpdatingAction={handleUploadClick} title={"Avatar"}>
             <AvatarDiv style={{ height: 100, width: 100 }} image={user.avatar || 'images/common/user_blank.png'}></AvatarDiv>
+            <input style={{display: 'none'}} ref={inputRef} type='file'/>
           </UpdateFieldLayout>
           <UpdateFieldLayout isUpdatingTextChange={isBioUpdating} isUpdatingAction={() => setIsBioUpdating(!isBioUpdating)} title={"Bio"}>
             <BioField detail={user.bio ?? '#N/A'}></BioField>
@@ -134,7 +153,7 @@ const GenderField = ({ gender }) => {
   return (
     <div>
       <TextWeb visible={!isGenderUpdating} text={gender} />
-      <GenderPicker visible={isGenderUpdating} onCancel={() => setIsGenderUpdating(false)}></GenderPicker>
+      <GenderPicker defaultGender={gender} visible={isGenderUpdating} onCancel={() => setIsGenderUpdating(false)}></GenderPicker>
     </div>
   )
 }

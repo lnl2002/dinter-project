@@ -8,6 +8,7 @@ import Lottie from 'react-lottie';
 import * as animationData from '../utils/lottie/socialmedia.json'
 import * as avatarFrame1 from '../utils/lottie/avatarFrame1.json'
 import { useParams } from 'react-router-dom'
+import { create } from 'zustand'
 
 const contentType = {
   post: {
@@ -28,7 +29,11 @@ function ProfileScreen(props) {
   }, [userId]);
   //
 
-  const [userData, setUserData] = useState([]);
+  //zustand user global state 
+  const userData = useUserStore((state) => state.userData)
+  const setUserData = useUserStore((state) => state.setUserData)
+
+  //const [userData, setUserData] = useState([]);
   const [userAnalysticData, setUserAnalysticData] = useState({});
   const [userMediaDisplay, setUserMediaDisplay] = useState([]);
   const [navOptionArr, setNavOptionArr] = useState(contentType.post.code);
@@ -384,5 +389,10 @@ const FormatNumber = (num) => {
     return Math.round(num / 100000000) / 10 + "B";
   }
 }
+
+export const useUserStore = create((set) => ({
+  userData: {},
+  setUserData: (userData) => set((state) => ({ userData: userData })),
+}))
 
 export default ProfileScreen
