@@ -35,10 +35,10 @@ const createUser = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const {email, password} = req.body;
+    const { email, password } = req.body;
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     const isCheckEmail = reg.test(email);
-    if(!isCheckEmail) {
+    if (!isCheckEmail) {
       return res.status(404).json({
         status: "ERR",
         message: "This is not a email"
@@ -54,18 +54,18 @@ const login = async (req, res) => {
 
 const refreshToken = async (req, res) => {
   try {
-      const token = req.headers.token.split(' ')[1];
-      if(!token) {
-        return res.status(404).json({
-          status: "ERR",
-          message: "Invalid token"
-        })
-      } 
+    const token = req.headers.token.split(' ')[1];
+    if (!token) {
+      return res.status(404).json({
+        status: "ERR",
+        message: "Invalid token"
+      })
+    }
 
-      const response = await JwtService.refreshToken(token);
-      res.status(201).json(response);
-      
-    
+    const response = await JwtService.refreshToken(token);
+    res.status(201).json(response);
+
+
   } catch (error) {
     return res.status(404).json(error)
   }
@@ -73,20 +73,54 @@ const refreshToken = async (req, res) => {
 
 const getUserInfoByAccessToken = async (req, res) => {
   try {
-      console.log('headers',req.headers);
-      const token = req.headers.token.split(' ')[1];
-      console.log('token',token);
-      if(!token) {
-        return res.status(404).json({
-          status: "ERR",
-          message: "Invalid token"
-        })
-      } 
+    console.log('headers', req.headers);
+    const token = req.headers.token.split(' ')[1];
+    console.log('token', token);
+    if (!token) {
+      return res.status(404).json({
+        status: "ERR",
+        message: "Invalid token"
+      })
+    }
 
-      const response = await UserService.getUserInfoByAccessToken(token);
-      res.status(200).json(response);
-      
-    
+    const response = await UserService.getUserInfoByAccessToken(token);
+    res.status(200).json(response);
+
+
+  } catch (error) {
+    return res.status(404).json(error)
+  }
+}
+
+const getUserInfoById = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const response = await UserService.getUserInfoById(userId);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(404).json(error)
+  }
+}
+
+const updateUserBasicInfo = async (req, res) => {
+  try {
+    const changes = req.body.changes;
+    const token = req.headers.token.split(' ')[1];
+    const authorizedUser = await UserService.getUserInfoByAccessToken(token);
+    const updatedData = await UserService.updateUserBasicInfo(authorizedUser.data._id, changes)
+    return res.status(204).json(updatedData);
+  } catch (error) {
+    return `Error updating user information: ${error.message}`;
+  }
+}
+
+//get user likes, posts, and friends number
+const getUserAnalysticNumber = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const response = await UserService.getUserAnalysticNumber(userId);
+
+    return res.status(200).json(response)
   } catch (error) {
     return res.status(404).json(error)
   }
@@ -96,12 +130,18 @@ export {
   createUser,
   login,
   refreshToken,
-  getUserInfoByAccessToken
+  getUserInfoByAccessToken,
+  getUserAnalysticNumber,
+  updateUserBasicInfo,
+  getUserInfoById
 };
 
 export default {
   createUser,
   login,
   refreshToken,
-  getUserInfoByAccessToken
+  getUserInfoByAccessToken,
+  getUserAnalysticNumber,
+  updateUserBasicInfo,
+  getUserInfoById
 };
