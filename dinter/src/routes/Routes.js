@@ -31,6 +31,10 @@ const routes = [
         element: ProfileScreen
     },
     {
+        path: '/profile/:userId',
+        element: ProfileScreen
+    },
+    {
         path: '/request-friend',
         element: RequestFriend
     },
