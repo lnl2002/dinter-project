@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import '../ProfileSetting/ProfileSetting.css'
 import { AvatarDiv, ButtonWeb, TextWeb } from '../../pages/ProfileScreen';
 import TextInputAreaBox from '../TextInputAreaBox/TextInputAreaBox';
 import { create } from 'zustand'
 import ProfileDatePickerBox from '../ProfileDatePickerBox/ProfileDatePickerBox';
+import { BACK_END_HOST } from '../../utils/AppConfig';
+import axios from 'axios';
+import { getAccessToken } from '../../common/Token';
+import GenderPicker from '../GenderPicker/GenderPicker';
 
 export default function ProfileSetting({
   visible,
@@ -20,6 +24,27 @@ export default function ProfileSetting({
   const isHobUpdating = useUpdateStore((state) => state.isHobUpdating)
   const setIsHobUpdating = useUpdateStore((state) => state.setIsHobUpdating)
 
+  const isGenderUpdating = useUpdateStore((state) => state.isGenderUpdating)
+  const setIsGenderUpdating = useUpdateStore((state) => state.setIsGenderUpdating)
+
+  // Create a ref to the input element
+  const inputRef = useRef(null);
+
+  // Handle the button click
+  const handleUploadClick = () => {
+    // Trigger the input click
+    if(inputRef.current) {
+      inputRef.current.click();
+    }
+  };
+
+  // Handle the file change
+  const handleFileChange = (e) => {
+    // Get the selected file
+    const file = e.target.files[0];
+    // Do the file upload here normally...
+  };
+
   return (
     <Modal show={visible} onHide={onHideAction} contentClassName='model-content' aria-labelledby="example-custom-modal-styling-title">
       <Modal.Header className='d-flex justify-content-between'>
@@ -30,15 +55,19 @@ export default function ProfileSetting({
         </button>
       </Modal.Header>
       <Modal.Body className='post-detail justify-content-center align-items-center' style={{ padding: 0 }}>
-        <div style={{ height: '60vh' }} className="d-flex flex-column">
-          <UpdateFieldLayout title={"Avatar"}>
-            <AvatarDiv style={{ height: 100, width: 100 }} image={user.avatar}></AvatarDiv>
+        <div className="d-flex flex-column">
+          <UpdateFieldLayout isUpdatingAction={handleUploadClick} title={"Avatar"}>
+            <AvatarDiv style={{ height: 100, width: 100 }} image={user.avatar || 'images/common/user_blank.png'}></AvatarDiv>
+            <input style={{display: 'none'}} ref={inputRef} type='file'/>
           </UpdateFieldLayout>
           <UpdateFieldLayout isUpdatingTextChange={isBioUpdating} isUpdatingAction={() => setIsBioUpdating(!isBioUpdating)} title={"Bio"}>
-            <BioField detail={'Acceptance is the awareness of fate'}></BioField>
+            <BioField detail={user.bio ?? '#N/A'}></BioField>
+          </UpdateFieldLayout>
+          <UpdateFieldLayout isUpdatingTextChange={isGenderUpdating} isUpdatingAction={() => setIsGenderUpdating(!isGenderUpdating)} title={"Gender"}>
+            <GenderField gender={user.gender || 'male'}></GenderField>
           </UpdateFieldLayout>
           <UpdateFieldLayout isUpdatingTextChange={isDOBUpdating} isUpdatingAction={() => setIsDOBUpdating(!isDOBUpdating)} title={"Date of birth"}>
-            <BODField dob={'25/05/2003'}></BODField>
+            <BODField dob={user.dateOfBirth ? formatDateProfile(user.dateOfBirth) : '01/01/2000'}></BODField>
           </UpdateFieldLayout>
           <UpdateFieldLayout isUpdatingTextChange={isHobUpdating} isUpdatingAction={() => setIsHobUpdating(!isHobUpdating)} title={"Hobby"}>
             <div className='d-flex flex-row flex-wrap'>
@@ -62,7 +91,7 @@ export default function ProfileSetting({
       </Modal.Body>
       <Modal.Footer>
         <ButtonWeb onClick={onHideAction} variant="secondary" title={"Close"}></ButtonWeb>
-        <ButtonWeb variant="primary" title={"Save changes"} />
+        {/* <ButtonWeb variant="primary" title={"Save changes"} /> */}
       </Modal.Footer>
     </Modal>
   )
@@ -117,21 +146,48 @@ const BioField = ({ detail }) => {
   )
 }
 
+const GenderField = ({ gender }) => {
+  const isGenderUpdating = useUpdateStore((state) => state.isGenderUpdating)
+  const setIsGenderUpdating = useUpdateStore((state) => state.setIsGenderUpdating)
+
+  return (
+    <div>
+      <TextWeb visible={!isGenderUpdating} text={gender} />
+      <GenderPicker defaultGender={gender} visible={isGenderUpdating} onCancel={() => setIsGenderUpdating(false)}></GenderPicker>
+    </div>
+  )
+}
+
 const BODField = ({ dob }) => {
   const isDOBUpdating = useUpdateStore((state) => state.isDOBUpdating)
   const setIsDOBUpdating = useUpdateStore((state) => state.setIsDOBUpdating)
 
-
-  const onSave = (dateString) => {
-
-  }
-
   return (
     <div>
       <TextWeb visible={!isDOBUpdating} text={dob} />
-      <ProfileDatePickerBox defaultDob={dob} onCancel={() => setIsDOBUpdating(false)} onSave={onSave} visible={isDOBUpdating} />
+      <ProfileDatePickerBox defaultDob={dob} onCancel={() => setIsDOBUpdating(false)} visible={isDOBUpdating} />
     </div>
   )
+}
+
+export const saveUpdateBasicInfo = async(field) => {
+  const changes = {
+    ...field
+  };
+  console.log(changes)
+  let headers = {
+    token: 'Bearer ' + getAccessToken(),
+    'Content-Type': 'application/json',
+  };
+  const url = BACK_END_HOST + "api/v1/user/user-basic-update"; // Replace with your API endpoint
+
+  try {
+    const response = await axios.patch(url, {changes}, {headers});
+    console.log('User information updated successfully:', response.data);
+  } catch (error) {
+    console.error('Error updating user information:', error.message);
+  }
+
 }
 
 const useUpdateStore = create((set) => ({
@@ -143,4 +199,20 @@ const useUpdateStore = create((set) => ({
 
   isHobUpdating: false,
   setIsHobUpdating: (isUpdating) => set((state) => ({ isHobUpdating: isUpdating })),
+
+  isGenderUpdating: false,
+  setIsGenderUpdating: (isUpdating) => set((state) => ({ isGenderUpdating: isUpdating })),
 }))
+
+export const formatDateProfile = (isoDateString) => {
+  const date = new Date(isoDateString);
+  const day = date.getUTCDate()+1; 
+  const month = date.getUTCMonth() + 1; // Months are zero-based (0 = January, 1 = February, etc.)
+  const year = date.getUTCFullYear();
+
+  // Format the date as DD/MM/YYYY
+  const formattedDay = day < 10 ? `0${day}` : day;
+  const formattedMonth = month < 10 ? `0${month}` : month;
+  const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
+  return formattedDate;
+};

@@ -1,21 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './style/ProfileScreen.css'
 import axios from 'axios'
 import { BACK_END_HOST } from '../utils/AppConfig'
 import PostDetail from '../components/PostDetail'
-import ProfileSetting from '../components/ProfileSetting'
+import ProfileSetting, { HobbyTag } from '../components/ProfileSetting'
 import Lottie from 'react-lottie';
 import * as animationData from '../utils/lottie/socialmedia.json'
-
-
-const lottieOptions = {
-  loop: true,
-  autoplay: true,
-  animationData: animationData,
-  rendererSettings: {
-    preserveAspectRatio: 'xMidYMid slice'
-  },
-};
+import * as avatarFrame1 from '../utils/lottie/avatarFrame1.json'
+import { useParams } from 'react-router-dom'
+import { create } from 'zustand'
 
 const contentType = {
   post: {
@@ -29,48 +22,84 @@ const contentType = {
 }
 
 function ProfileScreen(props) {
-  const [userData, setUserData] = useState([]);
+  //pre-define view
+  const { userId } = useParams();
+  const isSpectatedView = useMemo(() => {
+    return userId ? true : false;
+  }, [userId]);
+  //
+
+  //zustand user global state 
+  const userData = useUserStore((state) => state.userData)
+  const setUserData = useUserStore((state) => state.setUserData)
+
+  //const [userData, setUserData] = useState([]);
+  const [userAnalysticData, setUserAnalysticData] = useState({});
   const [userMediaDisplay, setUserMediaDisplay] = useState([]);
   const [navOptionArr, setNavOptionArr] = useState(contentType.post.code);
   const [showPostDetail, setShowPostDetail] = useState(false);
   const [showSettingBox, setShowSettingBox] = useState(false);
   const [chosenPostIndex, setChosenPostIndex] = useState(0);
 
-  const LoadUserPosts = async () => {
-    axios.get(BACK_END_HOST + "api/v1/post/").then(res => {
-      setUserMediaDisplay(res.data.data);
-    });
+  const LoadUserAnalyticNumber = async (userId) => {
+    axios.get(BACK_END_HOST + "api/v1/user/analytic/" + userId).then(response => {
+      setUserAnalysticData(response.data)
+    })
   }
 
-  const LoadUserVideos = async () => {
-    axios.get(BACK_END_HOST + "api/v1/post/all-from/" + userData._id).then(res => {
-      setUserMediaDisplay(res.data.data);
-    });
-  }
-
-  const LoadContent = async (type) => {
-    switch (type) {
-      case contentType.post.code: LoadUserPosts(); break;
-      case contentType.video.code: LoadUserVideos(); break
-      default: LoadUserPosts(); break;
+  const LoadUserPosts = async (userId) => {
+    if (userData) {
+      axios.get(BACK_END_HOST + "api/v1/post/all-from/" + userId).then(res => {
+        setUserMediaDisplay(res.data.data);
+      });
     }
   }
 
-  const LoadUser = async () => {
+  const LoadUserVideos = async (userId) => {
+    if (userData) {
+      axios.get(BACK_END_HOST + "api/v1/post/all-from/" + userId).then(res => {
+        setUserMediaDisplay(res.data.data);
+      });
+    }
+  }
+
+  const LoadContent = async (type, userId) => {
+    switch (type) {
+      case contentType.post.code: LoadUserPosts(userId); break;
+      case contentType.video.code: LoadUserVideos(userId); break
+      default: LoadUserPosts(userId); break;
+    }
+  }
+
+  const LoadUserPublicInfo = async (userId) =>{
+    axios.get(BACK_END_HOST + "api/v1/user/public-user-info/" + userId).then(res => {
+      setUserData(res.data)
+      console.log(res.data)
+    });
+  }
+
+  const LoadContentPage = async () => {
     if (localStorage.getItem('User')) {
-      setUserData(JSON.parse(localStorage.getItem('User')));
+      let user = JSON.parse(localStorage.getItem('User'));
+      LoadUserAnalyticNumber(user.id)
+      LoadContent(contentType.post.code, user.id);
+      LoadUserPublicInfo(user.id);
     }
   }
 
   useEffect(() => {
-    LoadUser()
-    LoadContent(contentType.post.code);
+    LoadContentPage();
   }, [])
 
   return (
-    userMediaDisplay && userMediaDisplay.length > 0 ?
+    userData && userMediaDisplay ?
       <div>
-        <PostDetail visible={showPostDetail} onHideCallBack={() => setShowPostDetail(false)} post={userMediaDisplay[chosenPostIndex]} user={userData}></PostDetail>
+        {
+          userMediaDisplay.length > 0 ?
+            <PostDetail visible={showPostDetail} onHideCallBack={() => setShowPostDetail(false)} post={userMediaDisplay[chosenPostIndex]} user={userData}></PostDetail>
+            :
+            <></>
+        }
         <ProfileSetting visible={showSettingBox} user={userData} onHideAction={() => setShowSettingBox(false)}></ProfileSetting>
         <div
           className="container container-app-p" style={{ minHeight: '100vh' }}
@@ -80,7 +109,7 @@ function ProfileScreen(props) {
 
             <div className='col-md-3'>
               <div className="App">
-                <AvatarDiv image={userData.avatar} />
+                <AvatarDiv image={userData.avatar || 'images/common/user_blank.png'} frame={avatarFrame1} />
               </div>
             </div>
 
@@ -96,16 +125,33 @@ function ProfileScreen(props) {
               </div>
 
               <div className='d-flex flex-row col-md-9' style={{ gap: 40 }}>
-                <StatisticNumber number={FormatNumber(userData.posts)} text={"posts"}></StatisticNumber>
-                <StatisticNumber number={FormatNumber(userData.followers)} text={"followers"}></StatisticNumber>
-                <StatisticNumber number={FormatNumber(userData.following)} text={"following"}></StatisticNumber>
+                <StatisticNumber number={FormatNumber(userAnalysticData.numberOfPosts)} text={"posts"}></StatisticNumber>
+                <StatisticNumber number={FormatNumber(userAnalysticData.numberOfLikes)} text={"likes"}></StatisticNumber>
+                <StatisticNumber number={FormatNumber(userData.friends?.length || 0)} text={"followers"}></StatisticNumber>
               </div>
 
-              <NameTag nameTag={userData.fullname}></NameTag>
+              {/* <NameTag nameTag={userData.fullname}></NameTag> */}
 
               <div className='row d-flex col-md-10'>
-                <TextWeb text={userData.bio}></TextWeb>
+                {
+                  userData.bio && userData.bio != '' ?
+                    <TextWeb text={userData.bio}></TextWeb>
+                    :
+                    <button style={{ backgroundColor: "#ff5464" }}>
+                      <TextWeb style={{ color: "white" }} text={!isSpectatedView ? "Go to profile setting to update bio" : "This user has no bio to shown"}></TextWeb>
+                    </button>
+                }
+              </div>
 
+              <div className='row d-flex col-md-10'>
+                {
+                  userData.hobbies && userData.length>0 ?
+                    userData.hobbies.map(ub => <HobbyTag title={ub.hobbyName}></HobbyTag>)
+                    :
+                    <button style={{ backgroundColor: "#ff5464" }}>
+                      <TextWeb style={{ color: "white" }} text={!isSpectatedView ? "Go to profile setting to update your hobbies list" : "This user has no hobby to shown"}></TextWeb>
+                    </button>
+                }
               </div>
 
             </div>
@@ -117,9 +163,9 @@ function ProfileScreen(props) {
 
               <div className='row justify-content-center navigate-part'>
 
-                <NavButton isChosen={navOptionArr == contentType.post.code} onClick={() => { setNavOptionArr(contentType.post.code); LoadContent(contentType.post.code) }} text={contentType.post.name} svg={<svg aria-label="" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="12" role="img" viewBox="0 0 24 24" width="12"><title></title><rect fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="18" x="3" y="3"></rect><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="9.015" x2="9.015" y1="3" y2="21"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="14.985" x2="14.985" y1="3" y2="21"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="21" x2="3" y1="9.015" y2="9.015"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="21" x2="3" y1="14.985" y2="14.985"></line></svg>} />
+                <NavButton isChosen={navOptionArr == contentType.post.code} onClick={() => { setNavOptionArr(contentType.post.code); LoadContent(contentType.post.code, userData._id) }} text={contentType.post.name} svg={<svg aria-label="" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="12" role="img" viewBox="0 0 24 24" width="12"><title></title><rect fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="18" x="3" y="3"></rect><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="9.015" x2="9.015" y1="3" y2="21"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="14.985" x2="14.985" y1="3" y2="21"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="21" x2="3" y1="9.015" y2="9.015"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="21" x2="3" y1="14.985" y2="14.985"></line></svg>} />
 
-                <NavButton isChosen={navOptionArr == contentType.video.code} onClick={() => { setNavOptionArr(contentType.video.code); LoadContent(contentType.video.code) }} text={contentType.video.name} svg={<svg aria-label="" class="x1lliihq x1n2onr6 x1roi4f4" fill="currentColor" height="12" role="img" viewBox="0 0 24 24" width="12"><title></title><line fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2" x1="2.049" x2="21.95" y1="7.002" y2="7.002"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="13.504" x2="16.362" y1="2.001" y2="7.002"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="7.207" x2="10.002" y1="2.11" y2="7.002"></line><path d="M2 12.001v3.449c0 2.849.698 4.006 1.606 4.945.94.908 2.098 1.607 4.946 1.607h6.896c2.848 0 4.006-.699 4.946-1.607.908-.939 1.606-2.096 1.606-4.945V8.552c0-2.848-.698-4.006-1.606-4.945C19.454 2.699 18.296 2 15.448 2H8.552c-2.848 0-4.006.699-4.946 1.607C2.698 4.546 2 5.704 2 8.552Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M9.763 17.664a.908.908 0 0 1-.454-.787V11.63a.909.909 0 0 1 1.364-.788l4.545 2.624a.909.909 0 0 1 0 1.575l-4.545 2.624a.91.91 0 0 1-.91 0Z" fill-rule="evenodd"></path></svg>} />
+                <NavButton isChosen={navOptionArr == contentType.video.code} onClick={() => { setNavOptionArr(contentType.video.code); LoadContent(contentType.video.code, userData._id) }} text={contentType.video.name} svg={<svg aria-label="" class="x1lliihq x1n2onr6 x1roi4f4" fill="currentColor" height="12" role="img" viewBox="0 0 24 24" width="12"><title></title><line fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2" x1="2.049" x2="21.95" y1="7.002" y2="7.002"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="13.504" x2="16.362" y1="2.001" y2="7.002"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="7.207" x2="10.002" y1="2.11" y2="7.002"></line><path d="M2 12.001v3.449c0 2.849.698 4.006 1.606 4.945.94.908 2.098 1.607 4.946 1.607h6.896c2.848 0 4.006-.699 4.946-1.607.908-.939 1.606-2.096 1.606-4.945V8.552c0-2.848-.698-4.006-1.606-4.945C19.454 2.699 18.296 2 15.448 2H8.552c-2.848 0-4.006.699-4.946 1.607C2.698 4.546 2 5.704 2 8.552Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M9.763 17.664a.908.908 0 0 1-.454-.787V11.63a.909.909 0 0 1 1.364-.788l4.545 2.624a.909.909 0 0 1 0 1.575l-4.545 2.624a.91.91 0 0 1-.91 0Z" fill-rule="evenodd"></path></svg>} />
 
               </div>
             </div>
@@ -130,7 +176,7 @@ function ProfileScreen(props) {
           <div className='row d-flex justify-content-center' style={{ padding: 0 }}>
             <div className='row d-flex col-md-10' style={{ padding: 0 }}>
               {
-                userMediaDisplay.map((u, index) =>
+                userMediaDisplay.length > 0 && userMediaDisplay.map((u, index) =>
                   <ImageItem
                     onClick={() => (setShowPostDetail(true), setChosenPostIndex(index))}
                     type={navOptionArr}
@@ -144,12 +190,21 @@ function ProfileScreen(props) {
               {
                 userMediaDisplay.length > 3 ? '' :
                   <div className='mt-5 mb-5 d-flex flex-column align-items-center'>
-                    <Lottie options={lottieOptions}
+                    <Lottie options={
+                      {
+                        loop: true,
+                        autoplay: true,
+                        animationData: animationData,
+                        rendererSettings: {
+                          preserveAspectRatio: 'xMidYMid slice'
+                        }
+                      }
+                    }
                       isClickToPauseDisabled="false"
                       height={400}
                       width={400} />
-                      <TextWeb style={{fontWeight: 'bolder'}} text={"Your profile page seems still quite empty"}/>
-                      <TextWeb style={{fontWeight: 'bolder'}} text={"Let's update some more moments!"}/>
+                    <TextWeb style={{ fontWeight: 'bolder' }} text={"Your profile page seems still quite empty"} />
+                    <TextWeb style={{ fontWeight: 'bolder' }} text={"Let's update some more moments!"} />
                   </div>
               }
             </div>
@@ -255,7 +310,7 @@ const StatisticNumber = ({ number, text }) => {
 }
 
 // Custom component for displaying an avatar
-export const AvatarDiv = ({ image, style }) => {
+export const AvatarDiv = ({ image, style, frame }) => {
   return (
     <div
       style={{
@@ -270,6 +325,19 @@ export const AvatarDiv = ({ image, style }) => {
       }}
     >
       <img src={image} style={{ width: "100%" }} alt="Avatar" />
+      <Lottie style={{ position: "absolute" }} options={
+        {
+          loop: false,
+          autoplay: true,
+          animationData: frame,
+          rendererSettings: {
+            preserveAspectRatio: 'xMidYMid slice'
+          }
+        }
+      }
+        isClickToPauseDisabled="false"
+        height={'290px'}
+        width={'290px'} />
     </div>
   );
 };
@@ -294,10 +362,10 @@ export const ButtonWeb = ({ title, onClick, variant }) => {
   }
 }
 
-export const TextWeb = ({ text, style, visible }) => {
+export const TextWeb = ({ text, style, visible, className }) => {
   if (visible != false)
     return (
-      <p className='m-0' style={{ margin: 0, ...style }}>{text}</p>
+      <p className={'m-0 ' + className} style={{ margin: 0, ...style }}>{text}</p>
     )
 }
 
@@ -321,5 +389,10 @@ const FormatNumber = (num) => {
     return Math.round(num / 100000000) / 10 + "B";
   }
 }
+
+export const useUserStore = create((set) => ({
+  userData: {},
+  setUserData: (userData) => set((state) => ({ userData: userData })),
+}))
 
 export default ProfileScreen
