@@ -46,3 +46,18 @@ body {
 .headerContainer{
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
+
+.header-dropdown {
+  padding: 0!important;
+  margin: 0!important;
+  background-color: #fff!important;
+  border: none!important;
+}
+
+.header-dropdown::after {
+  display: none!important;
+}
+
+.header-dropdown:focus-visible {
+  box-shadow: none!important;
+}

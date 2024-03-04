@@ -1,13 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
 import HeaderHome from '../components/HeaderComponents/HeaderHome'
 import MatchesPage from './MatchesPage';
-import $ from 'jquery';
 import './style/messages.css'
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { getAccessToken } from '../common/Token';
 import InputEmoji from 'react-input-emoji';
-import { io } from "socket.io-client";
+import api from '../utils/services';
 
 function MessagePage() {
 
@@ -95,11 +94,7 @@ function MessagePage() {
     }
 
     useEffect(() => {
-        axios.get(`http://localhost:3008/api/v1/conversation/find-user-chats/${user.id}`, {
-            headers: {
-                token: 'Bearer ' + getAccessToken()
-            }
-        })
+        api.get(`/conversation/find-user-chats/${user.id}`)
             .then(response => {
                 const conversations = response.data;
                 var conversationList = [];

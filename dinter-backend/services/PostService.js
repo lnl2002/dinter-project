@@ -73,13 +73,13 @@ const handleLike = async (postId, userId) => {
             throw new Error("The user liked this post!")
         }
         const favoritePost = await Post.updateOne({ _id: postId }, { $push: { likes: userId } })
-        await notificationController.insertNotification({
+        const notification = await notificationController.insertNotification({
             receiver: favorited.author,
             type: 'like',
             sender: userId,
             link: '/login'
         })
-        return favorited;
+        return notification;
     } catch (error) {
         throw new Error(error.toString())
     }

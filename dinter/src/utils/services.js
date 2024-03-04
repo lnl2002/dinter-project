@@ -1,15 +1,41 @@
-import axios from "axios";
+import axios from 'axios';
+import { clearToken, getAccessToken } from '../common/Token';
 
-const baseUrl = `http://localhost:3008/api/v1`;
+const api = axios.create({
+    baseURL: 'http://localhost:3008/api/v1',
+});
 
-export const postRequest = async(url, body) => {
-    await axios.post(baseUrl + url, body)
-            .then(response => {return response})
-            .catch(error => {return error.response})
-};
 
-export const getRequest = async(url) => {
-    await axios.post(baseUrl + url)
-            .then(response => {return response})
-            .catch(error => {return error.response})
-};
+// Thêm interceptor cho request
+api.interceptors.request.use(
+    (config) => {
+        const token = getAccessToken();
+
+        if (token) {
+            config.headers.Token = `Bearer ${token}`;
+        }
+
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+// Thêm interceptor cho response
+api.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            clearToken();
+            localStorage.removeItem('User');
+            window.location.href = '/login';
+        }
+        
+        return Promise.reject(error);
+    }
+);
+
+export default api;

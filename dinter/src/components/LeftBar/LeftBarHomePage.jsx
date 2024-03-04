@@ -5,6 +5,7 @@ import { AuthContext } from '../../context/AuthContext';
 import axios from 'axios';
 import { getAccessToken } from '../../common/Token';
 import { formatDistanceToNow } from 'date-fns';
+import api from '../../utils/services.js';
 
 
 function LeftBarHomePage(props) {
@@ -26,7 +27,7 @@ function LeftBarHomePage(props) {
         socket.on("getNotification", (res) => {
             console.log("getnotification", res);
 
-            setListNoti([...listNoti, res]);
+            setListNoti([res,...listNoti]);
             setNumberNoti(numberNoti + 1);
             
         })
@@ -63,23 +64,6 @@ function LeftBarHomePage(props) {
         };
     }, [navRef, showNoti]);
 
-    useEffect(() => {
-        if (showNoti) {
-            axios.get(`http://localhost:3008/api/v1/notification/${user.id}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    token: 'Bearer ' + getAccessToken()
-                }
-            })
-                .then(res => {
-                    setListNoti(res.data.data);
-                    setNumberNoti(res.data.numberNotRead);
-                    console.log('notification', res.data);
-                })
-                .catch(err => console.log(err));
-        }
-
-    }, [user, showNoti])
 
     // set notification status read
     const handleNotificationIsRead = (id, link, isRead) => {
@@ -101,13 +85,14 @@ function LeftBarHomePage(props) {
 
     // setnumbernoti when render
     useEffect(() => {
-        axios.get(`http://localhost:3008/api/v1/notification/${user.id}`, {
+        api.get(`http://localhost:3008/api/v1/notification/${user.id}`, {
                 headers: {
                     'Content-Type': 'application/json',
                     token: 'Bearer ' + getAccessToken()
                 }
             })
                 .then(res => {
+                    setListNoti(res.data.data);
                     setNumberNoti(res.data.numberNotRead);
                     console.log('notification2', res.data);
                 })
@@ -172,8 +157,8 @@ function LeftBarHomePage(props) {
                         hidden={!showNoti}
                     >
                         {
-                            listNoti && listNoti.map(noti => {
-                                return (
+                            listNoti && listNoti.map(noti => 
+                                (
                                     <Row style={{ margin: "14px 0" }} className={`notification-popup-item d-flex align-items-center ${noti.isRead ? 'read' : ''}`}
                                         onClick={e => handleNotificationIsRead(noti._id, noti.link, noti.isRead)}>
                                         <Col md={2}>
@@ -208,7 +193,7 @@ function LeftBarHomePage(props) {
                                     </Row>
 
                                 )
-                            })
+                            )
                         }
 
 
