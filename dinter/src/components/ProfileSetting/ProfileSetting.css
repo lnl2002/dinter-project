@@ -22,3 +22,14 @@
 .ant-picker-dropdown{
     z-index: 10000;
 }
+
+.input-group-text{
+    border: none!important;
+    padding: 0!important;
+    background: none!important;
+}
+
+.form-check-input:checked {
+    background-color: #05080c!important;
+    border-color: #000000!important;
+}

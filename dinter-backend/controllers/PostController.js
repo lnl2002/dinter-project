@@ -24,7 +24,7 @@ const createPost = async (req, res) => {
 
 const getPosts = async (req, res) => {
     try {
-        const limit = req.query.limit || 3;
+        const limit = req.query.limit || 12;
         const offset = req.query.offset || 0;
         const userId = req.userId;
         const post = await postService.getPost(limit, offset);  
@@ -128,7 +128,7 @@ const getPostsByUserId = async(req, res) => {
             return res.status(400).json({ error: 'userId is required' });
         }
 
-        const limit = req.query.limit || 3;
+        const limit = req.query.limit || 12;
         const offset = req.query.offset || 0;
         const post = await postService.getPostsByUserId(limit, offset, userId);
         res.status(200).json({

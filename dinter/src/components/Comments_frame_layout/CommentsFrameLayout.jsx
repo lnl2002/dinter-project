@@ -1,17 +1,22 @@
 import React, { useEffect, useState } from 'react';
 
-import CommentBox from '../Comments_box/CommentBox';
+import CommentBox, { UserBox } from '../Comments_box/CommentBox';
 import { motion } from "framer-motion"
 
 import '../PostDetail/PostDetail.css'
 import axios from 'axios';
 import { BACK_END_HOST } from '../../utils/AppConfig';
 import { getAccessToken } from '../../common/Token';
+import { TextWeb } from '../../pages/ProfileScreen';
 
 function CommentsFrameLayout({
   user,
-  postId
+  postId,
+  likes,
+  content,
+  date
 }) {
+  console.log(content)
   const [isLiked, setIsLiked] = useState(false);
   const [commentValue, setCommentValue] = useState('');
   const [commentData, setCommentData] = useState([]);
@@ -23,7 +28,9 @@ function CommentsFrameLayout({
   }
   const handleOnSubmitForm = async (event) => {
     event.preventDefault();
-    await postComment(commentValue);
+    if (commentValue != '') {
+      await postComment(commentValue);
+    }
     setCommentValue('');
   };
   const getCommentsOfPost = async (postId, limit, offset) => {
@@ -42,7 +49,7 @@ function CommentsFrameLayout({
     };
     axios.post(BACK_END_HOST + "api/v1/comment/post-comment/", requestData, { headers })
       .then((response) => {
-      let newComment = response.data;
+        let newComment = response.data;
         setCommentData([{
           ...newComment,
           userId: {
@@ -68,13 +75,14 @@ function CommentsFrameLayout({
   return (
     <div className='d-flex flex-column justify-content-between' style={{ height: '100%' }}>
       <div className='d-flex flex-column top-bar-comment-box p-3'>
-        <CommentBox user={user}></CommentBox>
+        <UserBox user={user} comment_data={" • " + calculateTimeDifference(date)}></UserBox>
+        <TextWeb className={'mt-2'} style={{ whiteSpace: 'pre-line' }} text={content}></TextWeb>
       </div>
       <div className='above-part' style={{ height: '80%' }}>
         <div className='d-flex flex-column comments-box p-3' style={{ gap: '30px' }}>
           {
             commentData?.map(c =>
-              <CommentBox user={c.userId} comment_data={c.content} onReplyComment={() => { }} ></CommentBox>
+              <CommentBox user={c.userId} comment={c} onReplyComment={() => { }} ></CommentBox>
             )
           }
         </div>
@@ -103,8 +111,8 @@ function CommentsFrameLayout({
           </div>
 
           <div className='d-flex flex-column'>
-            <p className='text-app-bold'>3,148,897 likes</p>
-            <p className='text-app-light'>October 24, 2023</p>
+            <p className='text-app-bold'>{formatNumber(likes?.length)} likes</p>
+            <p className='text-app-light'>{formatDate(date)}</p>
           </div>
         </div>
 
@@ -123,5 +131,67 @@ function CommentsFrameLayout({
   );
 }
 
+export const formatNumber = (num) => {
+  // Convert the number to a string
+  const numStr = num.toString();
+
+  // Split the string into groups of three digits
+  const groups = [];
+  for (let i = numStr.length; i > 0; i -= 3) {
+    groups.unshift(numStr.slice(Math.max(i - 3, 0), i));
+  }
+
+  // Join the groups with commas
+  return groups.join(',');
+}
+
+export const formatDate = (inputDate) => {
+  const date = new Date(inputDate); // Parse the input string
+  const day = date.getDate();
+  const month = date.getMonth(); // Note: Months are zero-based (0 = January, 1 = February, etc.)
+  const year = date.getFullYear();
+
+  // Format the month name
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  const formattedMonth = monthNames[month];
+
+  // Format the day with the appropriate suffix
+  let dayPrefix;
+  if (day < 10) {
+    dayPrefix = "0"
+  }
+
+  // Construct the final formatted string
+  const formattedDate = `${formattedMonth} ${dayPrefix}${day}, ${year}`;
+  return formattedDate;
+}
+
+export function calculateTimeDifference(isoDateString) {
+  const givenDate = new Date(isoDateString);
+  const currentDate = new Date();
+
+  const timeDifferenceMs = currentDate - givenDate;
+  const timeDifferenceSeconds = Math.floor(timeDifferenceMs / 1000);
+  const timeDifferenceMinutes = Math.floor(timeDifferenceSeconds / 60);
+  const timeDifferenceHours = Math.floor(timeDifferenceMinutes / 60);
+  const timeDifferenceDays = Math.floor(timeDifferenceHours / 24);
+  const timeDifferenceMonths = Math.floor(timeDifferenceDays / 31);
+  const timeDifferenceYears = Math.floor(timeDifferenceMonths / 12);
+
+  if (timeDifferenceMinutes < 60) {
+    return `${timeDifferenceMinutes} minute${timeDifferenceMinutes === 1 ? '' : 's'}`;
+  } else if (timeDifferenceHours < 24) {
+    return `${timeDifferenceHours} hour${timeDifferenceHours === 1 ? '' : 's'}`;
+  } else if (timeDifferenceDays < 31) {
+    return `${timeDifferenceDays} day${timeDifferenceDays === 1 ? '' : 's'}`;
+  } else if (timeDifferenceMonths < 12) {
+    return `${timeDifferenceMonths} month${timeDifferenceMonths === 1 ? '' : 's'}`;
+  } else {
+    return `${timeDifferenceYears} year${timeDifferenceYears === 1 ? '' : 's'}`;
+  }
+}
 
 export default CommentsFrameLayout;
