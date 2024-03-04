@@ -311,7 +311,8 @@ const StatisticNumber = ({ number, text }) => {
 
 // Custom component for displaying an avatar
 export const AvatarDiv = ({ image, style, frame }) => {
-  return (
+  console.log(image)
+  return ( 
     <div
       style={{
         display: "flex",

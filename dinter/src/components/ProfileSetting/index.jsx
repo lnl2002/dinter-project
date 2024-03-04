@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import '../ProfileSetting/ProfileSetting.css'
 import { AvatarDiv, ButtonWeb, TextWeb } from '../../pages/ProfileScreen';
@@ -9,6 +9,7 @@ import { BACK_END_HOST } from '../../utils/AppConfig';
 import axios from 'axios';
 import { getAccessToken } from '../../common/Token';
 import GenderPicker from '../GenderPicker/GenderPicker';
+import AvatarPicker from '../AvatarPicker/AvatarPicker';
 
 export default function ProfileSetting({
   visible,
@@ -27,13 +28,15 @@ export default function ProfileSetting({
   const isGenderUpdating = useUpdateStore((state) => state.isGenderUpdating)
   const setIsGenderUpdating = useUpdateStore((state) => state.setIsGenderUpdating)
 
-  // Create a ref to the input element
-  const inputRef = useRef(null);
+  const isAvatarUpdating = useUpdateStore((state) => state.isAvatarUpdating)
+  const setIsAvatarUpdating = useUpdateStore((state) => state.setIsAvatarUpdating)
 
-  // Handle the button click
+  const inputRef = useRef(null);
+  const [avatarUpdatePreview, setAvatarUpdatePreview] = useState(user.avatar || 'images/common/user_blank.png');
+
   const handleUploadClick = () => {
     // Trigger the input click
-    if(inputRef.current) {
+    if (inputRef.current) {
       inputRef.current.click();
     }
   };
@@ -41,9 +44,24 @@ export default function ProfileSetting({
   // Handle the file change
   const handleFileChange = (e) => {
     // Get the selected file
+    if (e.target.files && e.target.files[0]) {
+      setAvatarUpdatePreview(URL.createObjectURL(e.target.files[0]));
+    }
     const file = e.target.files[0];
-    // Do the file upload here normally...
+    setIsAvatarUpdating(true);
   };
+
+  const AvatarUpdateField = ({ avatar, defaultAvatar }) => {
+    const isAvatarUpdating = useUpdateStore((state) => state.isAvatarUpdating)
+    const setIsAvatarUpdating = useUpdateStore((state) => state.setIsAvatarUpdating)
+    console.log(avatar)
+    return (
+      <div> 
+        <AvatarDiv style={{ height: 100, width: 100, display:(isAvatarUpdating ? 'none' : 'flex') }} image={avatar || 'images/common/user_blank.png'}></AvatarDiv>
+        <AvatarPicker setingAvatar={avatar} visible={isAvatarUpdating} onCancel={() => {setIsAvatarUpdating(false); setAvatarUpdatePreview(user.avatar ?? 'images/common/user_blank.png')}}></AvatarPicker>
+      </div>
+    )
+  }
 
   return (
     <Modal show={visible} onHide={onHideAction} contentClassName='model-content' aria-labelledby="example-custom-modal-styling-title">
@@ -57,8 +75,8 @@ export default function ProfileSetting({
       <Modal.Body className='post-detail justify-content-center align-items-center' style={{ padding: 0 }}>
         <div className="d-flex flex-column">
           <UpdateFieldLayout isUpdatingAction={handleUploadClick} title={"Avatar"}>
-            <AvatarDiv style={{ height: 100, width: 100 }} image={user.avatar || 'images/common/user_blank.png'}></AvatarDiv>
-            <input style={{display: 'none'}} ref={inputRef} type='file'/>
+            <input onChange={(e) => handleFileChange(e)} style={{ display: 'none' }} ref={inputRef} type='file' accept="image/png, image/jpeg" />
+            <AvatarUpdateField avatar={avatarUpdatePreview} defaultAvatar={user.avatar}></AvatarUpdateField>
           </UpdateFieldLayout>
           <UpdateFieldLayout isUpdatingTextChange={isBioUpdating} isUpdatingAction={() => setIsBioUpdating(!isBioUpdating)} title={"Bio"}>
             <BioField detail={user.bio ?? '#N/A'}></BioField>
@@ -170,7 +188,7 @@ const BODField = ({ dob }) => {
   )
 }
 
-export const saveUpdateBasicInfo = async(field) => {
+export const saveUpdateBasicInfo = async (field) => {
   const changes = {
     ...field
   };
@@ -182,7 +200,7 @@ export const saveUpdateBasicInfo = async(field) => {
   const url = BACK_END_HOST + "api/v1/user/user-basic-update"; // Replace with your API endpoint
 
   try {
-    const response = await axios.patch(url, {changes}, {headers});
+    const response = await axios.patch(url, { changes }, { headers });
     console.log('User information updated successfully:', response.data);
   } catch (error) {
     console.error('Error updating user information:', error.message);
@@ -202,11 +220,14 @@ const useUpdateStore = create((set) => ({
 
   isGenderUpdating: false,
   setIsGenderUpdating: (isUpdating) => set((state) => ({ isGenderUpdating: isUpdating })),
+
+  isAvatarUpdating: false,
+  setIsAvatarUpdating: (isUpdating) => set((state) => ({ isAvatarUpdating: isUpdating })),
 }))
 
 export const formatDateProfile = (isoDateString) => {
   const date = new Date(isoDateString);
-  const day = date.getUTCDate()+1; 
+  const day = date.getUTCDate() + 1;
   const month = date.getUTCMonth() + 1; // Months are zero-based (0 = January, 1 = February, etc.)
   const year = date.getUTCFullYear();
 

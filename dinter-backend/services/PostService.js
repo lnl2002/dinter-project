@@ -87,6 +87,15 @@ const handleDislike = async (postId, userId) => {
         throw new Error(error.toString())
     }
 }
+
+const getPostById = async(postId) =>{
+    try {
+        const post = Post.findById(postId)
+        return post;
+    } catch (error) {
+        throw new Error(error.toString())
+    }
+}
 export default {
     createNewPost,
     getPost,
@@ -94,5 +103,6 @@ export default {
     getPostsByUserId,
     editPost,
     handleLike,
-    handleDislike
+    handleDislike,
+    getPostById,
 }
