@@ -11,7 +11,9 @@ import { io } from "socket.io-client";
 
 function MessagePage() {
 
-    const { user, socket, setSocket, onlineUsers, setOnlineUsers } = useContext(AuthContext);
+    const {  socket, setSocket, onlineUsers, setOnlineUsers } = useContext(AuthContext);
+
+    const user = JSON.parse(localStorage.getItem('User'));
 
     const [options, setOptions] = useState(1);
     const [currentFriend, setCurrentFriend] = useState(0);

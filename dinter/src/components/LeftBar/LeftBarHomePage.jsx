@@ -10,7 +10,9 @@ import { formatDistanceToNow } from 'date-fns';
 function LeftBarHomePage(props) {
     const nav = useNavigate();
 
-    const { user, socket, setSocket } = useContext(AuthContext);
+    const { socket, setSocket } = useContext(AuthContext);
+    const user = JSON.parse(localStorage.getItem('User'));
+    console.log('noti', user);
 
     const [activeNavItem, setActiveNavItem] = useState("home");
     const [showNoti, setShowNoti] = useState(false);
