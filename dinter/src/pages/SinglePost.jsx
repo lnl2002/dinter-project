@@ -1,10 +1,14 @@
 import { faBookmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 
 import './style/singpost.css'
 import axios from 'axios';
+import { AuthContext } from '../context/AuthContext';
+import { formatDistanceToNow } from 'date-fns';
 function SinglePost({ post, handleShow, index }) {
+    const { socket } = useContext(AuthContext);
+    const user = JSON.parse(localStorage.getItem('User'));
     const [currentImage, setCurImg] = useState(0);
     const [like, setLike] = useState(post.favorited);
     const handleSetCurImg = (num) => {
@@ -40,6 +44,23 @@ function SinglePost({ post, handleShow, index }) {
                     "Token": `Bearer ${getCookie('access_token')}`
                 }
             })
+                .then(res => {
+                    // send message
+                    if (socket === null) return;
+
+                    socket.emit("sendNotification", {
+                        link: res.data.link,
+                        receiver: res.data.receiver,
+                        type: res.data.type,
+                        sender: {
+                            avatar: user.avatar,
+                            username: user.username,
+                        },
+                        createdAt: res.data.createdAt,
+                        _id: res.data._id
+                    })
+                })
+                .catch(err => console.log(err));
         }
     }
     return (
@@ -53,7 +74,13 @@ function SinglePost({ post, handleShow, index }) {
                             </div>
                             <div className="ingo">
                                 <h5>{post.author.username}</h5>
-                                <small>{post.createdAt}</small>
+                                <small>
+                                    {
+                                        formatDistanceToNow(post.createdAt, {
+                                            addSuffix: true,
+                                        })
+                                    }
+                                </small>
                             </div>
 
                         </div>

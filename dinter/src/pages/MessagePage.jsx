@@ -1,17 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react'
 import HeaderHome from '../components/HeaderComponents/HeaderHome'
 import MatchesPage from './MatchesPage';
-import $ from 'jquery';
 import './style/messages.css'
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { getAccessToken } from '../common/Token';
 import InputEmoji from 'react-input-emoji';
-import { io } from "socket.io-client";
+import api from '../utils/services';
 
 function MessagePage() {
 
-    const { user } = useContext(AuthContext);
+    const {  socket, setSocket, onlineUsers, setOnlineUsers } = useContext(AuthContext);
+
+    const user = JSON.parse(localStorage.getItem('User'));
 
     const [options, setOptions] = useState(1);
     const [currentFriend, setCurrentFriend] = useState(0);
@@ -22,29 +23,7 @@ function MessagePage() {
     const [recipientUser, setRecipientUser] = useState({});
     const [textMessage, setTextMessage] = useState("");
     const [newMessage, setNewMessage] = useState("");
-    const [socket, setSocket] = useState(null);
-    const [onlineUsers, setOnlineUsers] = useState([]);
-
-    console.log('currentConversation', currentConversation);
-    //init socket
-    useEffect(() => {
-        const newSocket = io("http://localhost:3002");
-        setSocket(newSocket);
-
-        return () => {
-            newSocket.disconnect();
-        }
-    }, [user]);
-
-    // add online users
-    useEffect(() => {
-        if(socket === null) return;
-        
-        socket.emit("addNewUser", user?.id);
-        socket.on("getOnlineUsers", (res) => {
-            setOnlineUsers(res);
-        })
-    },[socket])
+    
 
      // send message
      useEffect(() => {
@@ -115,11 +94,7 @@ function MessagePage() {
     }
 
     useEffect(() => {
-        axios.get(`http://localhost:3008/api/v1/conversation/find-user-chats/${user.id}`, {
-            headers: {
-                token: 'Bearer ' + getAccessToken()
-            }
-        })
+        api.get(`/conversation/find-user-chats/${user.id}`)
             .then(response => {
                 const conversations = response.data;
                 var conversationList = [];

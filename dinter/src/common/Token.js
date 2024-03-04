@@ -16,8 +16,14 @@ const getRefreshToken = () => {
     return Cookies.get('refresh_token');
 }
 
+const clearToken = () => {
+    Cookies.remove('access_token');
+    Cookies.remove('refresh_token');
+}
+
 export {
     setTokenToCookies, 
     getAccessToken, 
-    getRefreshToken
+    getRefreshToken,
+    clearToken
 }
