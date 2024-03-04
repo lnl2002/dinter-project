@@ -26,11 +26,13 @@ const createUser = (newUser) => {
         });
       }
       const hash = bcrypt.hashSync(password, 10);
+      console.log("test2");
       const createdUser = await User.create({
         username,
         email,
         password: hash,
       });
+      console.log("test1");
       if (createdUser) {
         resolve({
           status: "OK",
@@ -111,6 +113,7 @@ const getUserInfoByAccessToken = (accessToken) => {
               status: "OK",
               message: "SUCCESS",
               data: {
+                _id: userInfo._id,
                 username: userInfo.username,
                 avatar: userInfo.avatar,
                 isAdmin: userInfo.isAdmin

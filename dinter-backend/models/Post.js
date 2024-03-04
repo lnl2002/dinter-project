@@ -1,17 +1,16 @@
 import mongoose, { Schema } from "mongoose";
+import Comment from "./Comment.js";
 
 const postSchema = new Schema({
     author: { type: Schema.Types.ObjectId, ref: 'Users', required: true },
     content: String,
     likes: [{ type: Schema.Types.ObjectId, ref: 'Users', required: true }],
-    image: {
+    images: [{
         type: String,
         required: true
-    },
-    tagList: [{
-        type: String
-    }]
-}, { timestamp: true });
+    }],
+    comments: [Comment.schema]
+}, { timestamps: true });
 
 const Post = mongoose.model('Posts', postSchema);
 export default Post;

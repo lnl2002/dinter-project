@@ -14,8 +14,9 @@ import cors from 'cors';
 config();
 
 
-const app = express();
 
+const app = express();
+app.use('/public',express.static('public'));
 const PORT = process.env.PORT || 3007;
 
 

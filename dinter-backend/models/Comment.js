@@ -10,7 +10,7 @@ const commentSchema = new Schema({
 
     liked: [{ type: Schema.Types.ObjectId, ref: 'Users', required: true }]
 }, {
-    timestamp: true,
+    timestamps: true,
 });
 
 const Comment = mongoose.model('Comments', commentSchema);
