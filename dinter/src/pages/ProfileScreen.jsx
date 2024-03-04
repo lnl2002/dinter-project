@@ -109,7 +109,7 @@ function ProfileScreen(props) {
 
             <div className='col-md-3'>
               <div className="App">
-                <AvatarDiv image={userData.avatar || 'images/common/user_blank.png'} frame={avatarFrame1} />
+                <AvatarDiv image={BACK_END_HOST + (userData.avatar || 'user_blank.png')} frame={avatarFrame1} />
               </div>
             </div>
 
@@ -311,7 +311,6 @@ const StatisticNumber = ({ number, text }) => {
 
 // Custom component for displaying an avatar
 export const AvatarDiv = ({ image, style, frame }) => {
-  console.log(image)
   return ( 
     <div
       style={{

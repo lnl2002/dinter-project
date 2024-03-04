@@ -75,7 +75,7 @@ const updateUserBasicInfo = async (userId, changes) => {
 
     // Save the updated user
     await user.save();
-    return 'User information updated successfully';
+    return user;
   } catch (error) {
     return `Error updating user information: ${error.message}`;
   }

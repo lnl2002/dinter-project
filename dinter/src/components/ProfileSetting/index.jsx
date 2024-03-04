@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import '../ProfileSetting/ProfileSetting.css'
 import { AvatarDiv, ButtonWeb, TextWeb } from '../../pages/ProfileScreen';
@@ -32,8 +32,8 @@ export default function ProfileSetting({
   const setIsAvatarUpdating = useUpdateStore((state) => state.setIsAvatarUpdating)
 
   const inputRef = useRef(null);
-  const [avatarUpdatePreview, setAvatarUpdatePreview] = useState(user.avatar || 'images/common/user_blank.png');
-
+  const [avatarUpdateUrl, setAvatarUpdateUrl] = useState(BACK_END_HOST + (user.avatar ?? 'user_blank.png'));
+  const [avatarUpdateFile, setAvatarUpdateFile] = useState();
   const handleUploadClick = () => {
     // Trigger the input click
     if (inputRef.current) {
@@ -45,20 +45,24 @@ export default function ProfileSetting({
   const handleFileChange = (e) => {
     // Get the selected file
     if (e.target.files && e.target.files[0]) {
-      setAvatarUpdatePreview(URL.createObjectURL(e.target.files[0]));
+      setAvatarUpdateFile(e.target.files[0]);
+      setAvatarUpdateUrl(URL.createObjectURL(e.target.files[0]));
     }
     const file = e.target.files[0];
     setIsAvatarUpdating(true);
   };
 
-  const AvatarUpdateField = ({ avatar, defaultAvatar }) => {
+  useEffect(()=>{
+    setAvatarUpdateUrl(BACK_END_HOST +user.avatar)
+  },[user])
+
+  const AvatarUpdateField = ({ avatarUrl, avatarFile}) => {
     const isAvatarUpdating = useUpdateStore((state) => state.isAvatarUpdating)
     const setIsAvatarUpdating = useUpdateStore((state) => state.setIsAvatarUpdating)
-    console.log(avatar)
     return (
       <div> 
-        <AvatarDiv style={{ height: 100, width: 100, display:(isAvatarUpdating ? 'none' : 'flex') }} image={avatar || 'images/common/user_blank.png'}></AvatarDiv>
-        <AvatarPicker setingAvatar={avatar} visible={isAvatarUpdating} onCancel={() => {setIsAvatarUpdating(false); setAvatarUpdatePreview(user.avatar ?? 'images/common/user_blank.png')}}></AvatarPicker>
+        <AvatarDiv style={{ height: 100, width: 100, display:(isAvatarUpdating ? 'none' : 'flex') }} image={avatarUrl}></AvatarDiv>
+        <AvatarPicker avatarFile={avatarFile} avatarUrl={avatarUrl} visible={isAvatarUpdating} onCancel={() => {setIsAvatarUpdating(false); setAvatarUpdateUrl(BACK_END_HOST + (user.avatar ?? 'user_blank.png'))}}></AvatarPicker>
       </div>
     )
   }
@@ -76,7 +80,7 @@ export default function ProfileSetting({
         <div className="d-flex flex-column">
           <UpdateFieldLayout isUpdatingAction={handleUploadClick} title={"Avatar"}>
             <input onChange={(e) => handleFileChange(e)} style={{ display: 'none' }} ref={inputRef} type='file' accept="image/png, image/jpeg" />
-            <AvatarUpdateField avatar={avatarUpdatePreview} defaultAvatar={user.avatar}></AvatarUpdateField>
+            <AvatarUpdateField avatarUrl={avatarUpdateUrl} avatarFile={avatarUpdateFile}></AvatarUpdateField>
           </UpdateFieldLayout>
           <UpdateFieldLayout isUpdatingTextChange={isBioUpdating} isUpdatingAction={() => setIsBioUpdating(!isBioUpdating)} title={"Bio"}>
             <BioField detail={user.bio ?? '#N/A'}></BioField>
