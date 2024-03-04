@@ -29,6 +29,8 @@ body {
   width: 40px;
   height: 40px;
   cursor: pointer;
+  overflow: hidden;
+  border-radius: 50%;
 }
 
 .avatar > img {

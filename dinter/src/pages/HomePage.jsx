@@ -14,6 +14,8 @@ import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import "react-loading-skeleton/dist/skeleton.css";
 library.add(faEllipsis, faHeart, faComments, faShareAlt, faBookmark, faEdit, faSearch);
 function HomePage(props) {
+  
+  const user = JSON.parse(localStorage.getItem('User'));
   const [listPost, setListPost] = useState([]);
   const [isLoad, setIsLoad] = useState();
   const [offset, setOffset] = useState(0);
@@ -137,17 +139,17 @@ function HomePage(props) {
         <Row>
           {/* LEFT */}
           <Col md={3}>
-            <div style={{ position: "fixed", width: "calc(16%)" }}>
+            <div style={{ position: "fixed", width: "calc(16%)", zIndex: "99" }}>
               <div>
                 <div
                   className="d-flex bg-white circle w-100 align-items-center"
                   style={{ padding: "16px" }}
                 >
                   <div className="avatar">
-                    <img src="images/common/avatar.png" alt="Avatar" />
+                    <img src={user.avatar} alt="Avatar" />
                   </div>
                   <div className="user-infor" style={{ marginLeft: "10px" }}>
-                    <strong>Lại Ngọc Lâm</strong>
+                    <strong>{user.username}</strong>
                   </div>
                 </div>
                 <LeftBarHomePage/>

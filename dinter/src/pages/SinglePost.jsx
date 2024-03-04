@@ -1,10 +1,13 @@
 import { faBookmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 
 import './style/singpost.css'
 import axios from 'axios';
+import { AuthContext } from '../context/AuthContext';
 function SinglePost({ post, handleShow, index }) {
+    const {socket} = useContext(AuthContext);
+    const user = JSON.parse(localStorage.getItem('User'));
     const [currentImage, setCurImg] = useState(0);
     const [like, setLike] = useState(post.favorited);
     const handleSetCurImg = (num) => {
@@ -40,6 +43,22 @@ function SinglePost({ post, handleShow, index }) {
                     "Token": `Bearer ${getCookie('access_token')}`
                 }
             })
+                .then(res => {
+                    // send message
+                    if(socket === null) return;
+
+                    socket.emit("sendNotification", {
+                        link: '/login',
+                        receiver: res.data.author,
+                        type: 'like',
+                        sender: {
+                            avatar: user.avatar,
+                            username: user.username,
+                        },
+                        createdAt: new Date()
+                    })
+                })
+                .catch(err => console.log(err));
         }
     }
     return (

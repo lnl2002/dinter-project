@@ -12,7 +12,6 @@ function LeftBarHomePage(props) {
 
     const { socket, setSocket } = useContext(AuthContext);
     const user = JSON.parse(localStorage.getItem('User'));
-    console.log('noti', user);
 
     const [activeNavItem, setActiveNavItem] = useState("home");
     const [showNoti, setShowNoti] = useState(false);
@@ -28,8 +27,7 @@ function LeftBarHomePage(props) {
             console.log("getnotification", res);
 
             setListNoti([...listNoti, res]);
-            setNumberNoti(++numberNoti);
-
+            setNumberNoti(numberNoti + 1);
             
         })
 

@@ -26,8 +26,7 @@ const getAllNotifications = async(req, res) => {
     }
 }
 
-const insertNotification = async(req, res) => {
-    const {type, link, receiver, sender} = req.body;
+const insertNotification = async({type, link, receiver, sender}) => {
     try {
         const notificattions = await Notification.create({
             receiver,
@@ -35,12 +34,10 @@ const insertNotification = async(req, res) => {
             link,
             sender
         });
-       
-        return res.status(201).json(notificattions);
+
+        return notificattions;
     } catch (err) {
-        return res.status(500).json({
-            message: err
-        })
+        console.log(err);
     }
 }
 
