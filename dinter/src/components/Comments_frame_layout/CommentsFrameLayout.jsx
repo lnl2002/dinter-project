@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import CommentBox, { UserBox } from '../Comments_box/CommentBox';
 import { motion } from "framer-motion"
-
+import EmojiPicker from 'emoji-picker-react';
 import '../PostDetail/PostDetail.css'
 import axios from 'axios';
 import { BACK_END_HOST } from '../../utils/AppConfig';
@@ -16,10 +16,11 @@ function CommentsFrameLayout({
   content,
   date
 }) {
-  console.log(content)
+  const sessionUser = JSON.parse(localStorage.getItem('User'));
   const [isLiked, setIsLiked] = useState(false);
   const [commentValue, setCommentValue] = useState('');
   const [commentData, setCommentData] = useState([]);
+  const [isOpenImoji, setIsOpenEmoji] = useState(false);
   const LikePost = () => {
     setIsLiked(!isLiked);
   }
@@ -54,8 +55,8 @@ function CommentsFrameLayout({
           ...newComment,
           userId: {
             ...response.userId,
-            avatar: user.avatar,
-            username: user.username
+            avatar: sessionUser.avatar,
+            username: sessionUser.username
           }
         }, ...commentData])
       })
@@ -117,7 +118,10 @@ function CommentsFrameLayout({
         </div>
 
         <div className='d-flex input-comment-box p-3 align-items-center' style={{ gap: 10 }}>
-          <svg aria-label="Emoji" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Emoji</title><path d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z"></path></svg>
+          <EmojiPicker onEmojiClick={(emojiData) => {setCommentValue(emojiData.emoji); setIsOpenEmoji(false)}} open={isOpenImoji} style={{position: 'absolute', marginBottom: '510px'}}/>
+          <button onClick={() => {setIsOpenEmoji(!isOpenImoji)}} style={{background: 'none'}}>
+            <svg aria-label="Emoji" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Emoji</title><path d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z"></path></svg>
+          </button>
           <form style={{ width: '100%' }} className='p-0 d-flex input-comment-box justify-content-between' onSubmit={(e) => handleOnSubmitForm(e)}>
             <input value={commentValue} onChange={(e) => handleOnchangeCommentInput(e.target.value)} style={{ width: '100%' }} placeholder='Add a comment...' />
             <button type='submit' className='btn-app-func'>
