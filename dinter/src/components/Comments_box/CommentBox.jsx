@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import '../Comments_box/CommentBox.css'
 import { motion } from "framer-motion"
 import { calculateTimeDifference, formatNumber } from '../Comments_frame_layout/CommentsFrameLayout';
+import { BACK_END_HOST } from '../../utils/AppConfig';
 
 function CommentBox({
   comment,
@@ -49,7 +50,7 @@ export const UserBox = ({ user, comment_data, children }) => {
   return (
     <div className='d-flex flex-row' style={{ gap: '10px' }}>
 
-      <AvatarDiv image={user.avatar ?? 'images/common/card.png'}></AvatarDiv>
+      <AvatarDiv image={BACK_END_HOST + user.avatar ?? 'images/common/card.png'}></AvatarDiv>
 
       <div className='d-flex flex-column  justify-content-center' style={{ gap: '5px' }}>
         <div className='d-flex' style={{ gap: '5px' }}>
