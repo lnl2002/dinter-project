@@ -141,6 +141,22 @@ const getPostsByUserId = async(req, res) => {
         })
     }
 }
+
+const getPostById = async(req, res) => {
+    try{
+        const postId = req.params.postId;
+        const post = await postService.getPostById(postId);
+        res.status(200).json({
+            message: "get post success",
+            data: post
+        })
+    }catch (error) {
+        res.status(500).json({
+            messages: error.toString()
+        })
+    }
+}
+
 export default {
     createPost,
     getPosts,
@@ -148,5 +164,6 @@ export default {
     getPostsByUserId,
     editPost,
     handleLike,
-    handleDislike
+    handleDislike,
+    getPostById
 }

@@ -7,6 +7,7 @@ import ProfileSetup from "../pages/ProfileSetup";
 import Story from "../pages/Story";
 import Dashboard from "../pages/Dashboard";
 import ResetPassword from "../pages/ResetPassword";
+import PostDetailProView from "../pages/PostDetailProView";
 
 
 const routes = [
@@ -33,6 +34,10 @@ const routes = [
     {
         path: '/profile/:userId',
         element: ProfileScreen
+    },
+    {
+        path: '/post/:postId',
+        element: PostDetailProView
     },
     {
         path: '/request-friend',
