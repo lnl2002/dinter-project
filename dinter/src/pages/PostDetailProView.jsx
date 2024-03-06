@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import { BACK_END_HOST } from '../utils/AppConfig';
 import axios from 'axios';
 import CommentsFrameLayout from '../components/Comments_frame_layout/CommentsFrameLayout';
+import PostDetail from '../components/PostDetail';
 
 function PostDetailProView() {
   const { postId } = useParams();
@@ -43,36 +44,7 @@ function PostDetailProView() {
 
   return (
     post && userData ?
-      <Container style={{ maxHeight:'100vh'}}>
-        <div className='row' style={{ background: 'white' ,height: '90%'}}>
-          <div className='d-flex justify-content-center align-items-center col-md-6' style={{ padding: 0, maxWidth: 750, height: '100%', width: 'fit-content', overflow: 'hidden' }}>
-            <Carousel controls={false} interval={null} style={{ height: '100%' }} activeIndex={indexImage}>
-              {post.images.map(pi =>
-                <Carousel.Item style={{ height: '100vh', overflow:'hidden' }}>
-                  <img alt='post-view' height='100%' src={BACK_END_HOST + pi} />
-                </Carousel.Item>
-              )}
-            </Carousel>
-            <div className='d-flex justify-content-between align-items-center' style={{ position: 'absolute', width: '100%', maxWidth: '750px', paddingLeft: '10px', paddingRight: '10px' }}>
-              <NavButton onClick={() => setIndexImage(indexImage - 1)} isNext={false}></NavButton>
-              <NavButton onClick={() => setIndexImage(indexImage + 1)} isNext={true}></NavButton>
-            </div>
-          </div>
-          <div className='col-md-6' style={{ height: '100%', border: '1px solid #7c7c7c30', padding: 0, width: '35vw', maxWidth: 500, minWidth: 405 }}>
-            <CommentsFrameLayout
-              user={userData}
-              postId={post._id}
-              content={post.content}
-              likes={post.likes}
-              date={post.createdAt}></CommentsFrameLayout>
-          </div>
-        </div>
-
-
-        <button onClick={() => { }} className='close-button'>
-          <svg style={{ color: 'white' }} class="x1lliihq x1n2onr6 x9bdzbf" fill="currentColor" height="18" role="img" viewBox="0 0 24 24" width="18"><title>Close</title><polyline fill="none" points="20.643 3.357 12 12 3.353 20.647" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></polyline><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" x1="20.649" x2="3.354" y1="20.649" y2="3.354"></line></svg>
-        </button>
-      </Container> :
+      <PostDetail visible={true} onHideCallBack={() => {}} post={post} user={userData} ></PostDetail> :
       ''
   );
 }
