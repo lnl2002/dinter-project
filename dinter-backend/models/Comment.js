@@ -7,7 +7,7 @@ const commentSchema = new Schema({
         type: String,
         required: true
     },
-
+    parentComment: {type: Schema.Types.ObjectId, ref: 'Comments'},
     liked: [{ type: Schema.Types.ObjectId, ref: 'Users', required: true }]
 }, {
     timestamps: true,
