@@ -44,7 +44,7 @@ function PostDetailProView() {
 
   return (
     post && userData ?
-      <PostDetail visible={true} onHideCallBack={() => {}} post={post} user={userData} ></PostDetail> :
+      <PostDetail visible={true} onHideCallBack={() => {window.location.href = '/'}} post={post} user={userData} ></PostDetail> :
       ''
   );
 }
