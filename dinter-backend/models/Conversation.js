@@ -6,10 +6,19 @@ const conversationSchema = new mongoose.Schema({
     members: [
         {
             type: Schema.Types.ObjectId,
-            ref: User
+            ref: User,
         }
-    ]
-},{
+    ],
+    isRead: [
+        {
+            type: Schema.Types.ObjectId
+        }
+    ],
+    newMessage: {
+        message: String,
+        senderId: Schema.Types.ObjectId
+    }
+}, {
     timestamps: true,
 })
 

@@ -1,3 +1,4 @@
+import Conversations from '../models/Conversation.js';
 import message from '../models/Message.js';
 
 
@@ -7,7 +8,7 @@ const createMessage = async (req, res) => {
 
     console.log(conversationId, senderId, text);
     if(!conversationId || !senderId || !text) {
-        return res.status(500).json({
+        return res.status(404).json({
             message: "ERROR"
         });
     }
@@ -18,20 +19,35 @@ const createMessage = async (req, res) => {
             senderId, 
             text
         })
+
+        const updateConversation = await Conversations.findByIdAndUpdate(conversationId, {
+            $set: {
+                isRead: [senderId],
+                newMessage: {
+                    message: text,
+                    senderId
+                }
+            }
+        })
         return res.status(200).json(newMessage);
     } catch (error) {
-        res.status(500).json(error);
+        res.status(404).json(error);
     }
 };
 
 //getMessagess
 const getMessages = async (req, res) => {
     const {conversationId} = req.params;
-    console.log(conversationId);
+    const {limit, skip} = req.query;
+    
+    console.log(conversationId, limit, skip);
     try {
         const messages = await message.find({
             conversationId: conversationId
-        }).sort({createdAt: -1});
+        })
+            .sort({createdAt: -1})
+            .limit(Number(limit))
+            .skip(Number(skip));
         return res.status(200).json(messages);
     } catch (error) {
         res.status(500).json(error);

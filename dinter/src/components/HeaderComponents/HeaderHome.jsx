@@ -6,6 +6,7 @@ import {AuthContext} from '../../context/AuthContext.jsx'
 function HeaderHome(props) {
     const nav = useNavigate();
     const {setUser} = useContext( AuthContext );
+    const user = JSON.parse(localStorage.getItem('User'));
 
     const handleLogout = () => {
         clearToken();
@@ -31,7 +32,7 @@ function HeaderHome(props) {
                 <Dropdown>
                     <Dropdown.Toggle className='header-dropdown'>
                         <div className="header-avatar avatar">
-                            <img src="images/common/avatar.png" alt="avatar" />
+                            <img src={user.avatar} alt="avatar" />
                         </div>
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
