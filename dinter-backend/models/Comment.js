@@ -8,6 +8,7 @@ const commentSchema = new Schema({
         required: true
     },
     parentComment: {type: Schema.Types.ObjectId, ref: 'Comments'},
+    replyTo: { type: Schema.Types.ObjectId, ref: 'Users'},
     liked: [{ type: Schema.Types.ObjectId, ref: 'Users', required: true }]
 }, {
     timestamps: true,

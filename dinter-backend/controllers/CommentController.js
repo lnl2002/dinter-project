@@ -5,7 +5,7 @@ import UserService from "../services/UserService.js";
 async function createComment(req,res) {
     try {
         const token = req.headers.token.split(' ')[1];
-        const { postId, content} = req.body
+        const { postId, content, parentComment, replyTo} = req.body
         const user = await UserService.getUserInfoByAccessToken(token);
 
         if(!user){
@@ -13,7 +13,7 @@ async function createComment(req,res) {
         }
         
         const userId = user.data._id;
-        const newComment = await CommentService.createComment(postId, userId, content);
+        const newComment = await CommentService.createComment(postId, userId, content, parentComment, replyTo);
 
         return res.status(200).json(newComment);
     } catch (error) {
@@ -33,7 +33,6 @@ async function getCommentsForPost(req,res) {
             message: "get comments success",
             data: comments
         })
-        console.log('Comments for post', postId, ':', comments);
     } catch (error) {
         console.error('Error fetching comments:', error);
     }
@@ -63,9 +62,31 @@ async function deleteComment(req,res) {
     }
 }
 
+async function getNumberOfRepliedComment(req,res) {
+    try{
+        const commentId = req.params.commentId;
+        const numberOfRepliedComment = await CommentService.getNumberOfRepliedComment(commentId);
+        return res.status(200).json(numberOfRepliedComment);
+    } catch(error) {
+        console.error('Error get number of replied comments:', error);
+    }
+}
+
+async function getRepliedComments(req, res) {
+    try{
+        const commentId = req.params.commentId;
+        const repliedComments = await CommentService.getRepliedComments(commentId);
+        return res.status(200).json(repliedComments);
+    } catch(error) {
+        console.error('Error get replied comments:', error);
+    }
+}
+
 export default{
     createComment,
     updateComment,
     deleteComment,
-    getCommentsForPost
+    getCommentsForPost,
+    getNumberOfRepliedComment,
+    getRepliedComments
 }

@@ -2,17 +2,20 @@ import Comment from "../models/Comment.js";
 import Post from "../models/Post.js";
 
 // Create a new comment
-async function createComment(postId, userId, content) {
+async function createComment(postId, userId, content, parentComment, replyTo) {
     try {
         const newComment = new Comment({
             postId,
             userId,
             content,
+            parentComment,
+            replyTo
         });
+
         await newComment.save();
 
         const post = await Post.findById(postId);
-        post.comments.unshift(newComment);
+        post.comments.push(newComment);
         await post.save();
 
         //console.log('Comment created successfully:', newComment);
@@ -25,12 +28,12 @@ async function createComment(postId, userId, content) {
 // Get comments for a specific post
 async function getCommentsForPost(postId, limit, offset) {
     try {
-        const comments = await Comment.find({ postId })
-        .sort([['createdAt', -1]])
-        .skip(Number(offset))
-        .limit(Number(limit))
-        .populate('userId', 'username avatar')
-        .exec();
+        const comments = await Comment.find({ postId, parentComment: { $exists: false } })
+            .sort([['createdAt', -1]])
+            .skip(Number(offset))
+            .limit(Number(limit))
+            .populate('userId', 'username avatar')
+            .exec();
         console.log('Comments for post', postId, ':', comments);
         return comments;
     } catch (error) {
@@ -62,9 +65,34 @@ async function deleteComment(commentId) {
     }
 }
 
-export default{
+async function getNumberOfRepliedComment(commentId) {
+    try {
+        const count = await Comment.countDocuments({ parentComment: commentId });
+        return count;
+    } catch (error) {
+        console.error('Error get number of replied comments:', error);
+    }
+}
+
+async function getRepliedComments(commentId) {
+    try {
+        const comments = await Comment.find({ parentComment: commentId })
+            .sort([['createdAt', 1]])
+            .populate('userId', 'username avatar')
+            .populate('replyTo', 'username avatar')
+            .exec();
+        console.log('Comments with parentComment:', comments);
+        return comments;
+    } catch (error) {
+        console.error('Error get replied comments:', error);
+    }
+}
+
+export default {
     createComment,
     updateComment,
     deleteComment,
-    getCommentsForPost
+    getCommentsForPost,
+    getNumberOfRepliedComment,
+    getRepliedComments
 }
