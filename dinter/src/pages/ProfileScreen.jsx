@@ -22,20 +22,19 @@ const contentType = {
 }
 
 function ProfileScreen(props) {
+  //session user (logged-in user)
+  const sessionUser = JSON.parse(localStorage.getItem('User'));
 
   //pre-define view
   const { userId } = useParams();
   const isSpectatedView = useMemo(() => {
-    return userId ? true : false;
+    return userId && sessionUser.id != userId? true : false;
   }, [userId]);
   //
 
   //zustand user global state 
   const userData = useUserStore((state) => state.userData)
   const setUserData = useUserStore((state) => state.setUserData)
-
-  //session user (logged-in user)
-  const sessionUser = JSON.parse(localStorage.getItem('User'));
 
   //const [userData, setUserData] = useState([]);
   const [userAnalysticData, setUserAnalysticData] = useState({});
@@ -355,12 +354,6 @@ export const AvatarDiv = ({ image, style, frame }) => {
     </div>
   );
 };
-
-const LinkWeb = ({ url }) => {
-  return (
-    <a style={{ textDecoration: 'none' }} href='www.ozgame.com.vn'><p className='m-0' style={{ margin: 0, marginLeft: "5px" }}>{url}</p></a>
-  )
-}
 
 export const ButtonWeb = ({ title, onClick, variant }) => {
   if (!variant) variant = 'primary';

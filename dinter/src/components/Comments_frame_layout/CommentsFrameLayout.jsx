@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import CommentBox, { UserBox } from '../Comments_box/CommentBox';
 import { motion } from "framer-motion"
@@ -18,9 +18,22 @@ function CommentsFrameLayout({
 }) {
   const sessionUser = JSON.parse(localStorage.getItem('User'));
   const [isLiked, setIsLiked] = useState(false);
+
+  //for switching between comment and reply
+  const [isCommenting, setIsCommenting] = useState(true)
+
+  //normal comment
   const [commentValue, setCommentValue] = useState('');
   const [commentData, setCommentData] = useState([]);
+
+  //replied comment
+  const [repliedUserData, setRepliedUserData] = useState();
+  const [repliedCommentData, setRepliedCommentData] = useState();
+  const [repliedCommentId, setRepliedCommentId] = useState();
+
   const [isOpenImoji, setIsOpenEmoji] = useState(false);
+  const commentInputRef = useRef(null)
+
   const LikePost = () => {
     setIsLiked(!isLiked);
   }
@@ -29,10 +42,18 @@ function CommentsFrameLayout({
   }
   const handleOnSubmitForm = async (event) => {
     event.preventDefault();
-    if (commentValue != '') {
-      await postComment(commentValue);
+    if(isCommenting){
+      if (commentValue != '') {
+        await postComment(commentValue);
+      }
+    } else{
+      if (commentValue != '') {
+        await postReplyComment(commentValue);
+      }
     }
+    setIsCommenting(true);
     setCommentValue('');
+    setRepliedUserData({});
   };
   const getCommentsOfPost = async (postId, limit, offset) => {
     axios.get(BACK_END_HOST + "api/v1/comment/all-from/" + postId).then(res => {
@@ -51,27 +72,66 @@ function CommentsFrameLayout({
     axios.post(BACK_END_HOST + "api/v1/comment/post-comment/", requestData, { headers })
       .then((response) => {
         let newComment = response.data;
-        setCommentData([{
+        const updatedComment = [{
           ...newComment,
           userId: {
             ...response.userId,
+            _id: sessionUser.id,
             avatar: sessionUser.avatar,
             username: sessionUser.username
           }
-        }, ...commentData])
+        }, ...commentData]
+
+        setCommentData(updatedComment)
       })
       .catch((error) => {
         console.error('Error:', error);
       });
   }
 
+  const postReplyComment = async (value) => {
+    let requestData = {
+      postId: postId,
+      replyTo: repliedUserData._id,
+      parentComment: repliedCommentId,
+      content: value
+    };
+    let headers = {
+      token: 'Bearer ' + getAccessToken(),
+      'Content-Type': 'application/json',
+    };
+    axios.post(BACK_END_HOST + "api/v1/comment/post-comment/", requestData, { headers })
+      .then((response) => {
+        let newComment = response.data;
+        setRepliedCommentData({
+          ...newComment,
+          userId: {
+            ...response.userId,
+            _id: sessionUser.id,
+            avatar: sessionUser.avatar,
+            username: sessionUser.username
+          },
+          replyTo:{
+            ...repliedUserData
+          }
+        });
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
+
+  const focusReplyComment = (user, repliedCommentId) => {
+    commentInputRef.current.focus();
+    setIsCommenting(false);
+    setRepliedCommentId(repliedCommentId);
+    setRepliedUserData(user);
+    console.log(user + "[][]" + repliedCommentId )
+  }
+
   useEffect(() => {
     getCommentsOfPost(postId)
   }, [])
-
-  useEffect(() => {
-    console.log(commentData)
-  }, [commentData])
 
   return (
     <div className='d-flex flex-column justify-content-between' style={{ height: '100%' }}>
@@ -82,8 +142,8 @@ function CommentsFrameLayout({
       <div className='above-part' style={{ height: '80%' }}>
         <div className='d-flex flex-column comments-box p-3' style={{ gap: '30px' }}>
           {
-            commentData?.map(c =>
-              <CommentBox user={c.userId} comment={c} onReplyComment={() => { }} ></CommentBox>
+            commentData?.map((c) =>
+              <CommentBox key={c._id} repliedCommentData={repliedCommentId == c._id ? repliedCommentData : ''} isParentComment={true} user={c.userId} comment={c} onFinishSetUpComment={()=> setRepliedCommentData('')} onClickReplyComment={(user, c_id) => {focusReplyComment(user.username ? user : c.userId, c_id ?? c._id)}} ></CommentBox>
             )
           }
         </div>
@@ -118,12 +178,29 @@ function CommentsFrameLayout({
         </div>
 
         <div className='d-flex input-comment-box p-3 align-items-center' style={{ gap: 10 }}>
-          <EmojiPicker onEmojiClick={(emojiData) => {setCommentValue(emojiData.emoji); setIsOpenEmoji(false)}} open={isOpenImoji} style={{position: 'absolute', marginBottom: '510px'}}/>
-          <button onClick={() => {setIsOpenEmoji(!isOpenImoji)}} style={{background: 'none'}}>
+          <EmojiPicker onEmojiClick={(emojiData) => { setCommentValue(emojiData.emoji); setIsOpenEmoji(false) }} open={isOpenImoji} style={{ position: 'absolute', marginBottom: '510px' }} />
+          <button onClick={() => { setIsOpenEmoji(!isOpenImoji) }} style={{ background: 'none' }}>
             <svg aria-label="Emoji" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Emoji</title><path d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z"></path></svg>
           </button>
           <form style={{ width: '100%' }} className='p-0 d-flex input-comment-box justify-content-between' onSubmit={(e) => handleOnSubmitForm(e)}>
-            <input value={commentValue} onChange={(e) => handleOnchangeCommentInput(e.target.value)} style={{ width: '100%' }} placeholder='Add a comment...' />
+            {
+              repliedUserData &&
+              <button style={{ whiteSpace: 'nowrap', marginRight: '5px', background: '#ffdae2' }}>
+                <TextWeb text={repliedUserData.username}></TextWeb>
+              </button>
+            }
+            <input
+              onKeyDown={(e) => {
+                if (commentValue === '' && e.key === 'Backspace') {
+                  setRepliedUserData({})
+                  setIsCommenting(true)
+                }
+              }}
+              style={{ width: '100%' }}
+              ref={commentInputRef}
+              value={commentValue}
+              onChange={(e) => handleOnchangeCommentInput(e.target.value)}
+              placeholder='Add a comment...' />
             <button type='submit' className='btn-app-func'>
               <p className='post-btn-title'>Post</p>
             </button>
