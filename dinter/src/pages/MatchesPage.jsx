@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import './style/matches.css'
+import MatchOnboarding from './MatchOnboarding';
 function MatchesPage() {
     const users = [
         {
@@ -49,6 +50,7 @@ function MatchesPage() {
     }
     return (
         <div className='col-9' style={{ height: "calc(100vh - 70px)", background: "#ececec;", borderLeft: "1px solid gray" }}>
+            <MatchOnboarding visible={true}></MatchOnboarding>
             <div className='container-fluid' style={{ height: "100%" }}>
                 <div className='row' style={{ height: "100%" }}>
                     <div className='col-3 direction' id='preCard' onDrop={(e) => handleSetCurrentUser(e, 1)}
@@ -56,7 +58,7 @@ function MatchesPage() {
 
                     </div>
                     <div className='col-6 card-container'>
-                        <div className='user-card' draggable='true' onDragStart={(e) => handleStartDragging(e)}
+                        {/* <div className='user-card' draggable='true' onDragStart={(e) => handleStartDragging(e)}
                             onDragEnd={(e) => handleEndDragging(e)}>
                             <img src={users[currentUser].image} alt='error' />
                             <div className='user-card-info'>
@@ -72,7 +74,7 @@ function MatchesPage() {
                             <div className='emotion'>
                                 <ion-icon name="chatbox-ellipses"></ion-icon>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                     <div className='col-3 direction' id='nextCard' onDrop={(e) => handleSetCurrentUser(e, 2)}
                         onDragOver={(e) => allowDrop(e)}>
