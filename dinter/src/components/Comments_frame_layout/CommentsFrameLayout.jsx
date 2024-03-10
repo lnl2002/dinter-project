@@ -8,6 +8,7 @@ import axios from 'axios';
 import { BACK_END_HOST } from '../../utils/AppConfig';
 import { getAccessToken } from '../../common/Token';
 import { TextWeb } from '../../pages/ProfileScreen';
+import { usePostDetailStore } from '../PostDetail';
 
 function CommentsFrameLayout({
   user,
@@ -17,7 +18,10 @@ function CommentsFrameLayout({
   date
 }) {
   const sessionUser = JSON.parse(localStorage.getItem('User'));
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(likes.includes(user._id));
+  //zustand user global state 
+  const likesArray = usePostDetailStore((state) => state.likesArray)
+  const setLikesArray = usePostDetailStore((state) => state.setLikesArray)
 
   //for switching between comment and reply
   const [isCommenting, setIsCommenting] = useState(true)
@@ -34,19 +38,53 @@ function CommentsFrameLayout({
   const [isOpenImoji, setIsOpenEmoji] = useState(false);
   const commentInputRef = useRef(null)
 
-  const LikePost = () => {
+  const LikePost = async () => {
+    const requestData = {}
+    if (!isLiked) {
+      let headers = {
+        token: 'Bearer ' + getAccessToken(),
+        'Content-Type': 'application/json',
+      };
+      axios.post(BACK_END_HOST + "api/v1/post/favorite/" + postId, requestData, { headers })
+        .then((response) => {
+          console.log(response.data)
+          setLikesArray([...likes, user._id])
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    } else {
+      let headers = {
+        token: 'Bearer ' + getAccessToken(),
+        'Content-Type': 'application/json',
+      };
+      axios.post(BACK_END_HOST + "api/v1/post/de-favorite/" + postId, requestData, { headers })
+        .then((response) => {
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+        let temp = likesArray;
+        const index = temp.indexOf(user._id);
+        if (index > -1) {
+          // Only splice the array when the item is found
+          temp.splice(index, 1); // The second parameter means remove one item only
+        }
+        setLikesArray(temp)
+    }
     setIsLiked(!isLiked);
   }
+
   const handleOnchangeCommentInput = (value) => {
     setCommentValue(value)
   }
   const handleOnSubmitForm = async (event) => {
     event.preventDefault();
-    if(isCommenting){
+    if (isCommenting) {
       if (commentValue != '') {
         await postComment(commentValue);
       }
-    } else{
+    } else {
       if (commentValue != '') {
         await postReplyComment(commentValue);
       }
@@ -111,7 +149,7 @@ function CommentsFrameLayout({
             avatar: sessionUser.avatar,
             username: sessionUser.username
           },
-          replyTo:{
+          replyTo: {
             ...repliedUserData
           }
         });
@@ -126,7 +164,7 @@ function CommentsFrameLayout({
     setIsCommenting(false);
     setRepliedCommentId(repliedCommentId);
     setRepliedUserData(user);
-    console.log(user + "[][]" + repliedCommentId )
+    console.log(user + "[][]" + repliedCommentId)
   }
 
   useEffect(() => {
@@ -143,7 +181,7 @@ function CommentsFrameLayout({
         <div className='d-flex flex-column comments-box p-3' style={{ gap: '30px' }}>
           {
             commentData?.map((c) =>
-              <CommentBox key={c._id} repliedCommentData={repliedCommentId == c._id ? repliedCommentData : ''} isParentComment={true} user={c.userId} comment={c} onFinishSetUpComment={()=> setRepliedCommentData('')} onClickReplyComment={(user, c_id) => {focusReplyComment(user.username ? user : c.userId, c_id ?? c._id)}} ></CommentBox>
+              <CommentBox key={c._id} repliedCommentData={repliedCommentId == c._id ? repliedCommentData : ''} isParentComment={true} user={c.userId} comment={c} onFinishSetUpComment={() => setRepliedCommentData('')} onClickReplyComment={(user, c_id) => { focusReplyComment(user.username ? user : c.userId, c_id ?? c._id) }} ></CommentBox>
             )
           }
         </div>
@@ -165,14 +203,14 @@ function CommentsFrameLayout({
               }
             </button>
 
-            <button className='btn-app-func' onClick={() => { }}>
+            <button className='btn-app-func' onClick={() => { commentInputRef.current.focus() }}>
               <svg aria-label="Comment" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Comment</title><path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path></svg>
             </button>
 
           </div>
 
           <div className='d-flex flex-column'>
-            <p className='text-app-bold'>{formatNumber(likes?.length)} likes</p>
+            <p className='text-app-bold'>{formatNumber(likesArray?.length)} likes</p>
             <p className='text-app-light'>{formatDate(date)}</p>
           </div>
         </div>
