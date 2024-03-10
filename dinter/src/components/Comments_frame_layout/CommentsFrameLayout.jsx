@@ -28,7 +28,7 @@ function CommentsFrameLayout({
 
   //replied comment
   const [repliedUserData, setRepliedUserData] = useState();
-  const [repliedCommentData, setRepliedCommentData] = useState({});
+  const [repliedCommentData, setRepliedCommentData] = useState();
   const [repliedCommentId, setRepliedCommentId] = useState();
 
   const [isOpenImoji, setIsOpenEmoji] = useState(false);
@@ -72,7 +72,7 @@ function CommentsFrameLayout({
     axios.post(BACK_END_HOST + "api/v1/comment/post-comment/", requestData, { headers })
       .then((response) => {
         let newComment = response.data;
-        setCommentData([{
+        const updatedComment = [{
           ...newComment,
           userId: {
             ...response.userId,
@@ -80,7 +80,9 @@ function CommentsFrameLayout({
             avatar: sessionUser.avatar,
             username: sessionUser.username
           }
-        }, ...commentData])
+        }, ...commentData]
+
+        setCommentData(updatedComment)
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -121,7 +123,6 @@ function CommentsFrameLayout({
 
   const focusReplyComment = (user, repliedCommentId) => {
     commentInputRef.current.focus();
-    console.log(user)
     setIsCommenting(false);
     setRepliedCommentId(repliedCommentId);
     setRepliedUserData(user);
@@ -140,8 +141,8 @@ function CommentsFrameLayout({
       <div className='above-part' style={{ height: '80%' }}>
         <div className='d-flex flex-column comments-box p-3' style={{ gap: '30px' }}>
           {
-            commentData?.map((c, index) =>
-              <CommentBox key={index} repliedCommentData={repliedCommentId == c._id ? repliedCommentData : 'k'} isParentComment={true} user={c.userId} comment={c} onClickReplyComment={() => focusReplyComment(c.userId, c._id)} ></CommentBox>
+            commentData?.map((c) =>
+              <CommentBox key={c._id} repliedCommentData={repliedCommentId == c._id ? repliedCommentData : ''} isParentComment={true} user={c.userId} comment={c} onFinishSetUpComment={()=> setRepliedCommentData('')} onClickReplyComment={() => focusReplyComment(c.userId, c._id)} ></CommentBox>
             )
           }
         </div>

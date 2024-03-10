@@ -9,13 +9,14 @@ const CommentBox = React.memo(({
   comment,
   isParentComment,
   onClickReplyComment,
+  onFinishSetUpComment,
   repliedCommentData,
   style,
   user
 }) => {
   const [repliedComment, setRepliedComment] = useState([])
   const [isShowReply, setIsShowReply] = useState(false)
-  const [isShowReplyAlone, setIsShowReplyAlone] = useState(false)
+  const [isShowReplyPreview, setIsShowReplyPreview] = useState(false)
   const [repliedCommentNumber, setRepliedCommentNumber] = useState(0)
   const [isLiked, setIsLiked] = useState(false);
   const LikePost = () => {
@@ -37,24 +38,27 @@ const CommentBox = React.memo(({
   useEffect(() => {
     if (isParentComment) {
       getRepliedCommentNumber()
+      // getRepliedComment()
     }
   }, [])
 
   useEffect(() => {
-    if ( repliedCommentData?.content && repliedCommentData != '') {
+    if ( repliedCommentData && repliedCommentData != '') {
       setRepliedComment([
         ...repliedComment,
         repliedCommentData
       ])
+      onFinishSetUpComment()
       if(!isShowReply){
         if(repliedCommentNumber == 0){
           setIsShowReply(true)
           setRepliedCommentNumber(1)
         }else{
-          setIsShowReplyAlone(true)
+          setIsShowReplyPreview(true)
         }
       }
     } 
+    console.log(repliedCommentData)
   }, [repliedCommentData])
 
   return (
@@ -93,7 +97,7 @@ const CommentBox = React.memo(({
     {
       repliedCommentNumber && repliedCommentNumber > 0 ?
         <div style={{ marginLeft: '50px' }}>
-          <button onClick={() => { getRepliedComment(); setIsShowReply(!isShowReply); setIsShowReplyAlone(false); getRepliedCommentNumber() }} style={{ background: 'none' }}>
+          <button onClick={() => { getRepliedComment(); setIsShowReply(!isShowReply);setIsShowReplyPreview(false) ;getRepliedCommentNumber() }} style={{ background: 'none' }}>
             <div className='d-flex align-items-center' style={{ gap: '10px' }}>
               <div style={{ width: '25px', height: '1px', background: '#8b8b8b' }}></div>
               <p className='text-app-medium'>{isShowReply ? 'Hide replies' : `View replies (${repliedCommentNumber})`}</p>
@@ -104,9 +108,9 @@ const CommentBox = React.memo(({
               repliedComment && repliedComment.length > 0 && repliedComment?.map(cr => <CommentBox isParentComment={false} style={{ marginTop: '20px' }} onClickReplyComment={onClickReplyComment} comment={cr} user={cr?.userId}></CommentBox>)
             }
           </div>
-          <div style={{ display: isShowReplyAlone ? 'block' : 'none' }}>
+          <div style={{ display: isShowReplyPreview ? 'block' : 'none' }}>
             {
-              repliedCommentData && repliedCommentData.userId && <CommentBox isParentComment={false} style={{ marginTop: '20px' }} onClickReplyComment={onClickReplyComment} comment={repliedCommentData} user={repliedCommentData.userId}></CommentBox>
+              <CommentBox isParentComment={false} style={{ marginTop: '20px' }} onClickReplyComment={onClickReplyComment} comment={repliedComment[repliedComment.length-1]} user={repliedComment[repliedComment.length-1]?.userId}></CommentBox>
             }
           </div>
         </div> : <></>
