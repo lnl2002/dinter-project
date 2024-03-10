@@ -71,7 +71,7 @@ const CommentBox = React.memo(({
           <div className='d-flex' style={{ gap: '15px' }}>
             <p className='text-app-light'>{calculateTimeDifference(comment.createdAt)}</p>
             <p className='text-app-medium'>{formatNumber(comment.liked?.length ?? 0)} likes</p>
-            <button onClick={() => { onClickReplyComment() }} className='btn-app-func'>
+            <button onClick={onClickReplyComment } className='btn-app-func'>
               <p className='text-app-medium'>Reply</p>
             </button>
           </div>
@@ -105,12 +105,22 @@ const CommentBox = React.memo(({
           </button>
           <div style={{ display: isShowReply ? 'block' : 'none' }}>
             {
-              repliedComment && repliedComment.length > 0 && repliedComment?.map(cr => <CommentBox isParentComment={false} style={{ marginTop: '20px' }} onClickReplyComment={onClickReplyComment} comment={cr} user={cr?.userId}></CommentBox>)
+              repliedComment && repliedComment.length > 0 && repliedComment?.map(cr => 
+              <CommentBox key={cr._id} 
+              isParentComment={false} 
+              style={{ marginTop: '20px' }} 
+              onClickReplyComment={() => onClickReplyComment(cr.userId , comment._id)} 
+              comment={cr} 
+              user={cr?.userId}></CommentBox>)
             }
           </div>
           <div style={{ display: isShowReplyPreview ? 'block' : 'none' }}>
             {
-              <CommentBox isParentComment={false} style={{ marginTop: '20px' }} onClickReplyComment={onClickReplyComment} comment={repliedComment[repliedComment.length-1]} user={repliedComment[repliedComment.length-1]?.userId}></CommentBox>
+              <CommentBox key={repliedComment[repliedComment.length-1]?._id} 
+              isParentComment={false} style={{ marginTop: '20px' }} 
+              onClickReplyComment={() => onClickReplyComment(repliedComment[repliedComment.length-1]?.userId, comment._id)} 
+              comment={repliedComment[repliedComment.length-1]} 
+              user={repliedComment[repliedComment.length-1]?.userId}></CommentBox>
             }
           </div>
         </div> : <></>
@@ -134,7 +144,7 @@ export const UserBox = ({ user, comment_data, repliedUserTagData, children }) =>
             repliedUserTagData &&
             <>
               <svg width={'8px'} height={'8px'} viewBox="-3 0 28 28" version="1.1" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>play</title> <desc>Created with Sketch Beta.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" > <g id="Icon-Set-Filled" transform="translate(-419.000000, -571.000000)" fill="#707070"> <path d="M440.415,583.554 L421.418,571.311 C420.291,570.704 419,570.767 419,572.946 L419,597.054 C419,599.046 420.385,599.36 421.418,598.689 L440.415,586.446 C441.197,585.647 441.197,584.353 440.415,583.554" id="play" > </path> </g> </g> </g></svg>
-              <button style={{ whiteSpace: 'nowrap', marginRight: '5px', background: '#ffdae2', borderRadius: '5px', paddingLeft: '5px', paddingRight: '5px' }}>
+              <button  onClick={() => { window.location.href = ('/profile/' + repliedUserTagData._id) }} style={{ whiteSpace: 'nowrap', marginRight: '5px', background: '#ffdae2', borderRadius: '5px', paddingLeft: '5px', paddingRight: '5px' }}>
                 <p className='text-app-bold'>@{repliedUserTagData.username}</p>
               </button>
             </>

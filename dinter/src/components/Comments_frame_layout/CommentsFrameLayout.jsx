@@ -47,8 +47,8 @@ function CommentsFrameLayout({
         await postComment(commentValue);
       }
     } else{
-      if (commentData != '') {
-        await postReplyComment(commentValue, repliedUserData._id);
+      if (commentValue != '') {
+        await postReplyComment(commentValue);
       }
     }
     setIsCommenting(true);
@@ -89,10 +89,10 @@ function CommentsFrameLayout({
       });
   }
 
-  const postReplyComment = async (value, replyToUserId) => {
+  const postReplyComment = async (value) => {
     let requestData = {
       postId: postId,
-      replyTo: replyToUserId,
+      replyTo: repliedUserData._id,
       parentComment: repliedCommentId,
       content: value
     };
@@ -126,6 +126,7 @@ function CommentsFrameLayout({
     setIsCommenting(false);
     setRepliedCommentId(repliedCommentId);
     setRepliedUserData(user);
+    console.log(user + "[][]" + repliedCommentId )
   }
 
   useEffect(() => {
@@ -142,7 +143,7 @@ function CommentsFrameLayout({
         <div className='d-flex flex-column comments-box p-3' style={{ gap: '30px' }}>
           {
             commentData?.map((c) =>
-              <CommentBox key={c._id} repliedCommentData={repliedCommentId == c._id ? repliedCommentData : ''} isParentComment={true} user={c.userId} comment={c} onFinishSetUpComment={()=> setRepliedCommentData('')} onClickReplyComment={() => focusReplyComment(c.userId, c._id)} ></CommentBox>
+              <CommentBox key={c._id} repliedCommentData={repliedCommentId == c._id ? repliedCommentData : ''} isParentComment={true} user={c.userId} comment={c} onFinishSetUpComment={()=> setRepliedCommentData('')} onClickReplyComment={(user, c_id) => {focusReplyComment(user.username ? user : c.userId, c_id ?? c._id)}} ></CommentBox>
             )
           }
         </div>
