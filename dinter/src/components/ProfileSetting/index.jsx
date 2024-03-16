@@ -10,6 +10,7 @@ import axios from 'axios';
 import { getAccessToken } from '../../common/Token';
 import GenderPicker from '../GenderPicker/GenderPicker';
 import AvatarPicker from '../AvatarPicker/AvatarPicker';
+import { HobbyPicker } from '../HobbyPicker/HobbyPicker';
 
 export default function ProfileSetting({
   visible,
@@ -52,70 +53,73 @@ export default function ProfileSetting({
     setIsAvatarUpdating(true);
   };
 
-  useEffect(()=>{
-    setAvatarUpdateUrl(BACK_END_HOST +user.avatar)
-  },[user])
+  useEffect(() => {
+    setAvatarUpdateUrl(BACK_END_HOST + user.avatar)
+  }, [user])
 
-  const AvatarUpdateField = ({ avatarUrl, avatarFile}) => {
+  const AvatarUpdateField = ({ avatarUrl, avatarFile }) => {
     const isAvatarUpdating = useUpdateStore((state) => state.isAvatarUpdating)
     const setIsAvatarUpdating = useUpdateStore((state) => state.setIsAvatarUpdating)
     return (
-      <div> 
-        <AvatarDiv style={{ height: 100, width: 100, display:(isAvatarUpdating ? 'none' : 'flex') }} image={avatarUrl}></AvatarDiv>
-        <AvatarPicker avatarFile={avatarFile} avatarUrl={avatarUrl} visible={isAvatarUpdating} onCancel={() => {setIsAvatarUpdating(false); setAvatarUpdateUrl(BACK_END_HOST + (user.avatar ?? 'user_blank.png'))}}></AvatarPicker>
+      <div>
+        <AvatarDiv style={{ height: 100, width: 100, display: (isAvatarUpdating ? 'none' : 'flex') }} image={avatarUrl}></AvatarDiv>
+        <AvatarPicker avatarFile={avatarFile} avatarUrl={avatarUrl} visible={isAvatarUpdating} onCancel={() => { setIsAvatarUpdating(false); setAvatarUpdateUrl(BACK_END_HOST + (user.avatar ?? 'user_blank.png')) }}></AvatarPicker>
       </div>
     )
   }
 
   return (
-    <Modal show={visible} onHide={onHideAction} contentClassName='model-content' aria-labelledby="example-custom-modal-styling-title">
-      <Modal.Header className='d-flex justify-content-between'>
-        <div></div>
-        <Modal.Title style={{ fontSize: '1rem' }}>Update personal information</Modal.Title>
-        <button onClick={onHideAction} className='cls-button'>
-          <svg style={{ color: '#565561' }} fill="currentColor" height="18" role="img" viewBox="0 0 24 24" width="18"><title>Close</title><polyline fill="none" points="20.643 3.357 12 12 3.353 20.647" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></polyline><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" x1="20.649" x2="3.354" y1="20.649" y2="3.354"></line></svg>
-        </button>
-      </Modal.Header>
-      <Modal.Body className='post-detail justify-content-center align-items-center' style={{ padding: 0 }}>
-        <div className="d-flex flex-column">
-          <UpdateFieldLayout isUpdatingAction={handleUploadClick} title={"Avatar"}>
-            <input onChange={(e) => handleFileChange(e)} style={{ display: 'none' }} ref={inputRef} type='file' accept="image/png, image/jpeg" />
-            <AvatarUpdateField avatarUrl={avatarUpdateUrl} avatarFile={avatarUpdateFile}></AvatarUpdateField>
-          </UpdateFieldLayout>
-          <UpdateFieldLayout isUpdatingTextChange={isBioUpdating} isUpdatingAction={() => setIsBioUpdating(!isBioUpdating)} title={"Bio"}>
-            <BioField detail={user.bio ?? '#N/A'}></BioField>
-          </UpdateFieldLayout>
-          <UpdateFieldLayout isUpdatingTextChange={isGenderUpdating} isUpdatingAction={() => setIsGenderUpdating(!isGenderUpdating)} title={"Gender"}>
-            <GenderField gender={user.gender || 'male'}></GenderField>
-          </UpdateFieldLayout>
-          <UpdateFieldLayout isUpdatingTextChange={isDOBUpdating} isUpdatingAction={() => setIsDOBUpdating(!isDOBUpdating)} title={"Date of birth"}>
-            <BODField dob={user.dateOfBirth ? formatDateProfile(user.dateOfBirth) : '01/01/2000'}></BODField>
-          </UpdateFieldLayout>
-          <UpdateFieldLayout isUpdatingTextChange={isHobUpdating} isUpdatingAction={() => setIsHobUpdating(!isHobUpdating)} title={"Hobby"}>
-            <div className='d-flex flex-row flex-wrap'>
-              <HobbyTag editable={isHobUpdating} title={"games"} />
-              <HobbyTag editable={isHobUpdating} title={"car"} />
-              <HobbyTag editable={isHobUpdating} title={"ons"} />
-              <HobbyTag editable={isHobUpdating} title={"hang-out"} />
-              <HobbyTag editable={isHobUpdating} title={"sport"} />
-              <HobbyTag editable={isHobUpdating} title={"meditation"} />
-              {
-                isHobUpdating ?
-                  <button style={{ background: 'none', marginLeft: '5px' }}>
-                    <svg enable-background="new 0 0 48 48" height="18px" width="18px" id="Layer_1" version="1.1" viewBox="0 0 48 48" ><g id="Layer_3"><path d="M24,0C10.745,0,0,10.745,0,24s10.745,24,24,24s24-10.745,24-24S37.255,0,24,0z M35,26h-9v8.998h-4V26h-9v-4   h9v-8.998h4V22h9V26z" fill="#241F20" /></g></svg>
-                  </button>
-                  :
-                  <></>
-              }
-            </div>
-          </UpdateFieldLayout>
-        </div>
-      </Modal.Body>
-      <Modal.Footer>
-        <ButtonWeb onClick={onHideAction} variant="secondary" title={"Close"}></ButtonWeb>
-        {/* <ButtonWeb variant="primary" title={"Save changes"} /> */}
-      </Modal.Footer>
-    </Modal>
+    <>
+      <Modal show={visible} onHide={onHideAction} contentClassName='model-content' aria-labelledby="example-custom-modal-styling-title">
+        <Modal.Header className='d-flex justify-content-between'>
+          <div></div>
+          <Modal.Title style={{ fontSize: '1rem' }}>Update personal information</Modal.Title>
+          <button onClick={onHideAction} className='cls-button'>
+            <svg style={{ color: '#565561' }} fill="currentColor" height="18" role="img" viewBox="0 0 24 24" width="18"><title>Close</title><polyline fill="none" points="20.643 3.357 12 12 3.353 20.647" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></polyline><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" x1="20.649" x2="3.354" y1="20.649" y2="3.354"></line></svg>
+          </button>
+        </Modal.Header>
+        <Modal.Body className='post-detail justify-content-center align-items-center' style={{ padding: 0 }}>
+          <div className="d-flex flex-column">
+            <UpdateFieldLayout isUpdatingAction={handleUploadClick} title={"Avatar"}>
+              <input onChange={(e) => handleFileChange(e)} style={{ display: 'none' }} ref={inputRef} type='file' accept="image/png, image/jpeg" />
+              <AvatarUpdateField avatarUrl={avatarUpdateUrl} avatarFile={avatarUpdateFile}></AvatarUpdateField>
+            </UpdateFieldLayout>
+            <UpdateFieldLayout isUpdatingTextChange={isBioUpdating} isUpdatingAction={() => setIsBioUpdating(!isBioUpdating)} title={"Bio"}>
+              <BioField detail={user.bio ?? '#N/A'}></BioField>
+            </UpdateFieldLayout>
+            <UpdateFieldLayout isUpdatingTextChange={isGenderUpdating} isUpdatingAction={() => setIsGenderUpdating(!isGenderUpdating)} title={"Gender"}>
+              <GenderField gender={user.gender || 'male'}></GenderField>
+            </UpdateFieldLayout>
+            <UpdateFieldLayout isUpdatingTextChange={isDOBUpdating} isUpdatingAction={() => setIsDOBUpdating(!isDOBUpdating)} title={"Date of birth"}>
+              <BODField dob={user.dateOfBirth ? formatDateProfile(user.dateOfBirth) : '01/01/2000'}></BODField>
+            </UpdateFieldLayout>
+            <UpdateFieldLayout isUpdatingTextChange={isHobUpdating} isUpdatingAction={() => setIsHobUpdating(!isHobUpdating)} title={"Hobby"}>
+              <div className='d-flex flex-row flex-wrap'>
+                <HobbyTag editable={isHobUpdating} title={"games"} />
+                <HobbyTag editable={isHobUpdating} title={"car"} />
+                <HobbyTag editable={isHobUpdating} title={"ons"} />
+                <HobbyTag editable={isHobUpdating} title={"hang-out"} />
+                <HobbyTag editable={isHobUpdating} title={"sport"} />
+                <HobbyTag editable={isHobUpdating} title={"meditation"} />
+                {
+                  isHobUpdating ?
+                    <button style={{ background: 'none', marginLeft: '5px' }}>
+                      <svg enable-background="new 0 0 48 48" height="18px" width="18px" id="Layer_1" version="1.1" viewBox="0 0 48 48" ><g id="Layer_3"><path d="M24,0C10.745,0,0,10.745,0,24s10.745,24,24,24s24-10.745,24-24S37.255,0,24,0z M35,26h-9v8.998h-4V26h-9v-4   h9v-8.998h4V22h9V26z" fill="#241F20" /></g></svg>
+                    </button>
+                    :
+                    <></>
+                }
+              </div>
+              <HobbyPicker></HobbyPicker>
+            </UpdateFieldLayout>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <ButtonWeb onClick={onHideAction} variant="secondary" title={"Close"}></ButtonWeb>
+          {/* <ButtonWeb variant="primary" title={"Save changes"} /> */}
+        </Modal.Footer>
+      </Modal>
+    </>
   )
 }
 
