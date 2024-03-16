@@ -69,8 +69,8 @@ const updateUserBasicInfo = async (userId, changes) => {
     if (changes.gender) {
       user.gender = changes.gender;
     }
-    if (changes.hobby) {
-      user.hobby = changes.hobby;
+    if (changes.hobbies) {
+      user.hobbies = changes.hobbies;
     }
 
     // Save the updated user
@@ -174,7 +174,8 @@ const getUserInfoByAccessToken = (accessToken) => {
 
 const getUserInfoById = async (userId) => {
   try {
-    const userInfo = await User.findById({_id : mongoose.Types.ObjectId.createFromHexString(userId)});
+    const userInfo = await User.findById({_id : mongoose.Types.ObjectId.createFromHexString(userId)})
+    .populate('hobbies');
     const userPublicData = {
       _id: userInfo._id,
       username: userInfo.username,

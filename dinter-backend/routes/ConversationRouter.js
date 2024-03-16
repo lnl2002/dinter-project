@@ -9,4 +9,7 @@ router.get('/find-user-chats/:userId',authMiddleware, ConversationController.fin
 router.get('/find-chat/:firstId/:secondId',authMiddleware, ConversationController.findChat);
 router.post('/update-read', authMiddleware, ConversationController.updateRead);
 
+//prm dinter lite api
+router.get('/find-user-chats-prm/:userId', ConversationController.findUserChats);
+
 export default router;
