@@ -1,4 +1,5 @@
 import React, { useEffect, useInsertionEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import HeaderHome from "../components/HeaderComponents/HeaderHome";
 import "./style/HomePage.css";
 import { Col, Container, Form, Modal, Row } from "react-bootstrap";
@@ -21,10 +22,14 @@ function HomePage(props) {
   const [showCreate, setShowCreate] = useState(false);
   const [showPostOption, setShowPostOption] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
+  const [story, setStory] = useState([]);
+  const [unwatchNews, setUnWatchNews] = useState([]);
+  const [watchedNews, setWatchedNews] = useState([]);
   const middle = useRef();
   const pageContent = useRef();
   const modal = useRef();
   const handleClose = () => setShowPostOption(false);
+  const nav = useNavigate();
   const handleShow = (id, index) => {
     setShowPostOption(true);
     setCurrentPost(id);
@@ -39,6 +44,7 @@ function HomePage(props) {
   }
   useEffect(() => {
     handleGetPost();
+    handleGetStory();
     setIsLoad(false);
     pageContent.current.addEventListener('scroll', handleScroll);
     // return () => pageContent.current.removeEventListener('scroll', handleScroll);
@@ -89,8 +95,6 @@ function HomePage(props) {
   }
   const handleGetPost = async () => {
     try {
-      const url = `http://localhost:3008/api/v1/post?limit=3&offset=${offset}`;
-      console.log(url);
       const data = await axios.get(`http://localhost:3008/api/v1/post?limit=3&offset=${offset}`, {
         headers: {
           "Token": `Bearer ${getCookie('access_token')}`
@@ -104,6 +108,35 @@ function HomePage(props) {
       }
       setIsLoad(false);
 
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  const handleGetStory = async () => {
+    try {
+      const data = await axios.get(`http://localhost:3008/api/v1/story`, {
+        headers: {
+          "Token": `Bearer ${getCookie('access_token')}`
+        }
+      });
+      setStory(data.data.data);
+      const uwArr = [];
+      const wArr = [];
+      const userId = JSON.parse(localStorage.getItem("User")).id;
+      data.data.data.forEach((user) => {
+        let watched = true;
+        user.stories.forEach((str) => {
+          if (!str.viewed.includes(userId)) {
+            watched = false;
+          }
+        })
+        if (watched) wArr.push(user);
+        else uwArr.push(user);
+      })
+      console.log(wArr);
+      console.log(uwArr);
+      setWatchedNews(wArr);
+      setUnWatchNews(uwArr);
     } catch (error) {
       console.log(error);
     }
@@ -127,8 +160,10 @@ function HomePage(props) {
     setShowEdit(true);
     setShowPostOption(false);
   }
-  console.log(offset);
-  console.log(listPost);
+  const handleNavStory = (id) => {
+    nav('/story/' + id);
+  }
+  console.log(unwatchNews);
   return (
     <div ref={pageContent} className="home-page">
       <HeaderHome />
@@ -197,61 +232,37 @@ function HomePage(props) {
           {/* Middle */}
           <Col md={6} ref={middle}>
             <Row>
-              <Col md={2}>
-                <div className="stories">
-                  <div className="story">
-                    <div className="profile-photo">
-                      <img src="images/common/avatar.png" alt="" width={35} />
+              <Col xs={12} className="story-container">
+                {
+                  unwatchNews.length === 0 && watchedNews.length === 0 && (
+                    <div className="story-item" onClick={() => {nav('/story/create')}}>
+                      <img src="/images/common/avatar.png" alt="error" className="avatar-story" />
+                      <p className="story-name">Add Story</p>
+                      <img src={"/images/common/avatar.png"} className="story-background"/>
                     </div>
-                    <div className="name">Trương Trọng Hưng</div>
-                  </div>
-                </div>
-              </Col>
-              <Col md={2}>
-                <div className="stories">
-                  <div className="story">
-                    <div className="profile-photo">
-                      <img src="images/common/avatar.png" alt="" width={35} />
-                    </div>
-                    <div className="name">You Story</div>
-                  </div>
-                </div>
-              </Col><Col md={2}>
-                <div className="stories">
-                  <div className="story">
-                    <div className="profile-photo">
-                      <img src="images/common/avatar.png" alt="" width={35} />
-                    </div>
-                    <div className="name">You Story</div>
-                  </div>
-                </div>
-              </Col><Col md={2}>
-                <div className="stories">
-                  <div className="story">
-                    <div className="profile-photo">
-                      <img src="images/common/avatar.png" alt="" width={35} />
-                    </div>
-                    <div className="name">You Story</div>
-                  </div>
-                </div>
-              </Col><Col md={2}>
-                <div className="stories">
-                  <div className="story">
-                    <div className="profile-photo">
-                      <img src="images/common/avatar.png" alt="" width={35} />
-                    </div>
-                    <div className="name">You Story</div>
-                  </div>
-                </div>
-              </Col><Col md={2}>
-                <div className="stories">
-                  <div className="story">
-                    <div className="profile-photo">
-                      <img src="images/common/avatar.png" alt="" width={35} />
-                    </div>
-                    <div className="name">You Story</div>
-                  </div>
-                </div>
+                  )
+                }
+                {
+                  unwatchNews && unwatchNews.map((str) => {
+                    return (
+                      <div className="story-item" onClick={() => handleNavStory(str.userId)}>
+                        <img src="images/common/avatar.png" alt="error" className="avatar-story" />
+                        <p className="story-name">{JSON.parse(localStorage.getItem("User")).username === str.username ? "Your story" : str.username}</p>
+                        <img src={"http://localhost:3008/" + str.stories[0].thumbnail} alt="error" />
+                      </div>
+                    )
+                  })}
+                {
+                  watchedNews && watchedNews.map((str) => {
+                    return (
+                      <div className="story-item" onClick={() => handleNavStory(str.userId)}>
+                        <img src="images/common/avatar.png" alt="error" className="avatar-story" />
+                        <p className="story-name">{JSON.parse(localStorage.getItem("User")).username === str.username ? "Your story" : str.username}</p>
+                        <img src={"http://localhost:3008/" + str.stories[0].thumbnail} alt="error" />
+                      </div>
+                    )
+                  })
+                }
               </Col>
             </Row>
 

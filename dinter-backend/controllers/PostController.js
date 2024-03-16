@@ -27,19 +27,26 @@ const getPosts = async (req, res) => {
         const limit = req.query.limit || 12;
         const offset = req.query.offset || 0;
         const userId = req.userId;
-        const post = await postService.getPost(limit, offset);  
+        const post = await postService.getPost(limit, offset);
         const post2 = post.map((p) => {
-            console.log(p);
-            if (p.likes.includes(userId)) {
+            console.log(p.likes);
+            if (p.likes) {
+                if (p.likes.includes(userId)) {
+                    return {
+                        ...p._doc,
+                        favorited: true
+                    }
+                }
                 return {
                     ...p._doc,
-                    favorited: true
+                    favorited: false
                 }
             }
             return {
                 ...p._doc,
                 favorited: false
             }
+
         })
         res.status(200).json({
             message: "get posts success",
@@ -120,8 +127,8 @@ const handleDislike = async (req, res) => {
     }
 }
 
-const getPostsByUserId = async(req, res) => {
-    try{
+const getPostsByUserId = async (req, res) => {
+    try {
         const userId = req.params.userId;
 
         if (!userId) {
@@ -135,7 +142,7 @@ const getPostsByUserId = async(req, res) => {
             message: "get posts success",
             data: post
         })
-    }catch (error) {
+    } catch (error) {
         res.status(500).json({
             messages: error.toString()
         })

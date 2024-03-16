@@ -4,12 +4,13 @@ import userController from './UserController.js';
 import postController from './PostController.js';
 import commentController from './CommentController.js';
 import HobbyController from './HobbyController.js';
-
+import VideoController from './VideoController.js'
 export {
     conservationController,
     messageController,
     userController,
     postController,
     commentController,
-    HobbyController
+    HobbyController,
+    VideoController
 }

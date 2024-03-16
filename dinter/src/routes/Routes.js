@@ -7,6 +7,7 @@ import ProfileSetup from "../pages/ProfileSetup";
 import Story from "../pages/Story";
 import Dashboard from "../pages/Dashboard";
 import ResetPassword from "../pages/ResetPassword";
+import StoryCreation from "../pages/StoryCreation";
 
 
 const routes = [
@@ -39,7 +40,7 @@ const routes = [
         element: RequestFriend
     },
     {
-        path: '/story',
+        path: '/story/:storyId',
         element: Story
     },
     {
@@ -49,6 +50,10 @@ const routes = [
     {
         path: '/reset-password',
         element: ResetPassword,
+    },
+    {
+        path: '/story/create',
+        element: StoryCreation,
     }
 ]
 
