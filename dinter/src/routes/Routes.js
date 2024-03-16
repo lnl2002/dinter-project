@@ -8,6 +8,7 @@ import Story from "../pages/Story";
 import Dashboard from "../pages/Dashboard";
 import ResetPassword from "../pages/ResetPassword";
 import PostDetailProView from "../pages/PostDetailProView";
+import MatchesPage from "../pages/MatchesPage";
 
 
 const routes = [
@@ -26,6 +27,10 @@ const routes = [
     {
         path: '/messages',
         element: MessagePage
+    },
+    {
+        path: '/matches',
+        element: MatchesPage
     },
     {
         path: '/profile',
@@ -51,7 +56,7 @@ const routes = [
         path: '/dashboard',
         element: Dashboard,
     },
-    {
+    {   
         path: '/reset-password',
         element: ResetPassword,
     }

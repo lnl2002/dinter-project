@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import GoogleMapReact from 'google-map-react';
 
-export default function DinterGoogleMap() {
+export default function DinterGoogleMap({
+  onChooseCoor
+}) {
   const mapRef = useRef()
   const markerRef = useRef()
   const defaultCenter = {
@@ -11,9 +13,9 @@ export default function DinterGoogleMap() {
   const [center, setCenter] = useState(defaultCenter);
   const [zoom, setZoom] = useState(10); // Set an initial zoom 
 
-  // useEffect(() => {
-  //   setNewMarker(defaultCenter)
-  // }, [])
+  useEffect(() => {
+    onChooseCoor({lat: center.lat, lng: center.lng})
+  }, [center])
 
   const handleMapOnClick = (e) => {
     const lat = e.lat;
@@ -26,6 +28,7 @@ export default function DinterGoogleMap() {
       lat: lat,
       lng: lng
     })
+    onChooseCoor({lat: e.lat, lng: e.lng})
   }
 
   const setNewMarker= ({lat, lng}) => {

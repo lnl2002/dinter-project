@@ -72,6 +72,15 @@ const updateUserBasicInfo = async (userId, changes) => {
     if (changes.hobbies) {
       user.hobbies = changes.hobbies;
     }
+    if (changes.hobbies) {
+      user.hobbies = changes.hobbies;
+    }
+    if (changes.location) {
+      user.location = changes.location;
+    }
+    if (changes.attractedBy) {
+      user.attractedBy = changes.attractedBy;
+    }
 
     // Save the updated user
     await user.save();

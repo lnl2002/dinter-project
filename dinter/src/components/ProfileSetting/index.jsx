@@ -114,7 +114,7 @@ export default function ProfileSetting({
                   )
                 }
               </div>
-              <HobbyPicker defaultHobby={user.hobbies} visible={isHobAdding} style={{ position: 'absolute' }} onCancel={() => setIsHobAdding(false)} onSave={(chosenHobby) => onSaveChosenHobby(chosenHobby)} className={'modal'}></HobbyPicker>
+              <HobbyPicker defaultHobby={user.hobbies} visible={isHobAdding} style={{ position: 'absolute' }} onCancel={() => setIsHobAdding(false)} onSave={(chosenHobby) => onSaveChosenHobby(chosenHobby)} className={'modal flex-column justify-content-around'}></HobbyPicker>
             </UpdateFieldLayout>
           </div>
         </Modal.Body>

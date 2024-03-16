@@ -29,6 +29,11 @@ const userSchema = new Schema({
   hobbies: [{ type: Schema.Types.ObjectId, ref: 'Hobbies' }],
   isSetUpProfile: {
     type: Boolean,
+  },
+  attractedBy: String,
+  location: {
+    lat: Number,
+    lng: Number
   }
 });
 
