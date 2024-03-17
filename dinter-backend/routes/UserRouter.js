@@ -6,6 +6,7 @@ const router = express.Router();
 import UserController from '../controllers/UserController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import multer from 'multer';
+import UserService from '../services/UserService.js';
 
 // Configure multer storage and file filter
 const storage = multer.diskStorage({
@@ -35,5 +36,7 @@ router.get('/user-info',authMiddleware, UserController.getUserInfoByAccessToken)
 router.get('/analytic/:userId', UserController.getUserAnalysticNumber);
 router.patch('/user-basic-update', authMiddleware, upload.single('image'), UserController.updateUserBasicInfo);
 router.get('/public-user-info/:userId', UserController.getUserInfoById)
+router.get('/getMatchedUsers', authMiddleware, UserController.getMatchedUsers)
+router.post('/send-match-request', authMiddleware, UserController.sendMatchRequest)
 
 export default router

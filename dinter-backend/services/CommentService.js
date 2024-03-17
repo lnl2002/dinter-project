@@ -34,7 +34,6 @@ async function getCommentsForPost(postId, limit, offset) {
             .limit(Number(limit))
             .populate('userId', 'username avatar')
             .exec();
-        console.log('Comments for post', postId, ':', comments);
         return comments;
     } catch (error) {
         console.error('Error fetching comments:', error);

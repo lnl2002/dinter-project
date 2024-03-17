@@ -131,6 +131,33 @@ const getUserAnalysticNumber = async (req, res) => {
   }
 }
 
+const getMatchedUsers = async (req, res) =>{
+  try{
+    const token = req.headers.token.split(' ')[1];
+    const response = await UserService.getUserInfoByAccessToken(token);
+    const user = response.data;
+    
+    const MatchedUserList = await UserService.getMatchedUsers(user.location, user.hobbies, user.attractedBy, user._id)
+    return res.status(200).json(MatchedUserList)
+  } catch (error) {
+    return res.status(404).json(error)
+  }
+}
+
+const sendMatchRequest = async (req, res) => {
+  try{
+    const targetUserId = req.body.targetUserId;
+    const token = req.headers.token.split(' ')[1];
+    const response = await UserService.getUserInfoByAccessToken(token);
+    const user = response.data;
+    
+    await UserService.sendMatchRequest(targetUserId , user._id)
+    return res.status(200).json({message: 'successful'})
+  } catch (error) {
+    return res.status(404).json(error)
+  }
+}
+
 export {
   createUser,
   login,
@@ -138,7 +165,9 @@ export {
   getUserInfoByAccessToken,
   getUserAnalysticNumber,
   updateUserBasicInfo,
-  getUserInfoById
+  getUserInfoById,
+  getMatchedUsers,
+  sendMatchRequest
 };
 
 export default {
@@ -148,5 +177,7 @@ export default {
   getUserInfoByAccessToken,
   getUserAnalysticNumber,
   updateUserBasicInfo,
-  getUserInfoById
+  getUserInfoById,
+  getMatchedUsers,
+  sendMatchRequest
 };
