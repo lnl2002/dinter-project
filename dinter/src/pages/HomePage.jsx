@@ -66,6 +66,7 @@ function HomePage(props) {
       window.innerHeight + pageContent.current.scrollTop >= middle.current.offsetHeight - 500
     ) {
       pageContent.current.removeEventListener('scroll', handleScroll);
+      console.log(offset);
       setOffset(offset + 3);
     }
   }
@@ -137,8 +138,6 @@ function HomePage(props) {
         if (watched) wArr.push(user);
         else uwArr.push(user);
       })
-      console.log(wArr);
-      console.log(uwArr);
       setWatchedNews(wArr);
       setUnWatchNews(uwArr);
     } catch (error) {
@@ -167,7 +166,7 @@ function HomePage(props) {
   const handleNavStory = (id) => {
     nav('/story/' + id);
   }
-  console.log(unwatchNews);
+  console.log(offset);
   return (
     <div ref={pageContent} className="home-page">
       <HeaderHome />
@@ -243,6 +242,7 @@ function HomePage(props) {
               listPost.length !== 0 && listPost.map((post, index) => {
                 return (
                   <SinglePost post={post} handleShow={handleShow} showEdit={showEdit} setShowEdit={setShowEdit} operEdit={openEdit}
+                    listPost={listPost}
                     index={index} key={index} />
                 )
               })
@@ -395,7 +395,8 @@ function HomePage(props) {
           </ul>
         </Modal>
       </Container>
-      <PostCreation show={showCreate} close={handleCreateClose} setListPost={setListPost} listPost={listPost} setShowCreate={setShowCreate} />
+      <PostCreation show={showCreate} close={handleCreateClose} setListPost={setListPost} listPost={listPost} setShowCreate={setShowCreate} 
+          offset={offset} setOffset={setOffset}/>
       <PostEdition show={showEdit} setShow={setShowEdit} post={listPost[indexPost]} setListPost={setListPost} listPost={listPost} />
     </div>
   );

@@ -1,19 +1,38 @@
 import { faBookmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
 import './style/singpost.css'
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
-function SinglePost({ post, handleShow, index }) {
-    const { socket } = useContext(AuthContext);
+import { Button, Modal } from 'react-bootstrap';
+function SinglePost({ post, handleShow, index, listPost }) {
     const user = JSON.parse(localStorage.getItem('User'));
     const [currentImage, setCurImg] = useState(0);
     const [like, setLike] = useState(post.favorited);
     const handleSetCurImg = (num) => {
         setCurImg(num + currentImage)
     }
+    const [pst, setPost] = useState(post);
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShowlike = () => setShow(true);
+    useEffect(() => {
+        if (post) {
+            post.likes.forEach((l) => {
+                if (l._id === user.id) {
+                    setLike(true);
+                    return;
+                }
+            })
+        }
+    }, [])
+
+    useEffect(() => {
+        setPost(post);
+    }, [listPost])
     function getCookie(cname) {
         let name = cname + "=";
         let decodedCookie = decodeURIComponent(document.cookie);
@@ -30,55 +49,45 @@ function SinglePost({ post, handleShow, index }) {
         return "";
     }
     const handleLike = async () => {
-        if (post.favorited) {
-            setLike(false);
-            await axios.delete(`http://localhost:3008/api/v1/post/favorite/${post._id}`, {
-                headers: {
-                    "Token": `Bearer ${getCookie('access_token')}`
-                }
-            })
-        } else {
-            setLike(true);
-            await axios.post(`http://localhost:3008/api/v1/post/favorite/${post._id}`, {}, {
-                headers: {
-                    "Token": `Bearer ${getCookie('access_token')}`
-                }
-            })
-                .then(res => {
-                    // send message
-                    if (socket === null) return;
-
-                    socket.emit("sendNotification", {
-                        link: res.data.link,
-                        receiver: res.data.receiver,
-                        type: res.data.type,
-                        sender: {
-                            avatar: user.avatar,
-                            username: user.username,
-                        },
-                        createdAt: res.data.createdAt,
-                        _id: res.data._id
-                    })
+        try {
+            if (like) {
+                const updatePost = await axios.delete(`http://localhost:3008/api/v1/post/favorite/${post._id}`, {
+                    headers: {
+                        "Token": `Bearer ${getCookie('access_token')}`
+                    }
                 })
-                .catch(err => console.log(err));
+                setPost(updatePost.data)
+                setLike(false);
+            } else {
+                const updatePost = await axios.post(`http://localhost:3008/api/v1/post/favorite/${post._id}`, {}, {
+                    headers: {
+                        "Token": `Bearer ${getCookie('access_token')}`
+                    }
+                })
+                setPost(updatePost.data)
+                setLike(true);
+            }
+        } catch (error) {
+            console.log(error);
         }
     }
+    console.log(pst);
     return (
         <>
             {
                 post && (
-                    <div className="feeds" key={post._id}>
+                    <div className="feeds" key={pst._id}>
                         <div className="feed">
                             <div className="head">
                                 <div className="user">
-                                    <div className="profile-photo1">
-                                        <img src="images/common/avatar.png" alt="" width={50} />
+                                    <div className="profile-photo2">
+                                        <img src={"http://localhost:3008/" + pst.author.avatar} alt="" width={50} />
                                     </div>
                                     <div className="ingo">
-                                        <h5>{post.author.username}</h5>
+                                        <h5>{pst.author.username}</h5>
                                         <small>
                                             {
-                                                formatDistanceToNow(post.createdAt, {
+                                                formatDistanceToNow(pst.createdAt, {
                                                     addSuffix: true,
                                                 })
                                             }
@@ -86,12 +95,16 @@ function SinglePost({ post, handleShow, index }) {
                                     </div>
 
                                 </div>
-                                <span className="edit">
-                                    <FontAwesomeIcon icon="ellipsis" onClick={() => handleShow(post._id, index)} />
-                                </span>
+                                {
+                                    JSON.parse(localStorage.getItem('User')).id === pst.author._id && (
+                                        <span className="edit">
+                                            <FontAwesomeIcon icon="ellipsis" onClick={() => handleShow(pst._id, index)} />
+                                        </span>
+                                    )
+                                }
                             </div>
                             <div style={{ marginTop: "5px", marginLeft: "2px" }}>
-                                <p style={{ whiteSpace: "pre-line" }}>{post.content}</p>
+                                <p style={{ whiteSpace: "pre-line" }}>{pst.content}</p>
                             </div>
                             <div className="photo">
                                 {
@@ -101,18 +114,18 @@ function SinglePost({ post, handleShow, index }) {
                                         </div>
                                     )
                                 }
-                                <img src={'http://localhost:3008/' + post.images[currentImage]} alt="" width={650} />
+                                <img src={'http://localhost:3008/' + pst.images[currentImage]} alt="" width={650} />
                                 {
-                                    currentImage < post.images.length - 1 && (
+                                    currentImage < pst.images.length - 1 && (
                                         <div className='sg-next-img' onClick={() => handleSetCurImg(1)}>
                                             <ion-icon name="chevron-forward-outline"></ion-icon>
                                         </div>
                                     )
                                 }
                                 {
-                                    post.images.length > 1 && (
+                                    pst.images.length > 1 && (
                                         <div className='sg-img-point'>{
-                                            post.images.map((image, index) => {
+                                            pst.images.map((image, index) => {
                                                 return (
                                                     <div className={index === currentImage ? 'sg-cur-img' : 'sg-img'} key={index}>
                                                     </div>
@@ -137,21 +150,35 @@ function SinglePost({ post, handleShow, index }) {
                                     </span>
                                 </div>
                             </div>
-                            <div className="liked-by">
-                                <span><img src="images/common/avatar.png" alt="" width={25} /></span>
-                                <span><img src="images/common/avatar.png" alt="" /></span>
-                                <span><img src="images/common/avatar.png" alt="" /></span>
-                                <a>Liked by <b>Truong Hung</b> and <b>100 other</b></a>
-                            </div>
-                            <div className="caption">
-                                <a><b>Truong Hung</b> asdhasjdhasjdhjsd <span className="harsh-tag">#hello</span></a>
-                            </div>
-                            <div className="text-muted">View all 277 comment</div>
+                            {
+                                (pst.likes.length !== 0) && (
+                                    <div className="liked-by" onClick={handleShowlike}>
+                                        <a>Liked by <b>{pst.likes.length !== 0 && pst.likes[0].username}</b> {pst.likes.length - 1 !== 0 && (<> and <b>{`${pst.likes.length - 1} other`} </b></>)}</a>
+                                    </div>
+                                )
+                            }
+                            <div className="text-muted">View all {pst.comments.length} comment</div>
                         </div>
                     </div >
                 )
             }
 
+            <Modal show={show} onHide={handleClose} centered>
+                <Modal.Body>
+                    <div style={{ height: "300px", overflow: "auto" }}>
+                        {
+                            pst.likes.map((p) => {
+                                return (
+                                    <div style={{marginTop:"20px"}}>
+                                        <img src={`http://localhost:3008/${p.avatar}`} style={{ height: "50px", width: "50px", borderRadius: "50%", marginRight:"20px"}} />
+                                        {p.username}
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+                </Modal.Body>
+            </Modal>
         </>
     )
 }
