@@ -5,7 +5,7 @@ import notificationController from './Notification.js';
 import postController from './PostController.js';
 import commentController from './CommentController.js';
 import HobbyController from './HobbyController.js';
-
+import VideoController from './VideoController.js'
 export {
     conversatioController,
     messageController,
@@ -13,5 +13,6 @@ export {
     notificationController,
     postController,
     commentController,
-    HobbyController
+    HobbyController,
+    VideoController
 }

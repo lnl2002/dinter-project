@@ -22,7 +22,7 @@ const peerServer = ExpressPeerServer(server, {
 async function main() {
   try {
     await mongoose.connect(process.env.MONGO_DB_URL);
-    
+    console.log("Connect to MongoDB success");
     app.use(cors());
     
     app.use('/peerjs', peerServer);
