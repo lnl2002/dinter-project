@@ -33,6 +33,9 @@ router.post('/register',UserController.createUser);
 router.post('/login', UserController.login);
 router.get('/user-info',authMiddleware, UserController.getUserInfoByAccessToken);
 router.get('/analytic/:userId', UserController.getUserAnalysticNumber);
+router.get('/request-friend/:userId', UserController.getRequestFriend);
+router.post('/accept-friend/:userId', UserController.acceptFriend);
+router.delete('/delete-accept-friend/:userId', UserController.deleteAcceptFriend);
 router.patch('/user-basic-update', authMiddleware, upload.single('image'), UserController.updateUserBasicInfo);
 router.get('/public-user-info/:userId', UserController.getUserInfoById)
 

@@ -224,6 +224,53 @@ const getUserAnalysticNumber = async (userId) => {
   }
 }
 
+const fncGetListRequest = async (req) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findById(userId).populate('requestMatch', 'username') // Lấy user và populate danh sách yêu cầu kết bạn
+    res.json(user.requestMatch) // Trả về danh sách yêu cầu kết bạn
+  } catch (error) {
+    throw new Error(error.toString())
+  }
+}
+
+const fncAcceptRequest = async (req) => {
+  try {
+    const userId = req.params.userId;
+    const friendId = req.params.friendId;
+    const user = await User.findById(userId);
+    const friend = await User.findById(friendId);
+
+    // Xử lý chấp nhận yêu cầu kết bạn
+    user.friends.push(friend); // Thêm bạn vào danh sách bạn bè của user
+    await user.save();
+
+    // Xóa yêu cầu kết bạn khỏi danh sách yêu cầu của user
+    user.requestMatch.pull(friend);
+    await user.save();
+
+    res.status(200).json({ message: "Accepted friend request" });
+  } catch (error) {
+    throw new Error(error.toString())
+  }
+}
+
+const fncDeleteRequest = async (req) => {
+  try {
+    const userId = req.params.userId;
+    const friendId = req.params.friendId;
+    const user = await User.findById(userId);
+
+    // Xóa yêu cầu kết bạn từ danh sách yêu cầu của user
+    user.requestMatch.pull(friendId);
+    await user.save();
+
+    res.status(200).json({ message: "Deleted friend request" });
+  } catch (error) {
+    throw new Error(error.toString())
+  }
+}
+
 export {
   createUser,
   login,
@@ -233,6 +280,9 @@ export {
 export default {
   createUser,
   login,
+  fncAcceptRequest,
+  fncDeleteRequest,
+  fncGetListRequest,
   getUserInfoByAccessToken,
   getUserAnalysticNumber,
   updateUserBasicInfo,

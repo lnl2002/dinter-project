@@ -131,10 +131,41 @@ const getUserAnalysticNumber = async (req, res) => {
   }
 }
 
+//get request add friend
+const getRequestFriend = async (req, res) => {
+  try {
+    const response = await UserService.fncGetListRequest(req)
+    return res.status(response.statusCode).json(response)
+  } catch (error) {
+    return res.status(500).json(error.toString())
+  }
+}
+
+const acceptFriend = async (req, res) => {
+  try {
+    const response = await UserService.fncAcceptRequest(req)
+    return res.status(response.statusCode).json(response)
+  } catch (error) {
+    return res.status(500).json(error.toString())
+  }
+}
+
+const deleteAcceptFriend = async (req, res) => {
+  try {
+    const response = await UserService.fncDeleteRequest(req)
+    return res.status(response.statusCode).json(response)
+  } catch (error) {
+    return res.status(500).json(error.toString())
+  }
+}
+
 export {
   createUser,
   login,
   refreshToken,
+  getRequestFriend,
+  acceptFriend,
+  deleteAcceptFriend,
   getUserInfoByAccessToken,
   getUserAnalysticNumber,
   updateUserBasicInfo,
@@ -145,6 +176,9 @@ export default {
   createUser,
   login,
   refreshToken,
+  getRequestFriend,
+  acceptFriend,
+  deleteAcceptFriend,
   getUserInfoByAccessToken,
   getUserAnalysticNumber,
   updateUserBasicInfo,
