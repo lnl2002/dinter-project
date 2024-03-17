@@ -69,8 +69,17 @@ const updateUserBasicInfo = async (userId, changes) => {
     if (changes.gender) {
       user.gender = changes.gender;
     }
-    if (changes.hobby) {
-      user.hobby = changes.hobby;
+    if (changes.hobbies) {
+      user.hobbies = changes.hobbies;
+    }
+    if (changes.hobbies) {
+      user.hobbies = changes.hobbies;
+    }
+    if (changes.location) {
+      user.location.coordinates=[changes.location.lng,  changes.location.lat];
+    }
+    if (changes.attractedBy) {
+      user.attractedBy = changes.attractedBy;
     }
 
     // Save the updated user
@@ -155,7 +164,9 @@ const getUserInfoByAccessToken = (accessToken) => {
               isAdmin: userInfo.isAdmin,
               bio: userInfo.bio,
               hobbies: userInfo.hobbies,
-              gender: userInfo.gender
+              gender: userInfo.gender,
+              location: userInfo.location,
+              attractedBy: userInfo.attractedBy
             }
           })
         }
@@ -174,7 +185,8 @@ const getUserInfoByAccessToken = (accessToken) => {
 
 const getUserInfoById = async (userId) => {
   try {
-    const userInfo = await User.findById({_id : mongoose.Types.ObjectId.createFromHexString(userId)});
+    const userInfo = await User.findById({ _id: mongoose.Types.ObjectId.createFromHexString(userId) })
+      .populate('hobbies');
     const userPublicData = {
       _id: userInfo._id,
       username: userInfo.username,
@@ -224,6 +236,56 @@ const getUserAnalysticNumber = async (userId) => {
   }
 }
 
+const getMatchedUsers = async (location, hobbies, attractedBy, userId) => {
+  try {
+    // Convert string hobby IDs to ObjectId
+    const hobbiesObjectIds = hobbies
+    // Perform the query to find matching users
+    const matchingUsers = await User.aggregate([
+      {
+        $geoNear: {
+          near: { type: 'Point', coordinates: [location.coordinates[0], location.coordinates[1]] },
+          distanceField: 'distance',
+          spherical: true
+        }
+      },
+      {
+        $match: {
+          _id: { $ne: userId }, // Exclude the user by their userId
+          location: {$exists: true, $ne: null },
+          gender: attractedBy
+        }
+      },
+      {
+        $addFields: {
+          common_hobbies: {
+            $size: {
+              $setIntersection: ['$hobbies', hobbiesObjectIds]
+            }
+          }
+        }
+      },
+      {
+        $sort: {
+          distance: 1,
+          common_hobbies: -1
+        }
+      },
+      {
+        $limit: 5
+      }
+    ]);
+    return matchingUsers
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+//user send request to targetUserId
+const sendMatchRequest = async (targetUserId, userId) => {
+    await User.updateOne({ _id: targetUserId }, { $push: { requestMatch: userId } })
+}
+
 export {
   createUser,
   login,
@@ -236,5 +298,7 @@ export default {
   getUserInfoByAccessToken,
   getUserAnalysticNumber,
   updateUserBasicInfo,
-  getUserInfoById
+  getUserInfoById,
+  getMatchedUsers,
+  sendMatchRequest
 };

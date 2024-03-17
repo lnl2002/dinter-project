@@ -30,8 +30,19 @@ const userSchema = new Schema({
   isSetUpProfile: {
     type: Boolean,
   },
-  requestMatch: [{ type: Schema.Types.ObjectId, ref: 'Users' }]
+  requestMatch: [{ type: Schema.Types.ObjectId, ref: 'Users' }],
+  attractedBy: String,
+  location: {
+    type: { type: String, enum: ['Point']},
+    coordinates: { type: [Number]}
+  }
 });
+
+// Create a 2dsphere index on the location field
+// Place the index creation line right after you’ve defined the schema and before you compile the schema into a model 
+// with mongoose.model. This ensures that the index is created when the model is used for the first time, allowing for 
+// efficient geospatial queries on the location field.
+userSchema.index({ location: '2dsphere' });
 
 const User = mongoose.model('Users', userSchema);
 

@@ -109,7 +109,10 @@ function CommentsFrameLayout({
     };
     axios.post(BACK_END_HOST + "api/v1/comment/post-comment/", requestData, { headers })
       .then((response) => {
-        let newComment = response.data;
+        let newComment = {
+          ...response.data,
+          avatar: user.avatar
+        }
         const updatedComment = [{
           ...newComment,
           userId: {
@@ -140,7 +143,10 @@ function CommentsFrameLayout({
     };
     axios.post(BACK_END_HOST + "api/v1/comment/post-comment/", requestData, { headers })
       .then((response) => {
-        let newComment = response.data;
+        let newComment = {
+          ...response.data,
+          avatar: user.avatar
+        }
         setRepliedCommentData({
           ...newComment,
           userId: {
@@ -187,7 +193,7 @@ function CommentsFrameLayout({
         </div>
       </div>
 
-      <div className='footer-box' style={{ height: '20%' }}>
+      <div className='footer-box' style={{ height: '170px' }}>
         <div className='d-flex interact-comment-box flex-column p-3' style={{ gap: 10 }}>
           <div className='d-flex' style={{ gap: 15 }}>
 
