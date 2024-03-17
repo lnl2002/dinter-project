@@ -133,11 +133,12 @@ const getUserAnalysticNumber = async (req, res) => {
 
 const getMatchedUsers = async (req, res) =>{
   try{
+    const {limit, offset} = req.query
     const token = req.headers.token.split(' ')[1];
     const response = await UserService.getUserInfoByAccessToken(token);
     const user = response.data;
     
-    const MatchedUserList = await UserService.getMatchedUsers(user.location, user.hobbies, user.attractedBy, user._id)
+    const MatchedUserList = await UserService.getMatchedUsers(user.location, user.hobbies, user.attractedBy, user._id, limit, offset)
     return res.status(200).json(MatchedUserList)
   } catch (error) {
     return res.status(404).json(error)

@@ -25,4 +25,5 @@ router.post('/', authMiddleware, upload.single("video"), VideoController.uploadS
     .post('/like', authMiddleware, VideoController.likeVideo)
     .post('/video', authMiddleware, VideoController.viewVideo)
     .get('/viewed/:id', authMiddleware, VideoController.getViewer)
+    .get('/all-from/:userId', VideoController.getAllStoryOfUser)
 export default router
