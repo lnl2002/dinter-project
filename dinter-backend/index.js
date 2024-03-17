@@ -23,7 +23,7 @@ const PORT = process.env.PORT || 3007;
 async function main() {
   try {
     await mongoose.connect(process.env.MONGO_DB_URL);
-    
+    console.log("Connect to MongoDB success");
     app.use(cors());
     
     app.use(bodyParser.json());

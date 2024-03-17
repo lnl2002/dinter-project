@@ -7,9 +7,15 @@ const videoSchema = new Schema({
         unique: true
     },
     userId: { type: Schema.Types.ObjectId, ref: 'Users', required: true },
-    liked: [{ type: Schema.Types.ObjectId, ref: 'Users' }],
+    thumbnail: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    liked: [{ type: Schema.Types.ObjectId, ref: 'Users'}],
+    viewed: [{ type: Schema.Types.ObjectId, ref: 'Users'}],
     isHide: Boolean
-}, {   timeStamp: true});
+}, { timestamps: true });
 
 const Video = mongoose.model('Videos', videoSchema);
 export default Video

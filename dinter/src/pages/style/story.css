@@ -97,6 +97,8 @@
     background-color: #242526;
     border-radius: 10px;
     overflow: hidden;
+    display: flex;
+    align-items: center;
 }
 
 .add-story-box {
@@ -175,7 +177,8 @@
     position: relative;
 }
 
-.move-left:hover, .move-right:hover{
+.move-left:hover,
+.move-right:hover {
     cursor: pointer;
 }
 
@@ -207,4 +210,96 @@
     position: absolute;
     top: 40%;
     right: 20%;
+}
+
+.currentStory {
+    background-color: rgb(71, 71, 71);
+}
+
+
+#story-close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 30px;
+    color: white;
+}
+
+.favorite-story {
+    font-size: 50px;
+    color: #ff655b;
+    animation-name: heart-icon;
+    animation-duration: 0.5s;
+}
+
+.favorite-story-opacity {
+    opacity: 0;
+}
+
+@keyframes heart-icon {
+    0% {
+        scale: 0;
+        opacity: 1;
+    }
+
+    100% {
+        scale: 2;
+        opacity: 0.75;
+    }
+}
+
+.viewed-story {
+    width: 100%;
+    text-align: left;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.viewed-container {
+    position: absolute;
+    height: 500px;
+    width: 100%;
+    bottom: 30px;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    background-color: #242526;
+    padding: 10px;
+    display: none;
+}
+
+.friendcontainer {
+    width: 100%;
+    height: 400px;
+    overflow: auto;
+}
+
+.friendtag {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.friendtag ion-icon {
+    color: #fd297b;
+    font-size: 30px;
+}
+
+.fr-info {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.fr-info p {
+    margin: 0;
+    margin-left: 10px;
+}
+
+.fr-info img {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
 }

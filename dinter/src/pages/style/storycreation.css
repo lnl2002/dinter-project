@@ -1,0 +1,34 @@
+.story-info2{
+    display: flex;
+    width: 80%;
+    height: 60px;
+    align-items: center;
+}
+
+.story-info2 img{
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
+}
+
+.story-info2 p{
+    margin: 0;
+    font-size: 17px;
+    font-weight: bold;
+    margin-left: 20px;
+    color: white;
+}
+
+#choose-video{
+    width: 90%;
+    margin-top: 50px;
+    background-color: #fd297b;
+    border-color: #fd297b;
+    margin-left: 10px;
+}
+
+.option-video{
+    width: 43%;
+    margin-top: 70%;
+    color: rgb(36, 36, 36);
+}

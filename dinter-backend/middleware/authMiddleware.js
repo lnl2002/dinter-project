@@ -5,7 +5,6 @@ dotenv.config();
 
 const authMiddleware = (req, res, next) => {
     try {
-        console.log(req.headers.token);
         const token = req.headers.token.split(' ')[1];
 
         jwt.verify(token, process.env.PRIVATE_KEY, (err, user) => {
@@ -15,7 +14,7 @@ const authMiddleware = (req, res, next) => {
                     message: "The authentication"
                 })
             } else {
-                console.log(user);
+                // console.log(user);
                 req.userId = user.id;
                 next();
             }

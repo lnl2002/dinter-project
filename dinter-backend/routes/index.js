@@ -6,6 +6,7 @@ import NotificationRouter from './NotificationRouter.js';
 import PostRouter from './PostRouter.js';
 import CommentRouter from './CommentRoute.js';
 import HobbyRouter from './HobbyRoute.js';
+import StoryRouter from './StoryRouter.js';
 
 const routes = (app) => {
     app.use('/api/v1/user', UserRouter)
@@ -16,6 +17,7 @@ const routes = (app) => {
     app.use('/api/v1/post', PostRouter)
     app.use('/api/v1/comment', CommentRouter)
     app.use('/api/v1/hobby', HobbyRouter)
+    app.use('/api/v1/story', StoryRouter)
 }
 
 export default routes;
