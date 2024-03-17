@@ -9,6 +9,7 @@ import Lottie from 'react-lottie';
 import { TextWeb } from './ProfileScreen';
 import { HobbyPicker } from '../components/HobbyPicker/HobbyPicker';
 import { HobbyTag, saveUpdateBasicInfo } from '../components/ProfileSetting';
+import { useNavigate } from 'react-router-dom';
 
 function MatchOnboarding({
   visible,
@@ -18,6 +19,7 @@ function MatchOnboarding({
   const [onboardingProgress, setOnboardingProgress] = useState(0)
   const [chosenCoordinator, setChosenCoordinators] = useState({ lat: 0, lng: 0 })
   const [chosenHobbies, setChosenHobbies] = useState()
+  const nav = useNavigate()
 
   const onChooseCoodination = ({ lat, lng }) => {
     setChosenCoordinators({ lat: lat, lng: lng })
@@ -81,6 +83,8 @@ function MatchOnboarding({
           hobbies: chosenHobbies,
           attractedBy: chosenGender
         })
+        onHideAction()
+        window.location.reload();
       }
     }
 

@@ -40,8 +40,8 @@ function PostDetail({
 
             <Carousel id='caro' controls={false} interval={null} style={{ height: '100%' }} activeIndex={indexImage}>
               {post.images.map(pi =>
-                <Carousel.Item style={{ height: '100%' }}>
-                  <img alt='post-view' width={'100%'} height='100%' src={BACK_END_HOST + pi} style={{objectFit: 'contain'}}/>
+                <Carousel.Item style={{ height: '100%' , borderBottom: 0}}>
+                  <img alt='post-view' width={'100%'} height='100%' src={BACK_END_HOST + pi} style={{objectFit: 'cover'}}/>
                 </Carousel.Item>
               )}
             </Carousel>

@@ -76,6 +76,7 @@ const updateUserBasicInfo = async (userId, changes) => {
       user.hobbies = changes.hobbies;
     }
     if (changes.location) {
+      user.location.type= 'Point'
       user.location.coordinates=[changes.location.lng,  changes.location.lat];
     }
     if (changes.attractedBy) {
@@ -196,7 +197,8 @@ const getUserInfoById = async (userId) => {
       bio: userInfo.bio,
       hobbies: userInfo.hobbies,
       gender: userInfo.gender,
-      dateOfBirth: userInfo.dateOfBirth
+      dateOfBirth: userInfo.dateOfBirth,
+      location: userInfo.location
     }
     return userPublicData;
   } catch (error) {
