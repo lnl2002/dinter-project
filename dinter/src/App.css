@@ -35,8 +35,7 @@ body {
 
 .avatar > img {
   width: 100%;
-  border-radius: 50%;
-  overflow: hidden;
+  height: auto;
 }
 
 .circle {

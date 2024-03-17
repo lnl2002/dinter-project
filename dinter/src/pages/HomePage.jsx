@@ -13,6 +13,7 @@ import SinglePost from "./SinglePost";
 import PostEdition from "./PostEdition";
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import "react-loading-skeleton/dist/skeleton.css";
+import { BACK_END_HOST } from "../utils/AppConfig";
 library.add(faEllipsis, faHeart, faComments, faShareAlt, faBookmark, faEdit, faSearch);
 function HomePage(props) {
   
@@ -181,7 +182,7 @@ function HomePage(props) {
                   style={{ padding: "16px" }}
                 >
                   <div className="avatar">
-                    <img src={user.avatar} alt="Avatar" />
+                    <img src={BACK_END_HOST + user.avatar} alt="Avatar" />
                   </div>
                   <div className="user-infor" style={{ marginLeft: "10px" }}>
                     <strong>{user.username}</strong>

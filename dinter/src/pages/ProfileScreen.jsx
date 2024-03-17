@@ -7,8 +7,10 @@ import ProfileSetting, { HobbyTag } from '../components/ProfileSetting'
 import Lottie from 'react-lottie';
 import * as animationData from '../utils/lottie/socialmedia.json'
 import * as avatarFrame1 from '../utils/lottie/avatarFrame1.json'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { create } from 'zustand'
+import HeaderHome from '../components/HeaderComponents/HeaderHome'
+import api from '../utils/services'
 
 const contentType = {
   post: {
@@ -22,6 +24,9 @@ const contentType = {
 }
 
 function ProfileScreen(props) {
+  //use Navigation
+  const nav = useNavigate();
+
   //session user (logged-in user)
   const sessionUser = JSON.parse(localStorage.getItem('User'));
 
@@ -99,9 +104,21 @@ function ProfileScreen(props) {
     LoadContentPage();
   }, [])
 
+  // create new conversation
+  const handleSendMessage = () => {
+    api.post('/conversation/create-chat', {
+      firstId: sessionUser.id,
+      secondId: userId
+    })
+      .then(res => nav('/messages'))
+      .catch(err => console.log(err));
+  }
+
   return (
     userData && userMediaDisplay ?
-      <div>
+  <div>
+    <HeaderHome/>
+    <div style={{paddingTop: '38px'}}>
         {
           userMediaDisplay.length > 0 ?
             <PostDetail visible={showPostDetail} onHideCallBack={() => setShowPostDetail(false)} post={userMediaDisplay[chosenPostIndex]} user={userData}></PostDetail>
@@ -131,7 +148,7 @@ function ProfileScreen(props) {
                   :
                   <ButtonWeb onClick={() => {}} title={"Add friend +"}></ButtonWeb> 
                 }
-                <ButtonWeb title={"View archive"}></ButtonWeb>
+                <ButtonWeb onClick={handleSendMessage} title={"Send message"}></ButtonWeb>
                 <button style={{ background: "white" }}>
                   <svg aria-label="Options" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Options</title><circle cx="12" cy="12" fill="none" r="8.635" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></circle><path d="M14.232 3.656a1.269 1.269 0 0 1-.796-.66L12.93 2h-1.86l-.505.996a1.269 1.269 0 0 1-.796.66m-.001 16.688a1.269 1.269 0 0 1 .796.66l.505.996h1.862l.505-.996a1.269 1.269 0 0 1 .796-.66M3.656 9.768a1.269 1.269 0 0 1-.66.796L2 11.07v1.862l.996.505a1.269 1.269 0 0 1 .66.796m16.688-.001a1.269 1.269 0 0 1 .66-.796L22 12.93v-1.86l-.996-.505a1.269 1.269 0 0 1-.66-.796M7.678 4.522a1.269 1.269 0 0 1-1.03.096l-1.06-.348L4.27 5.587l.348 1.062a1.269 1.269 0 0 1-.096 1.03m11.8 11.799a1.269 1.269 0 0 1 1.03-.096l1.06.348 1.318-1.317-.348-1.062a1.269 1.269 0 0 1 .096-1.03m-14.956.001a1.269 1.269 0 0 1 .096 1.03l-.348 1.06 1.317 1.318 1.062-.348a1.269 1.269 0 0 1 1.03.096m11.799-11.8a1.269 1.269 0 0 1-.096-1.03l.348-1.06-1.317-1.318-1.062.348a1.269 1.269 0 0 1-1.03-.096" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path></svg>
                 </button>
@@ -224,7 +241,9 @@ function ProfileScreen(props) {
           </div>
 
         </div>
-      </div> :
+      </div> 
+  </div>
+      :
       ''
   )
 }
