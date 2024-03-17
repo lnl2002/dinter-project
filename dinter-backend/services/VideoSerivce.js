@@ -61,11 +61,27 @@ const getViewer = async (storyId) => {
         throw new Error(error.toString());
     }
 }
+
+const getAllStoryOfUser = async (limit, offset, userId) => {
+    try {
+        const getPosts = await Video.find()
+        .sort([['createdAt', -1]])
+        .skip(Number(offset))
+        .limit(Number(limit))
+        .populate('userId', 'username')
+        .exec();
+        return getPosts;
+    } catch (error) {
+        throw new Error(error.toString());
+    }
+}
+
 export default {
     uploadVideo,
     deleteVideo,
     getStories,
     likeStory,
     viewStory,
-    getViewer
+    getViewer,
+    getAllStoryOfUser
 }
