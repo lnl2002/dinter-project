@@ -37,6 +37,7 @@ router.get('/analytic/:userId', UserController.getUserAnalysticNumber);
 router.patch('/user-basic-update', authMiddleware, upload.single('image'), UserController.updateUserBasicInfo);
 router.get('/public-user-info/:userId', UserController.getUserInfoById)
 router.get('/getMatchedUsers', authMiddleware, UserController.getMatchedUsers)
-router.post('/send-match-request', authMiddleware, UserController.sendMatchRequest)
+router.post('/send-match-request', authMiddleware, UserController.sendMatchRequest);
+router.get('/user-search/:keyword', UserController.searchUsers);
 
 export default router
