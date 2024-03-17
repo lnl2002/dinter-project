@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { AuthContext } from '../../context/AuthContext';
+import { BACK_END_HOST } from '../../utils/AppConfig';
 
 function CallVideoRequestModal(props) {
     const { requestCallVideoInfo, setRequestCallVideoInfo } = useContext(AuthContext);
@@ -35,7 +36,7 @@ function CallVideoRequestModal(props) {
                                 borderRadius: '50%',
                                 overflow: 'hidden'
                             }}>
-                                <img width={'100%'} src={requestCallVideoInfo && requestCallVideoInfo.user.avatar} alt="avatar" />
+                                <img width={'100%'} src={requestCallVideoInfo && (BACK_END_HOST + requestCallVideoInfo.user.avatar)} alt="avatar" />
                             </div>
                         </div>
                         <div className='text-center'>
