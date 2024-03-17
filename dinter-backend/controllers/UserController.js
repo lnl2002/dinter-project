@@ -1,5 +1,6 @@
 import UserService from '../services/UserService.js';
 import JwtService from '../services/JwtService.js';
+import User from '../models/User.js';
 
 
 const createUser = async (req, res) => {
@@ -159,6 +160,62 @@ const sendMatchRequest = async (req, res) => {
   }
 }
 
+const getAllRequestMatches = async(req,res) => {
+  try{
+    const { id } = req.params;
+    const requestMatches = await User.findById(id, 'requestMatch').populate('requestMatch', '_id username avatar');
+    
+    return res.status(200).json(requestMatches)
+  } catch (error) {
+    return res.status(404).json(error)
+  }
+}
+
+const accRequestMatch = async(req,res) => {
+  try{
+    const { sender, receiver } = req.body;
+
+    
+    const requestMatches = await User.findByIdAndUpdate(sender, {
+      $addToSet: {
+        friends: receiver
+      },
+      $pull: {
+        requestMatch: receiver
+      }
+    })
+
+    const requestMatchesForReceiver = await User.findByIdAndUpdate(receiver, {
+      $addToSet: {
+        friends: sender
+      },
+      $pull: {
+        requestMatch: sender
+      }
+    })
+    
+    return res.status(200).json(requestMatches)
+  } catch (error) {
+    return res.status(404).json(error)
+  }
+}
+
+const deleteRequestMatch = async(req,res) => {
+  try{
+    const { sender, receiver } = req.body;
+
+    const requestMatches = await User.findByIdAndUpdate(sender, {
+      $pull: {
+        requestMatch: receiver
+      }
+    })
+
+    return res.status(200).json(requestMatches)
+  } catch (error) {
+    return res.status(404).json(error)
+  }
+}
+
 export {
   createUser,
   login,
@@ -168,7 +225,10 @@ export {
   updateUserBasicInfo,
   getUserInfoById,
   getMatchedUsers,
-  sendMatchRequest
+  sendMatchRequest,
+  getAllRequestMatches,
+  accRequestMatch,
+  deleteRequestMatch
 };
 
 export default {
@@ -180,5 +240,8 @@ export default {
   updateUserBasicInfo,
   getUserInfoById,
   getMatchedUsers,
-  sendMatchRequest
+  sendMatchRequest,
+  getAllRequestMatches,
+  accRequestMatch,
+  deleteRequestMatch
 };

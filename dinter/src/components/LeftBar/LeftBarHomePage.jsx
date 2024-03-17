@@ -20,17 +20,17 @@ function LeftBarHomePage(props) {
     const [listNoti, setListNoti] = useState([]);
     const [numberNoti, setNumberNoti] = useState(0);
     const navRef = useRef();
- 
+
     //getNotifications
     useEffect(() => {
-        if(socket === null) return;
+        if (socket === null) return;
 
         socket.on("getNotification", (res) => {
             console.log("getnotification", res);
 
-            setListNoti([res,...listNoti]);
+            setListNoti([res, ...listNoti]);
             setNumberNoti(numberNoti + 1);
-            
+
         })
 
         return () => {
@@ -68,19 +68,19 @@ function LeftBarHomePage(props) {
 
     // set notification status read
     const handleNotificationIsRead = (id, link, isRead) => {
-        if(!isRead) {
+        if (!isRead) {
             axios.post(`http://localhost:3008/api/v1/notification/update-notification-status/${id}`,
-            JSON.stringify({
-                isRead: true
-            }),
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    token: 'Bearer ' + getAccessToken()
-                }
-            })
-            .then(res => nav(link))
-            .catch(err => console.log(err));
+                JSON.stringify({
+                    isRead: true
+                }),
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        token: 'Bearer ' + getAccessToken()
+                    }
+                })
+                .then(res => nav(link))
+                .catch(err => console.log(err));
         }
         nav(link);
     }
@@ -88,17 +88,17 @@ function LeftBarHomePage(props) {
     // setnumbernoti when render
     useEffect(() => {
         api.get(`http://localhost:3008/api/v1/notification/${user.id}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    token: 'Bearer ' + getAccessToken()
-                }
+            headers: {
+                'Content-Type': 'application/json',
+                token: 'Bearer ' + getAccessToken()
+            }
+        })
+            .then(res => {
+                setListNoti(res.data.data);
+                setNumberNoti(res.data.numberNotRead);
+                console.log('notification2', res.data);
             })
-                .then(res => {
-                    setListNoti(res.data.data);
-                    setNumberNoti(res.data.numberNotRead);
-                    console.log('notification2', res.data);
-                })
-                .catch(err => console.log(err));
+            .catch(err => console.log(err));
     }, [])
 
     return (
@@ -107,16 +107,19 @@ function LeftBarHomePage(props) {
             style={{ marginTop: "30px", fontSize: "18px" }}
             ref={navRef}
         >
-            <div
-                className={`d-flex align-items-center cursor-pointer navbar-item ${activeNavItem === "home" ? "nav-active" : ""}`}
-                style={{ padding: "30px 35px" }}
-                onClick={() => handleNavItemClick("home")}
-            >
-                <ion-icon name="home-outline"></ion-icon>
-                <span style={{ marginLeft: "20px", fontWeight: "700" }}>
-                    Home
-                </span>
-            </div>
+            <Link to={"/"} style={{ textDecoration: "none", color: "#000" }}>
+                <div
+                    className={`d-flex align-items-center cursor-pointer navbar-item ${activeNavItem === "home" ? "nav-active" : ""}`}
+                    style={{ padding: "30px 35px" }}
+                    onClick={() => handleNavItemClick("home")}
+                >
+                    <ion-icon name="home-outline"></ion-icon>
+                    <span style={{ marginLeft: "20px", fontWeight: "700" }}>
+                        Home
+                    </span>
+                </div>
+            </Link>
+
             <div
                 className='position-relative'
                 onClick={() => handleNavItemClick("notification")}
@@ -159,44 +162,44 @@ function LeftBarHomePage(props) {
                         hidden={!showNoti}
                     >
                         {
-                            listNoti && listNoti.map(noti => 
-                                (
-                                    <Row style={{ margin: "14px 0" }} className={`notification-popup-item d-flex align-items-center ${noti.isRead ? 'read' : ''}`}
-                                        onClick={e => handleNotificationIsRead(noti._id, noti.link, noti.isRead)}>
-                                        <Col md={2}>
-                                            <div style={{
-                                                width: "50px",
-                                                height: "50px",
-                                                borderRadius: "50%", 
-                                                overflow: "hidden" 
-                                            }}>
-                                                <img src={BACK_END_HOST + noti.sender.avatar} alt='avatar' width={"100%"}
-                                                    style={{ width: '100%', height: 'auto'}} />
-                                            </div>
-                                        </Col>
-                                        <Col md={9}>
-                                            <div className=''>
-                                                <strong>{noti.sender.username} </strong>
-                                                <span>
-                                                    {
-                                                        noti.type
-                                                    }
-                                                </span>
-                                            </div>
-                                            <small>
+                            listNoti && listNoti.map(noti =>
+                            (
+                                <Row style={{ margin: "14px 0" }} className={`notification-popup-item d-flex align-items-center ${noti.isRead ? 'read' : ''}`}
+                                    onClick={e => handleNotificationIsRead(noti._id, noti.link, noti.isRead)}>
+                                    <Col md={2}>
+                                        <div style={{
+                                            width: "50px",
+                                            height: "50px",
+                                            borderRadius: "50%",
+                                            overflow: "hidden"
+                                        }}>
+                                            <img src={BACK_END_HOST + noti.sender.avatar} alt='avatar' width={"100%"}
+                                                style={{ width: '100%', height: 'auto' }} />
+                                        </div>
+                                    </Col>
+                                    <Col md={9}>
+                                        <div className=''>
+                                            <strong>{noti.sender.username} </strong>
+                                            <span>
                                                 {
-                                                    formatDistanceToNow(noti.createdAt, {
-                                                        addSuffix: true,
-                                                    })
+                                                    noti.type
                                                 }
-                                            </small>
-                                        </Col>
-                                        <Col md={1}>
-                                            <div className={noti.isRead ? '' : 'not-read'}></div>
-                                        </Col>
-                                    </Row>
+                                            </span>
+                                        </div>
+                                        <small>
+                                            {
+                                                formatDistanceToNow(noti.createdAt, {
+                                                    addSuffix: true,
+                                                })
+                                            }
+                                        </small>
+                                    </Col>
+                                    <Col md={1}>
+                                        <div className={noti.isRead ? '' : 'not-read'}></div>
+                                    </Col>
+                                </Row>
 
-                                )
+                            )
                             )
                         }
 
@@ -234,32 +237,35 @@ function LeftBarHomePage(props) {
 
                 </div>
             </Link>
-            <div
-                className="d-flex align-items-center cursor-pointer navbar-item"
-                style={{ padding: "30px 35px" }}
-            >
-                <div className='position-relative'>
-                    <ion-icon name="id-card-outline"></ion-icon>
-                    <span
-                        style={{
-                            width: "20px",
-                            height: "20px",
-                            backgroundColor: "#fb4f4d",
-                            color: "#fff",
-                            padding: "3px",
-                            borderRadius: "50%",
-                            fontSize: "10px",
-                            position: "absolute",
-                            top: "-5px",
-                            right: "-5px",
-                            textAlign: "center",
-                        }}>9+</span>
+            <Link to={"/request-friend"} style={{ textDecoration: "none", color: "#000" }}>
+                <div
+                    className="d-flex align-items-center cursor-pointer navbar-item"
+                    style={{ padding: "30px 35px" }}
+                >
+                    <div className='position-relative'>
+                        <ion-icon name="id-card-outline"></ion-icon>
+                        <span
+                            style={{
+                                width: "20px",
+                                height: "20px",
+                                backgroundColor: "#fb4f4d",
+                                color: "#fff",
+                                padding: "3px",
+                                borderRadius: "50%",
+                                fontSize: "10px",
+                                position: "absolute",
+                                top: "-5px",
+                                right: "-5px",
+                                textAlign: "center",
+                            }}>9+</span>
 
+                    </div>
+                    <span style={{ marginLeft: "20px", fontWeight: "700" }}>
+                        Match
+                    </span>
                 </div>
-                <span style={{ marginLeft: "20px", fontWeight: "700" }}>
-                    Match
-                </span>
-            </div>
+            </Link>
+
         </div>
     );
 }

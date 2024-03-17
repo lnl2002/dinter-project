@@ -38,5 +38,8 @@ router.patch('/user-basic-update', authMiddleware, upload.single('image'), UserC
 router.get('/public-user-info/:userId', UserController.getUserInfoById)
 router.get('/getMatchedUsers', authMiddleware, UserController.getMatchedUsers)
 router.post('/send-match-request', authMiddleware, UserController.sendMatchRequest)
+router.get('/request-matches/:id', authMiddleware, UserController.getAllRequestMatches)
+router.post('/request-matches', authMiddleware, UserController.accRequestMatch)
+router.post('/delete-request-matches', authMiddleware, UserController.deleteRequestMatch)
 
 export default router
