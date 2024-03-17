@@ -4,6 +4,7 @@ import CommentsFrameLayout from '../Comments_frame_layout/CommentsFrameLayout';
 import '../PostDetail/PostDetail.css'
 import { BACK_END_HOST } from '../../utils/AppConfig';
 import Carousel from 'react-bootstrap/Carousel';
+import { create } from 'zustand';
 
 function PostDetail({
   visible,
@@ -12,9 +13,13 @@ function PostDetail({
   onHideCallBack,
 }) {
   const [indexImage, setIndexImage] = useState(0);
+    //zustand user global state 
+    const likesArray = usePostDetailStore((state) => state.likesArray)
+    const setLikesArray = usePostDetailStore((state) => state.setLikesArray)
 
   useEffect(()=>{
     setIndexImage(0)
+    setLikesArray(post.likes)
   },[post])
 
   const NavButton = ({ isNext, onClick }) => {
@@ -50,7 +55,7 @@ function PostDetail({
               user={user} 
               postId={post._id} 
               content={post.content} 
-              likes={post.likes}
+              likes={likesArray}
               date={post.createdAt}></CommentsFrameLayout>
           </div>
         </div>
@@ -61,5 +66,10 @@ function PostDetail({
     </Modal>
   );
 }
+
+export const usePostDetailStore = create((set) => ({
+  likesArray: 0,
+  setLikesArray: (likesArray) => set((state) => ({ likesArray: likesArray}))
+}))
 
 export default PostDetail;

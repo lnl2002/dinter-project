@@ -1,30 +1,82 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../Comments_box/CommentBox.css'
 import { motion } from "framer-motion"
 import { calculateTimeDifference, formatNumber } from '../Comments_frame_layout/CommentsFrameLayout';
+import { BACK_END_HOST } from '../../utils/AppConfig';
+import axios from 'axios';
 
-function CommentBox({
+const CommentBox = React.memo(({
   comment,
-  onReplyComment,
+  isParentComment,
+  onClickReplyComment,
+  onFinishSetUpComment,
+  repliedCommentData,
+  style,
   user
-}) {
-  console.log(comment.liked)
+}) => {
+  const [repliedComment, setRepliedComment] = useState([])
+  const [isShowReply, setIsShowReply] = useState(false)
+  const [isShowReplyPreview, setIsShowReplyPreview] = useState(false)
+  const [repliedCommentNumber, setRepliedCommentNumber] = useState(0)
   const [isLiked, setIsLiked] = useState(false);
   const LikePost = () => {
     setIsLiked(!isLiked);
   }
-  return (
-    <div className='d-flex flex-row justify-content-between' style={{ gap: '10px' }}>
 
-      <UserBox user={user} comment_data={comment.content}>
-        <div className='d-flex' style={{ gap: '15px' }}>
-          <p className='text-app-light'>{calculateTimeDifference(comment.createdAt)}</p>
-          <p className='text-app-medium'>{formatNumber(comment.liked?.length ?? 0)} likes</p>
-          <button className='btn-app-func'>
-            <p className='text-app-medium'>Reply</p>
-          </button>
-        </div>
-      </UserBox>
+  const getRepliedCommentNumber = async () => {
+    axios.get(BACK_END_HOST + "api/v1/comment/count-reply/" + comment._id).then(response => {
+      setRepliedCommentNumber(response.data)
+    })
+  }
+
+  const getRepliedComment = async () => {
+    axios.get(BACK_END_HOST + "api/v1/comment/all-reply-from/" + comment._id).then(response => {
+      setRepliedComment(response.data)
+    })
+  }
+
+  useEffect(() => {
+    if (isParentComment) {
+      getRepliedCommentNumber()
+      // getRepliedComment()
+    }
+  }, [])
+
+  useEffect(() => {
+    if ( repliedCommentData && repliedCommentData != '') {
+      setRepliedComment([
+        ...repliedComment,
+        repliedCommentData
+      ])
+      onFinishSetUpComment()
+      if(!isShowReply){
+        if(repliedCommentNumber == 0){
+          setIsShowReply(true)
+          setRepliedCommentNumber(1)
+        }else{
+          setIsShowReplyPreview(true)
+        }
+      }
+    } 
+    console.log(repliedCommentData)
+  }, [repliedCommentData])
+
+  return (
+    comment ? <div style={style}>
+
+    <div style={{ width: '100%', gap: '10px' }} className='d-flex flex-row justify-content-between'>
+      {
+        user &&
+        <UserBox user={user} repliedUserTagData={comment.replyTo} comment_data={comment.content}>
+          <div className='d-flex' style={{ gap: '15px' }}>
+            <p className='text-app-light'>{calculateTimeDifference(comment.createdAt)}</p>
+            <p className='text-app-medium'>{formatNumber(comment.liked?.length ?? 0)} likes</p>
+            <button onClick={onClickReplyComment } className='btn-app-func'>
+              <p className='text-app-medium'>Reply</p>
+            </button>
+          </div>
+        </UserBox>
+      } 
 
       <div className='d-flex align-items-center'>
         <button className='btn-app-func' onClick={() => LikePost()}>
@@ -40,22 +92,65 @@ function CommentBox({
           }
         </button>
       </div>
-
     </div>
-  );
-}
 
-export const UserBox = ({ user, comment_data, children }) => {
+    {
+      repliedCommentNumber && repliedCommentNumber > 0 ?
+        <div style={{ marginLeft: '50px' }}>
+          <button onClick={() => { getRepliedComment(); setIsShowReply(!isShowReply);setIsShowReplyPreview(false) ;getRepliedCommentNumber() }} style={{ background: 'none' }}>
+            <div className='d-flex align-items-center' style={{ gap: '10px' }}>
+              <div style={{ width: '25px', height: '1px', background: '#8b8b8b' }}></div>
+              <p className='text-app-medium'>{isShowReply ? 'Hide replies' : `View replies (${repliedCommentNumber})`}</p>
+            </div>
+          </button>
+          <div style={{ display: isShowReply ? 'block' : 'none' }}>
+            {
+              repliedComment && repliedComment.length > 0 && repliedComment?.map(cr => 
+              <CommentBox key={cr._id} 
+              isParentComment={false} 
+              style={{ marginTop: '20px' }} 
+              onClickReplyComment={() => onClickReplyComment(cr.userId , comment._id)} 
+              comment={cr} 
+              user={cr?.userId}></CommentBox>)
+            }
+          </div>
+          <div style={{ display: isShowReplyPreview ? 'block' : 'none' }}>
+            {
+              <CommentBox key={repliedComment[repliedComment.length-1]?._id} 
+              isParentComment={false} style={{ marginTop: '20px' }} 
+              onClickReplyComment={() => onClickReplyComment(repliedComment[repliedComment.length-1]?.userId, comment._id)} 
+              comment={repliedComment[repliedComment.length-1]} 
+              user={repliedComment[repliedComment.length-1]?.userId}></CommentBox>
+            }
+          </div>
+        </div> : <></>
+    }
+
+  </div> : <></>
+  );
+});
+
+export const UserBox = ({ user, comment_data, repliedUserTagData, children }) => {
+
   return (
     <div className='d-flex flex-row' style={{ gap: '10px' }}>
 
-      <AvatarDiv image={user.avatar ?? 'images/common/card.png'}></AvatarDiv>
+      <AvatarDiv image={BACK_END_HOST + user.avatar ?? 'images/common/card.png'}></AvatarDiv>
 
       <div className='d-flex flex-column  justify-content-center' style={{ gap: '5px' }}>
-        <div className='d-flex' style={{ gap: '5px' }}>
-          <p className='text-app-bold'>{user.username}</p>
-          <p className='text-app-comment-normal'>{comment_data}</p>
-        </div>
+        <span className='text-app-comment-normal' style={{ gap: '5px' }}>
+          <button style={{ marginRight: '5px' }} className='btn-app-func' onClick={() => { window.location.href = ('/profile/' + user._id) }}><p className='text-app-bold'>{user.username}</p></button>
+          {
+            repliedUserTagData &&
+            <>
+              <svg width={'8px'} height={'8px'} viewBox="-3 0 28 28" version="1.1" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>play</title> <desc>Created with Sketch Beta.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" > <g id="Icon-Set-Filled" transform="translate(-419.000000, -571.000000)" fill="#707070"> <path d="M440.415,583.554 L421.418,571.311 C420.291,570.704 419,570.767 419,572.946 L419,597.054 C419,599.046 420.385,599.36 421.418,598.689 L440.415,586.446 C441.197,585.647 441.197,584.353 440.415,583.554" id="play" > </path> </g> </g> </g></svg>
+              <button  onClick={() => { window.location.href = ('/profile/' + repliedUserTagData._id) }} style={{ whiteSpace: 'nowrap', marginRight: '5px', background: '#ffdae2', borderRadius: '5px', paddingLeft: '5px', paddingRight: '5px' }}>
+                <p className='text-app-bold'>@{repliedUserTagData.username}</p>
+              </button>
+            </>
+          }
+          {comment_data}
+        </span>
         {children}
       </div>
 

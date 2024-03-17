@@ -8,6 +8,7 @@ import Story from "../pages/Story";
 import Dashboard from "../pages/Dashboard";
 import ResetPassword from "../pages/ResetPassword";
 import StoryCreation from "../pages/StoryCreation";
+import PostDetailProView from "../pages/PostDetailProView";
 
 
 const routes = [
@@ -34,6 +35,10 @@ const routes = [
     {
         path: '/profile/:userId',
         element: ProfileScreen
+    },
+    {
+        path: '/post/:postId',
+        element: PostDetailProView
     },
     {
         path: '/request-friend',

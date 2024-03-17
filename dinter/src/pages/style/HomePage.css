@@ -279,6 +279,55 @@ main .container .right {
     gap: 1rem;
 }
 
+/* nav-item */
+.navbar-item:hover {
+    background-color: #f0edf5;
+}
+
+/* notification - popup */
+
+.notification-popup {
+    max-height: 400px;
+    overflow-y: scroll;
+}
+
+.test::before {
+    content: "";
+    width: 1.2rem;
+    height: 1.2rem;
+    display: block;
+    background-color: #fff;
+    position: absolute;
+    left: -0.6rem;
+    transform: rotate(45deg);
+    top: 23px;
+}
+
+.notification-popup-item {
+    cursor: pointer;
+    padding: 5px;
+}
+
+.notification-popup > .notification-popup-item:hover {
+    background-color: #f0edf5;
+}
+
+.navbar-item ion-icon {
+    font-size: xx-large;
+}
+
+.not-read {
+    width: 10px;
+    height: 10px;
+    background-color: #7261dd;
+    border-radius: 50%;
+}
+
+.read {
+    opacity: 0.8;
+    font-weight: 350;
+}
+
 
 
 .edit {

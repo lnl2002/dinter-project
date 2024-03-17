@@ -11,3 +11,18 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.nav-active {
+  background-color: #f0edf5;
+  color: #5f51b7;
+  border-left: 15px solid #7261dd;
+}
+
+a {
+  text-decoration: none;
+  color: #000;
+}

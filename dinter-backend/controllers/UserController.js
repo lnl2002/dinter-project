@@ -105,16 +105,15 @@ const getUserInfoById = async (req, res) => {
 const updateUserBasicInfo = async (req, res) => {
   try {
     let changes = req.body.changes;
-    if (req.files) {
+    if (req.file) {
       changes ={
         avatar: req.file.path
       }
     }
-    console.log(changes);
     const token = req.headers.token.split(' ')[1];
     const authorizedUser = await UserService.getUserInfoByAccessToken(token);
     const updatedData = await UserService.updateUserBasicInfo(authorizedUser.data._id, changes)
-    return res.status(204).json(updatedData);
+    return res.status(200).json(updatedData);
   } catch (error) {
     return `Error updating user information: ${error.message}`;
   }

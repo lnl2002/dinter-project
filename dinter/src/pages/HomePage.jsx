@@ -6,6 +6,7 @@ import { Col, Container, Form, Modal, Row } from "react-bootstrap";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faBookmark, faComments, faEdit, faEllipsis, faHeader, faHeart, faSearch, faShare, faShareAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import LeftBarHomePage from "../components/LeftBar/LeftBarHomePage";
 import axios from 'axios'
 import PostCreation from "./PostCreation";
 import SinglePost from "./SinglePost";
@@ -14,6 +15,8 @@ import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import "react-loading-skeleton/dist/skeleton.css";
 library.add(faEllipsis, faHeart, faComments, faShareAlt, faBookmark, faEdit, faSearch);
 function HomePage(props) {
+  
+  const user = JSON.parse(localStorage.getItem('User'));
   const [listPost, setListPost] = useState([]);
   const [isLoad, setIsLoad] = useState();
   const [offset, setOffset] = useState(0);
@@ -171,61 +174,20 @@ function HomePage(props) {
         <Row>
           {/* LEFT */}
           <Col md={3}>
-            <div style={{ position: "fixed", width: "calc(16%)" }}>
+            <div style={{ position: "fixed", width: "calc(16%)", zIndex: "99" }}>
               <div>
                 <div
                   className="d-flex bg-white circle w-100 align-items-center"
                   style={{ padding: "16px" }}
                 >
                   <div className="avatar">
-                    <img src="images/common/avatar.png" alt="Avatar" />
+                    <img src={user.avatar} alt="Avatar" />
                   </div>
                   <div className="user-infor" style={{ marginLeft: "10px" }}>
-                    <strong>Lại Ngọc Lâm</strong>
+                    <strong>{user.username}</strong>
                   </div>
                 </div>
-                <div
-                  className="bg-white circle"
-                  style={{ marginTop: "10px", fontSize: "18px" }}
-                >
-                  <div
-                    className="d-flex align-items-center"
-                    style={{ padding: "30px 35px" }}
-                  >
-                    <ion-icon name="home-outline"></ion-icon>
-                    <span style={{ marginLeft: "20px", fontWeight: "700" }}>
-                      Home
-                    </span>
-                  </div>
-                  <div
-                    className="d-flex align-items-center"
-                    style={{ padding: "30px 35px" }}
-                  >
-                    <ion-icon name="home-outline"></ion-icon>
-                    <span style={{ marginLeft: "20px", fontWeight: "700" }}>
-
-                      <a href="/messages">Message</a>
-                    </span>
-                  </div>
-                  <div
-                    className="d-flex align-items-center"
-                    style={{ padding: "30px 35px" }}
-                  >
-                    <ion-icon name="home-outline"></ion-icon>
-                    <span style={{ marginLeft: "20px", fontWeight: "700" }}>
-                      Messagse
-                    </span>
-                  </div>
-                  <div
-                    className="d-flex align-items-center"
-                    style={{ padding: "30px 35px" }}
-                  >
-                    <ion-icon name="home-outline"></ion-icon>
-                    <span style={{ marginLeft: "20px", fontWeight: "700" }}>
-                      Setting
-                    </span>
-                  </div>
-                </div>
+                <LeftBarHomePage/>
               </div>
             </div>
           </Col>

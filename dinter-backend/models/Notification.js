@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
 const notificationSchema = new Schema({
-    userId: { type: Schema.Types.ObjectId, ref: 'Users', required: true },
+    receiver: { type: Schema.Types.ObjectId, ref: 'Users', required: true },
     type: {
         type: String,
         required: true
@@ -9,8 +9,16 @@ const notificationSchema = new Schema({
     link: {
         type: String,
         required: true
+    },
+    sender: { type: Schema.Types.ObjectId, ref: 'Users', required: true },
+    isRead: {
+        type: Boolean,
+        required: true,
+        default: false
     }
-}, { timestamp: true });
+}, {
+     timestamps: true 
+});
 
 const Notification = mongoose.model('Notifications', notificationSchema);
 export default Notification; 

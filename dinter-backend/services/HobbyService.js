@@ -5,7 +5,7 @@ const getAllHobby = async (limit, offset, keyWord) => {
         let query = {};
 
         // If the keyword is not empty, add it to the query
-        if (keyWord) {
+        if (keyWord && keyWord !='_') {
             query = { hobbyName: { $regex: keyWord, $options: 'i' } };
         }
 
@@ -13,12 +13,14 @@ const getAllHobby = async (limit, offset, keyWord) => {
         const hobbies = await Hobby.find(query)
             .exec();
 
-        // Custom sorting based on keyword position
-        hobbies.sort((a, b) => {
-            const aIndex = a.hobbyName.toLowerCase().indexOf(keyWord.toLowerCase());
-            const bIndex = b.hobbyName.toLowerCase().indexOf(keyWord.toLowerCase());
-            return aIndex - bIndex;
-        });
+        // Only sort if the keyword is not empty
+        if (keyWord) {
+            hobbies.sort((a, b) => {
+                const aIndex = a.hobbyName.toLowerCase().indexOf(keyWord.toLowerCase());
+                const bIndex = b.hobbyName.toLowerCase().indexOf(keyWord.toLowerCase());
+                return aIndex - bIndex;
+            });
+        }
 
         // Apply limit and offset
         const slicedHobbies = hobbies.slice(Number(offset), Number(offset) + Number(limit));
