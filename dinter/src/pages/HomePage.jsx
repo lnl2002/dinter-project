@@ -1,13 +1,38 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import HeaderHome from "../components/HeaderComponents/HeaderHome";
 import "./style/HomePage.css";
 import { Col, Container, Form, Row } from "react-bootstrap";
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faBookmark, faComments, faEdit, faEllipsis, faHeader, faHeart, faSearch, faShare, faShareAlt } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faBookmark,
+  faComments,
+  faEdit,
+  faEllipsis,
+  faHeader,
+  faHeart,
+  faSearch,
+  faShare,
+  faShareAlt,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Carousel from "react-bootstrap/Carousel";
 
-library.add(faEllipsis,faHeart,faComments,faShareAlt,faBookmark,faEdit,faSearch);
+library.add(
+  faEllipsis,
+  faHeart,
+  faComments,
+  faShareAlt,
+  faBookmark,
+  faEdit,
+  faSearch
+);
 function HomePage(props) {
+  const [index, setIndex] = useState(0);
+
+  const handleSelect = (selectedIndex) => {
+    setIndex(selectedIndex);
+  };
+
   return (
     <div>
       <HeaderHome />
@@ -47,8 +72,7 @@ function HomePage(props) {
                   >
                     <ion-icon name="home-outline"></ion-icon>
                     <span style={{ marginLeft: "20px", fontWeight: "700" }}>
-                      
-                      <a href="/messages">Message</a>
+                      <a href="/messages"> Message </a>
                     </span>
                   </div>
                   <div
@@ -66,7 +90,7 @@ function HomePage(props) {
                   >
                     <ion-icon name="home-outline"></ion-icon>
                     <span style={{ marginLeft: "20px", fontWeight: "700" }}>
-                    Setting
+                      Setting
                     </span>
                   </div>
                 </div>
@@ -78,289 +102,344 @@ function HomePage(props) {
             <Row>
               <Col md={2}>
                 <div className="stories">
-                    <div className="story">
+                  <div className="storyy">
                     <div className="profile-photo">
-                        <img src="images/common/avatar.png" alt="" width={35} />
+                      <img src="images/common/avatar.png" alt="" width={35} />
                     </div>
                     <div className="name">Trương Trọng Hưng</div>
-                    </div>
+                  </div>
                 </div>
               </Col>
               <Col md={2}>
                 <div className="stories">
-                    <div className="story">
+                  <div className="storyy">
                     <div className="profile-photo">
-                        <img src="images/common/avatar.png" alt="" width={35} />
+                      <img src="images/common/avatar.png" alt="" width={35} />
                     </div>
                     <div className="name">You Story</div>
-                    </div>
+                  </div>
                 </div>
-              </Col><Col md={2}>
+              </Col>
+              <Col md={2}>
                 <div className="stories">
-                    <div className="story">
+                  <div className="storyy">
                     <div className="profile-photo">
-                        <img src="images/common/avatar.png" alt="" width={35} />
+                      <img src="images/common/avatar.png" alt="" width={35} />
                     </div>
                     <div className="name">You Story</div>
-                    </div>
+                  </div>
                 </div>
-              </Col><Col md={2}>
+              </Col>
+              <Col md={2}>
                 <div className="stories">
-                    <div className="story">
+                  <div className="storyy">
                     <div className="profile-photo">
-                        <img src="images/common/avatar.png" alt="" width={35} />
+                      <img src="images/common/avatar.png" alt="" width={35} />
                     </div>
                     <div className="name">You Story</div>
-                    </div>
+                  </div>
                 </div>
-              </Col><Col md={2}>
+              </Col>
+              <Col md={2}>
                 <div className="stories">
-                    <div className="story">
+                  <div className="storyy">
                     <div className="profile-photo">
-                        <img src="images/common/avatar.png" alt="" width={35} />
+                      <img src="images/common/avatar.png" alt="" width={35} />
                     </div>
                     <div className="name">You Story</div>
-                    </div>
+                  </div>
                 </div>
-              </Col><Col md={2}>
+              </Col>
+              <Col md={2}>
                 <div className="stories">
-                    <div className="story">
+                  <div className="storyy">
                     <div className="profile-photo">
-                        <img src="images/common/avatar.png" alt="" width={35} />
+                      <img src="images/common/avatar.png" alt="" width={35} />
                     </div>
                     <div className="name">You Story</div>
-                    </div>
+                  </div>
                 </div>
               </Col>
             </Row>
 
             {/* Creat Post */}
-          <Form className="create-post">
-          <div className="profile-photo1">
-                        <img src="images/common/avatar.png" alt="" width={40}/>
-                    </div>
-                    <input type="text" placeholder="New ? " id="create-post" />
-                    <input type="submit" value="Post" className="btn btn-primary" />
-          </Form>
+            <Form className="create-post">
+              <div className="profile-photo1">
+                <img src="images/common/avatar.png" alt="" width={40} />
+              </div>
+              <input type="text" placeholder="New ? " id="create-post" />
+              <input type="submit" value="Post" className="btn btn-primary" />
+            </Form>
 
-          {/* New Feeds */}
-          <div className="feeds">
-            <div className="feed">
+            {/* New Feeds */}
+            <div className="feeds">
+              <div className="feed">
                 <div className="head">
-                    <div className="user">
-                        <div className="profile-photo1">
-                            <img src="images/common/avatar.png" alt="" width={50}/>
-                        </div>
-                        <div className="ingo">
-                            <h5>Truong Hung</h5>
-                            <small>FPT, 1g</small>
-                        </div>
-                        
+                  <div className="user">
+                    <div className="profile-photo1">
+                      <img src="images/common/avatar.png" alt="" width={50} />
                     </div>
-                    <span className="edit">
-                        <FontAwesomeIcon icon="ellipsis" />
-                        </span>
+                    <div className="ingo">
+                      <h5>Truong Hung</h5>
+                      <small>FPT, 1g</small>
+                    </div>
+                  </div>
+                  <span className="edit">
+                    <FontAwesomeIcon icon="ellipsis" />
+                  </span>
                 </div>
 
                 <div className="photo">
-                    <img src="images/common/anhbia.jpg" alt="" width={650}/>
+                  {/* //active message */}
+                  <Carousel activeIndex={index} onSelect={handleSelect} interval={null} >
+                    <Carousel.Item>
+                      <img src="images/common/anhbia.jpg" alt="" width={650} />
+                    </Carousel.Item>
+                    <Carousel.Item>
+                      <img src="images/common/anhbia.jpg" alt="" width={650} />
+                    </Carousel.Item>
+                    <Carousel.Item>
+                      <img src="images/common/anhbia.jpg" alt="" width={650} />
+                    </Carousel.Item>
+                  </Carousel>
                 </div>
-                
+
                 <div className="action-buttons">
-                    <div className="inter-buttons">
-                    <span >
-                        <FontAwesomeIcon icon="heart" /><i> </i>
-                        <FontAwesomeIcon icon="comments" /><i> </i>
-                        <FontAwesomeIcon icon="share-alt" /><i> </i>
-                        </span>
-                    </div>
-                    <div className="booknark">
-                    <span >
-                    <FontAwesomeIcon icon={faBookmark} />
-                        </span>
-                    </div>
+                  <div className="inter-buttons">
+                    <span>
+                      <FontAwesomeIcon icon="heart" />
+                      <i> </i>
+                      <FontAwesomeIcon icon="comments" />
+                      <i> </i>
+                      <FontAwesomeIcon icon="share-alt" />
+                      <i> </i>
+                    </span>
+                  </div>
+                  <div className="booknark">
+                    <span>
+                      <FontAwesomeIcon icon={faBookmark} />
+                    </span>
+                  </div>
                 </div>
                 <div className="liked-by">
-                    <span><img src="images/common/avatar.png" alt="" width={25} /></span>
-                    <span><img src="images/common/avatar.png" alt="" /></span>
-                    <span><img src="images/common/avatar.png" alt="" /></span>
-                     <a>Liked by <b>Truong Hung</b> and <b>100 other</b></a>
+                  <span>
+                    <img src="images/common/avatar.png" alt="" width={25} />
+                  </span>
+                  <span>
+                    <img src="images/common/avatar.png" alt="" />
+                  </span>
+                  <span>
+                    <img src="images/common/avatar.png" alt="" />
+                  </span>
+                  <a>
+                    Liked by <b>Truong Hung</b> and <b>100 other</b>
+                  </a>
                 </div>
                 <div className="caption">
-                    <a><b>Truong Hung</b> asdhasjdhasjdhjsd <span className="harsh-tag">#hello</span></a>
+                  <a>
+                    <b>Truong Hung</b> asdhasjdhasjdhjsd{" "}
+                    <span className="harsh-tag">#hello</span>
+                  </a>
                 </div>
                 <div className="text-muted">View all 277 comment</div>
+              </div>
             </div>
-          </div>
 
-          <div className="feeds">
-            <div className="feed">
+            <div className="feeds">
+              <div className="feed">
                 <div className="head">
-                    <div className="user">
-                        <div className="profile-photo1">
-                            <img src="images/common/avatar.png" alt="" width={50}/>
-                        </div>
-                        <div className="ingo">
-                            <h5>Truong Hung</h5>
-                            <small>FPT, 1g</small>
-                        </div>
-                        
+                  <div className="user">
+                    <div className="profile-photo1">
+                      <img src="images/common/avatar.png" alt="" width={50} />
                     </div>
-                    <span className="edit">
-                        <FontAwesomeIcon icon="ellipsis" />
-                        </span>
+                    <div className="ingo">
+                      <h5>Truong Hung</h5>
+                      <small>FPT, 1g</small>
+                    </div>
+                  </div>
+                  <span className="edit">
+                    <FontAwesomeIcon icon="ellipsis" />
+                  </span>
                 </div>
 
                 <div className="photo">
-                    <img src="images/common/anhbia.jpg" alt="" width={650}/>
+                {/* <Carousel activeIndex={index} onSelect={handleSelect} interval={null} >
+                    <Carousel.Item> */}
+                      <img src="images/common/anhbia.jpg" alt="" width={650} />
+                    {/* </Carousel.Item>
+                    <Carousel.Item>
+                      <img src="images/common/anhbia.jpg" alt="" width={650} />
+                    </Carousel.Item>
+                    <Carousel.Item>
+                      <img src="images/common/anhbia.jpg" alt="" width={650} />
+                    </Carousel.Item>
+                  </Carousel> */}
                 </div>
-                
+
                 <div className="action-buttons">
-                    <div className="inter-buttons">
-                    <span >
-                        <FontAwesomeIcon icon="heart" /><i> </i>
-                        <FontAwesomeIcon icon="comments" /><i> </i>
-                        <FontAwesomeIcon icon="share-alt" /><i> </i>
-                        </span>
-                    </div>
-                    <div className="booknark">
-                    <span >
-                    <FontAwesomeIcon icon={faBookmark} />
-                        </span>
-                    </div>
+                  <div className="inter-buttons">
+                    <span>
+                      <FontAwesomeIcon icon="heart" />
+                      <i> </i>
+                      <FontAwesomeIcon icon="comments" />
+                      <i> </i>
+                      <FontAwesomeIcon icon="share-alt" />
+                      <i> </i>
+                    </span>
+                  </div>
+                  <div className="booknark">
+                    <span>
+                      <FontAwesomeIcon icon={faBookmark} />
+                    </span>
+                  </div>
                 </div>
                 <div className="liked-by">
-                    <span><img src="images/common/avatar.png" alt="" width={25} /></span>
-                    <span><img src="images/common/avatar.png" alt="" /></span>
-                    <span><img src="images/common/avatar.png" alt="" /></span>
-                     <a>Liked by <b>Truong Hung</b> and <b>100 other</b></a>
+                  <span>
+                    <img src="images/common/avatar.png" alt="" width={25} />
+                  </span>
+                  <span>
+                    <img src="images/common/avatar.png" alt="" />
+                  </span>
+                  <span>
+                    <img src="images/common/avatar.png" alt="" />
+                  </span>
+                  <a>
+                    Liked by <b>Truong Hung</b> and <b>100 other</b>
+                  </a>
                 </div>
                 <div className="caption">
-                    <a><b>Truong Hung</b> asdhasjdhasjdhjsd <span className="harsh-tag">#hello</span></a>
+                  <a>
+                    <b>Truong Hung</b> asdhasjdhasjdhjsd{" "}
+                    <span className="harsh-tag">#hello</span>
+                  </a>
                 </div>
                 <div className="text-muted">View all 277 comment</div>
+              </div>
             </div>
-          </div>
           </Col>
 
           {/* Right */}
           <Col md={3}>
             <div className="right">
-                <div className="messages">
-                    <div className="heading">
-                        <h5>Messages</h5><i><FontAwesomeIcon icon={faEdit} /></i>
-                    </div>
-                    {/* search bar*/}
-                    <div className="search-bar">
-                    <FontAwesomeIcon icon={faSearch} />
-                    <input type="search" placeholder="Search messages" id="message-search" />
-                    </div>
-                     {/* mess category*/}
-                     <div className="category">
-                        <h6 className="actives">Primary</h6>
-                        <h6>General</h6>
-                        <h6 className="message-requests">Requests(1)</h6>
-                     </div>
-                     {/* messagaes*/}
-                     <div className="message">
-                        <div className="profile-photo1">
-                            <img src="images/common/avatar.png" alt="" width={50}/>
-                        </div>
-                        <div className="message-body">
-                            <h6>Edem Quist <br /><span className="text-muted">Just woke up bruh</span></h6>
-                        
-                        </div>
-                     </div><div className="message">
-                        <div className="profile-photo1">
-                            <img src="images/common/avatar.png" alt="" width={50}/>
-                            <div className="actives"></div>
-                        </div>
-                        <div className="message-body">
-                            <h6>Edem Quist <br /><span className="text-bold">Just woke up bruh</span></h6>
-                        
-                        </div>
-                     </div>
-                     <div className="message">
-                        <div className="profile-photo1">
-                            <img src="images/common/avatar.png" alt="" width={50}/>
-                        </div>
-                        <div className="message-body">
-                            <h6>Edem Quist <br /><span className="text-bold">Just woke up bruh</span></h6>
-                        
-                        </div>
-                     </div>
-                     <div className="message">
-                        <div className="profile-photo1">
-                            <img src="images/common/avatar.png" alt="" width={50}/>
-                        </div>
-                        <div className="message-body">
-                            <h6>Edem Quist <br /><span className="text-muted">Just woke up bruh</span></h6>
-                        
-                        </div>
-                     </div>
+              <div className="messages">
+                <div className="heading">
+                  <h5>Messages</h5>
+                  <i>
+                    <FontAwesomeIcon icon={faEdit} />
+                  </i>
                 </div>
+                {/* search bar*/}
+                <div className="search-bar">
+                  <FontAwesomeIcon icon={faSearch} />
+                  <input
+                    type="search"
+                    placeholder="Search messages"
+                    id="message-search"
+                  />
+                </div>
+                {/* mess category*/}
+                <div className="category">
+                  <h6 className="actives">Primary</h6>
+                  <h6>General</h6>
+                  <h6 className="message-requests">Requests(1)</h6>
+                </div>
+                {/* messagaes*/}
+                <div className="message">
+                  <div className="profile-photo1">
+                    <img src="images/common/avatar.png" alt="" width={50} />
+                  </div>
+                  <div className="message-body">
+                    <h6>
+                      Edem Quist <br />
+                      <span className="text-muted">Just woke up bruh</span>
+                    </h6>
+                  </div>
+                </div>
+                <div className="message">
+                  <div className="profile-photo1">
+                    <img src="images/common/avatar.png" alt="" width={50} />
+                    <div className="actives"></div>
+                  </div>
+                  <div className="message-body">
+                    <h6>
+                      Edem Quist <br />
+                      <span className="text-bold">Just woke up bruh</span>
+                    </h6>
+                  </div>
+                </div>
+                <div className="message">
+                  <div className="profile-photo1">
+                    <img src="images/common/avatar.png" alt="" width={50} />
+                  </div>
+                  <div className="message-body">
+                    <h6>
+                      Edem Quist <br />
+                      <span className="text-bold">Just woke up bruh</span>
+                    </h6>
+                  </div>
+                </div>
+                <div className="message">
+                  <div className="profile-photo1">
+                    <img src="images/common/avatar.png" alt="" width={50} />
+                  </div>
+                  <div className="message-body">
+                    <h6>
+                      Edem Quist <br />
+                      <span className="text-muted">Just woke up bruh</span>
+                    </h6>
+                  </div>
+                </div>
+              </div>
 
-                {/* Friend Accept */}
-                <div className="friend-requests">
-                    <h5>Requests</h5>
-                    <div className="request">
-                        <div className="info">
-                        <div className="profile-photo1">
-                            <img src="images/common/avatar.png" alt="" width={50}/>
-                        </div>
-                        <div>
-                        <h6>Tuan Joker</h6>
-                        <p className="text-muted">8 mutual friends</p>
-                        </div>
-                        </div>
-                        <div className="action">
-                            <button className="btn btn-primary">
-                                Accept
-                            </button>
-                            <button className="btn"> 
-                                Decline
-                            </button>
-                        </div>
+              {/* Friend Accept */}
+              <div className="friend-requests">
+                <h5>Requests</h5>
+                <div className="request">
+                  <div className="info">
+                    <div className="profile-photo1">
+                      <img src="images/common/avatar.png" alt="" width={50} />
                     </div>
-                    <div className="request">
-                        <div className="info">
-                        <div className="profile-photo1">
-                            <img src="images/common/avatar.png" alt="" width={50}/>
-                        </div>
-                        <div>
-                        <h6>Tuan Joker</h6>
-                        <p className="text-muted">8 mutual friends</p>
-                        </div>
-                        </div>
-                        <div className="action">
-                            <button className="btn btn-primary">
-                                Accept
-                            </button>
-                            <button className="btn"> 
-                                Decline
-                            </button>
-                        </div>
+                    <div>
+                      <h6>Tuan Joker</h6>
+                      <p className="text-muted">8 mutual friends</p>
                     </div>
-                    <div className="request">
-                        <div className="info">
-                        <div className="profile-photo1">
-                            <img src="images/common/avatar.png" alt="" width={50}/>
-                        </div>
-                        <div>
-                        <h6>Tuan Joker</h6>
-                        <p className="text-muted">8 mutual friends</p>
-                        </div>
-                        </div>
-                        <div className="action">
-                            <button className="btn btn-primary">
-                                Accept
-                            </button>
-                            <button className="btn"> 
-                                Decline
-                            </button>
-                        </div>
-                    </div>
+                  </div>
+                  <div className="action">
+                    <button className="btn btn-primary">Accept</button>
+                    <button className="btn">Decline</button>
+                  </div>
                 </div>
+                <div className="request">
+                  <div className="info">
+                    <div className="profile-photo1">
+                      <img src="images/common/avatar.png" alt="" width={50} />
+                    </div>
+                    <div>
+                      <h6>Tuan Joker</h6>
+                      <p className="text-muted">8 mutual friends</p>
+                    </div>
+                  </div>
+                  <div className="action">
+                    <button className="btn btn-primary">Accept</button>
+                    <button className="btn">Decline</button>
+                  </div>
+                </div>
+                <div className="request">
+                  <div className="info">
+                    <div className="profile-photo1">
+                      <img src="images/common/avatar.png" alt="" width={50} />
+                    </div>
+                    <div>
+                      <h6>Tuan Joker</h6>
+                      <p className="text-muted">8 mutual friends</p>
+                    </div>
+                  </div>
+                  <div className="action">
+                    <button className="btn btn-primary">Accept</button>
+                    <button className="btn">Decline</button>
+                  </div>
+                </div>
+              </div>
             </div>
           </Col>
         </Row>

@@ -129,15 +129,26 @@ const getUserInfoByAccessToken = (accessToken) => {
     }
   })
 }
+const getAllUser = async () => {
+  try {
+      const listUser = await User.find({}).exec();
+      console.log(listUser);
+      return listUser;
+  } catch (error) {
+      throw new Error(error.toString());
+  }
+}
 
 export {
   createUser,
   login,
-  getUserInfoByAccessToken
+  getUserInfoByAccessToken,
+  getAllUser
 };
 
 export default {
   createUser,
   login,
-  getUserInfoByAccessToken
+  getUserInfoByAccessToken,
+  getAllUser
 };

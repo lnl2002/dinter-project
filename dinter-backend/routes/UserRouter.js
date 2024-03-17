@@ -10,5 +10,6 @@ import UserController from '../controllers/UserController.js';
 router.post('/register',UserController.createUser)
 router.post('/login', UserController.login)
 router.get('/user-info', UserController.getUserInfoByAccessToken);
-
+router.get('/user-search/:keyword', UserController.searchUsers);
+router.put('/:userId', UserController.updateUser);
 export default router

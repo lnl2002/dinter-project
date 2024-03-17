@@ -19,15 +19,19 @@ const userSchema = new Schema({
     enum: ['male', 'female', 'other']
   },
   dateOfBirth: {
-    type: Date,
-    required: true
+    type: Date
   },
   avatar: String,
   bio: String,
   address: String,
   friends: [{ type: Schema.Types.ObjectId, ref: 'Users' }],
   isAdmin: Boolean,
-  hobbies: [{ type: Schema.Types.ObjectId, ref: 'Hobbies' }]
+  hobbies: [{ type: Schema.Types.ObjectId, ref: 'Hobbies' }],
+  
+  isSetUpProfile: {
+    type: Boolean,
+    default: false,
+  }
 });
 
 const User = mongoose.model('Users', userSchema);
