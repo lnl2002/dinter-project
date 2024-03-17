@@ -16,7 +16,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { BACK_END_HOST } from "../utils/AppConfig";
 library.add(faEllipsis, faHeart, faComments, faShareAlt, faBookmark, faEdit, faSearch);
 function HomePage(props) {
-  
+
   const user = JSON.parse(localStorage.getItem('User'));
   const [listPost, setListPost] = useState([]);
   const [isLoad, setIsLoad] = useState();
@@ -166,7 +166,7 @@ function HomePage(props) {
   const handleNavStory = (id) => {
     nav('/story/' + id);
   }
-  console.log(offset);
+  console.log(unwatchNews);
   return (
     <div ref={pageContent} className="home-page">
       <HeaderHome />
@@ -187,7 +187,7 @@ function HomePage(props) {
                     <strong>{user.username}</strong>
                   </div>
                 </div>
-                <LeftBarHomePage/>
+                <LeftBarHomePage />
               </div>
             </div>
           </Col>
@@ -197,10 +197,10 @@ function HomePage(props) {
               <Col xs={12} className="story-container">
                 {
                   unwatchNews.length === 0 && watchedNews.length === 0 && (
-                    <div className="story-item" onClick={() => {nav('/story/create')}}>
+                    <div className="story-item" onClick={() => { nav('/story/create') }}>
                       <img src="/images/common/avatar.png" alt="error" className="avatar-story" />
                       <p className="story-name">Add Story</p>
-                      <img src={"/images/common/avatar.png"} className="story-background"/>
+                      <img src={"/images/common/avatar.png"} className="story-background" />
                     </div>
                   )
                 }
@@ -208,7 +208,7 @@ function HomePage(props) {
                   unwatchNews && unwatchNews.map((str) => {
                     return (
                       <div className="story-item" onClick={() => handleNavStory(str.userId)}>
-                        <img src="images/common/avatar.png" alt="error" className="avatar-story" />
+                        <img src={"http://localhost:3008/" + str.avatar} alt="error" className="avatar-story" />
                         <p className="story-name">{JSON.parse(localStorage.getItem("User")).username === str.username ? "Your story" : str.username}</p>
                         <img src={"http://localhost:3008/" + str.stories[0].thumbnail} alt="error" />
                       </div>
@@ -218,7 +218,7 @@ function HomePage(props) {
                   watchedNews && watchedNews.map((str) => {
                     return (
                       <div className="story-item" onClick={() => handleNavStory(str.userId)}>
-                        <img src="images/common/avatar.png" alt="error" className="avatar-story" />
+                        <img src={"http://localhost:3008/" + str.avatar} alt="error" className="avatar-story" />
                         <p className="story-name">{JSON.parse(localStorage.getItem("User")).username === str.username ? "Your story" : str.username}</p>
                         <img src={"http://localhost:3008/" + str.stories[0].thumbnail} alt="error" />
                       </div>
@@ -395,8 +395,8 @@ function HomePage(props) {
           </ul>
         </Modal>
       </Container>
-      <PostCreation show={showCreate} close={handleCreateClose} setListPost={setListPost} listPost={listPost} setShowCreate={setShowCreate} 
-          offset={offset} setOffset={setOffset}/>
+      <PostCreation show={showCreate} close={handleCreateClose} setListPost={setListPost} listPost={listPost} setShowCreate={setShowCreate}
+        offset={offset} setOffset={setOffset} />
       <PostEdition show={showEdit} setShow={setShowEdit} post={listPost[indexPost]} setListPost={setListPost} listPost={listPost} />
     </div>
   );
