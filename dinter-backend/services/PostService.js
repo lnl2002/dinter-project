@@ -77,7 +77,7 @@ const handleLike = async (postId, userId) => {
             receiver: favorited.author,
             type: 'like',
             sender: userId,
-            link: '/login'
+            link: '/post/' + postId
         })
         return notification;
     } catch (error) {

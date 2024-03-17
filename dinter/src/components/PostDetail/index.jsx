@@ -38,10 +38,10 @@ function PostDetail({
         <div style={{ height: '90vh' }} className="d-flex flex-row justify-content-between header align-items-center">
           <div className='d-flex justify-content-center align-items-center' style={{ padding: 0, maxWidth: 750, height: '100%', width: 'fit-content', overflow: 'hidden' }}>
 
-            <Carousel controls={false} interval={null} style={{ height: '100%' }} activeIndex={indexImage}>
+            <Carousel id='caro' controls={false} interval={null} style={{ height: '100%' }} activeIndex={indexImage}>
               {post.images.map(pi =>
                 <Carousel.Item style={{ height: '100%' }}>
-                  <img alt='post-view' height='100%' src={BACK_END_HOST + pi} />
+                  <img alt='post-view' width={'100%'} height='100%' src={BACK_END_HOST + pi} style={{objectFit: 'contain'}}/>
                 </Carousel.Item>
               )}
             </Carousel>
@@ -68,7 +68,7 @@ function PostDetail({
 }
 
 export const usePostDetailStore = create((set) => ({
-  likesArray: 0,
+  likesArray: [],
   setLikesArray: (likesArray) => set((state) => ({ likesArray: likesArray}))
 }))
 

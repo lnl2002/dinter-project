@@ -79,9 +79,10 @@ function LeftBarHomePage(props) {
                     token: 'Bearer ' + getAccessToken()
                 }
             })
-            .then(res => nav('/login'))
+            .then(res => nav(link))
             .catch(err => console.log(err));
         }
+        nav(link);
     }
 
     // setnumbernoti when render
