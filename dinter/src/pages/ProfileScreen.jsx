@@ -33,7 +33,7 @@ function ProfileScreen(props) {
   //pre-define view
   const { userId } = useParams();
   const isSpectatedView = useMemo(() => {
-    return userId && sessionUser.id != userId? true : false;
+    return userId && sessionUser.id != userId ? true : false;
   }, [userId]);
   //
 
@@ -79,7 +79,7 @@ function ProfileScreen(props) {
     }
   }
 
-  const LoadUserPublicInfo = async (userId) =>{
+  const LoadUserPublicInfo = async (userId) => {
     axios.get(BACK_END_HOST + "api/v1/user/public-user-info/" + userId).then(res => {
       setUserData(res.data)
       console.log(res.data)
@@ -87,13 +87,13 @@ function ProfileScreen(props) {
   }
 
   const LoadContentPage = async () => {
-    if(!isSpectatedView){ //if is user go to page
+    if (!isSpectatedView) { //if is user go to page
       if (sessionUser) {
         LoadUserAnalyticNumber(sessionUser.id)
         LoadContent(contentType.post.code, sessionUser.id);
         LoadUserPublicInfo(sessionUser.id);
       }
-    } else{
+    } else {
       LoadUserAnalyticNumber(userId)
       LoadContent(contentType.post.code, userId);
       LoadUserPublicInfo(userId);
@@ -143,10 +143,10 @@ function ProfileScreen(props) {
               <div className='name-field d-flex flex-row align-content-center' style={{ gap: 10 }}>
                 <h5>{userData.username}</h5>
                 {
-                  !isSpectatedView? 
-                  <ButtonWeb onClick={() => setShowSettingBox(true)} title={"Edit profile"}></ButtonWeb> 
-                  :
-                  <ButtonWeb onClick={() => {}} title={"Add friend +"}></ButtonWeb> 
+                  !isSpectatedView ?
+                    <ButtonWeb onClick={() => setShowSettingBox(true)} title={"Edit profile"}></ButtonWeb>
+                    :
+                    <ButtonWeb onClick={() => { }} title={"Add friend +"}></ButtonWeb>
                 }
                 <ButtonWeb onClick={handleSendMessage} title={"Send message"}></ButtonWeb>
                 <button style={{ background: "white" }}>
@@ -175,8 +175,14 @@ function ProfileScreen(props) {
 
               <div className='row d-flex col-md-10'>
                 {
-                  userData.hobbies && userData.length>0 ?
-                    userData.hobbies.map(ub => <HobbyTag title={ub.hobbyName}></HobbyTag>)
+                  userData.hobbies && userData.hobbies.length > 0 ?
+                    <div className='d-flex flex-row flex-wrap'>
+                      {
+                        userData.hobbies.map(ub => <HobbyTag 
+                          style={{background: 'linear-gradient(90deg, rgba(133,88,181,1) 16%, rgba(255,28,78,1) 59%, rgba(241,139,209,1) 100%)'}} 
+                          title={ub.hobbyName}></HobbyTag>)
+                      }
+                    </div>
                     :
                     <button style={{ backgroundColor: "#ff5464" }}>
                       <TextWeb style={{ color: "white" }} text={!isSpectatedView ? "Go to profile setting to update your hobbies list" : "This user has no hobby to shown"}></TextWeb>
@@ -343,7 +349,7 @@ const StatisticNumber = ({ number, text }) => {
 
 // Custom component for displaying an avatar
 export const AvatarDiv = ({ image, style, frame }) => {
-  return ( 
+  return (
     <div
       style={{
         display: "flex",

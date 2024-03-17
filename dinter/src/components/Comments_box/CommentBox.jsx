@@ -38,7 +38,6 @@ const CommentBox = React.memo(({
   useEffect(() => {
     if (isParentComment) {
       getRepliedCommentNumber()
-      // getRepliedComment()
     }
   }, [])
 
@@ -58,7 +57,6 @@ const CommentBox = React.memo(({
         }
       }
     } 
-    console.log(repliedCommentData)
   }, [repliedCommentData])
 
   return (

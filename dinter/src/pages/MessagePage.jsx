@@ -270,10 +270,10 @@ function MessagePage() {
     console.log('recipientUser', recipientUser);
     console.log('listConversation', listConversation);
     return (
-        <div>
+        <div style={{width: '100vw', height: '100vh'}}>
             <HeaderHome />
-            <div className='container-fluid' style={{ paddingTop: "68px", backgroundColor: "white" }}>
-                <div className='row'>
+            <div className='container-fluid' style={{ paddingTop: "68px", backgroundColor: "white", width:'100%', height: '100%' }}>
+                <div className='row' style={{ flexWrap: 'nowrap' , height:'100%'}}>
                     <div className='col-3' style={{ padding: "0" }}>
                         <div id='mp-mes-header'>
                             <input type="text" class="form-control" placeholder="Search Messages" />
@@ -479,7 +479,9 @@ function MessagePage() {
                     }
                     {
                         options === 1 && (
-                            <MatchesPage />
+                            <div className='col-md-9 p-0'>
+                                <MatchesPage />
+                            </div>
                         )
                     }
 

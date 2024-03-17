@@ -6,7 +6,8 @@ import { useState } from "react";
 export default function GenderPicker({
     defaultGender,
     visible,
-    onCancel
+    onCancel,
+    style
 }) {
     //zustand user global state 
     const userData = useUserStore((state) => state.userData);
@@ -71,7 +72,7 @@ export default function GenderPicker({
     }
 
     return (
-        <div className="p-0 mt-3 flex-column align-items-center" style={{ display: visible ? 'flex' : 'none' }}>
+        <div className="p-0 mt-3 flex-column align-items-center" style={{ ...style, display: visible ? 'flex' : 'none' }}>
             <InputGroup>
                 {getGenderTabByString('male')}
                 {getGenderTabByString('female')}

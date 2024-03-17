@@ -10,6 +10,7 @@ import ResetPassword from "../pages/ResetPassword";
 import StoryCreation from "../pages/StoryCreation";
 import PostDetailProView from "../pages/PostDetailProView";
 import CallVideo from "../pages/CallVideo/CallVideo";
+import MatchesPage from "../pages/MatchesPage";
 
 
 const routes = [
@@ -28,6 +29,10 @@ const routes = [
     {
         path: '/messages',
         element: MessagePage
+    },
+    {
+        path: '/matches',
+        element: MatchesPage
     },
     {
         path: '/profile',
@@ -53,7 +58,7 @@ const routes = [
         path: '/dashboard',
         element: Dashboard,
     },
-    {
+    {   
         path: '/reset-password',
         element: ResetPassword,
     },
