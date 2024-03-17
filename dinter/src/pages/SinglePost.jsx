@@ -71,7 +71,6 @@ function SinglePost({ post, handleShow, index, listPost }) {
             console.log(error);
         }
     }
-    console.log(pst);
     return (
         <>
             {
