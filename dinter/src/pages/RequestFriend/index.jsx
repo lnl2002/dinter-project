@@ -98,7 +98,9 @@ const RequestFriend = () => {
       const res = axios.put(
         `http://localhost:3008/api/v1/user/accept-friend/${e}`
       );
-      setListRequest(res?.data);
+      if(!!res?.data?.message) {
+        getListRequest()
+      }
     } catch (error) {
       console.log(error);
     }
@@ -109,7 +111,9 @@ const RequestFriend = () => {
       const res = axios.delete(
         `http://localhost:3008/api/v1/user/delete-accept-friend/${e}`
       );
-      setListRequest(res?.data);
+      if(!!res?.data?.message) {
+        getListRequest()
+      }
     } catch (error) {
       console.log(error);
     }
