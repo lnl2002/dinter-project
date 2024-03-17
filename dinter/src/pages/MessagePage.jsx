@@ -9,6 +9,8 @@ import InputEmoji from 'react-input-emoji';
 import api from '../utils/services';
 import { Col, Row, Spinner } from 'react-bootstrap';
 import EmptyConversation from '../components/EmptyConversation/EmptyConversation';
+import { useNavigate } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 
 function MessagePage() {
 
@@ -30,6 +32,8 @@ function MessagePage() {
     const messageContainerRef = useRef();
     const [showLoadMessage, setShowLoadMessage] = useState(false);
     const [skipMessage, setSkipMessage] = useState(0);
+
+    const nav = useNavigate();
 
     // send message
     useEffect(() => {
@@ -247,6 +251,20 @@ function MessagePage() {
         setListConversation(tempList);
     }
 
+    const handleCallVideo = () => {
+        var uuid = uuidv4();
+        sendRoomId(uuid);
+        nav(`/call-video/${uuid}`)
+    }
+
+    const sendRoomId = (uuid) => {
+        socket.emit('sendRoomId', {
+            uuid,
+            receiverId: recipientUser._id,
+            user
+        })
+    }
+
     console.log('currentConversation', currentConversation);
     console.log('recipientUser', recipientUser);
     console.log('listConversation', listConversation);
@@ -370,7 +388,7 @@ function MessagePage() {
                                         </div>
                                         <div className='boxchat-option'>
                                             <ion-icon name="call" className="bc-option"></ion-icon>
-                                            <ion-icon name="videocam" className="bc-option"></ion-icon>
+                                            <ion-icon name="videocam" className="bc-option" onClick={handleCallVideo} ></ion-icon>
                                             <ion-icon name="alert-circle" onClick={() => setViewInfo(!viewInfo)}></ion-icon>
                                         </div>
                                     </div>

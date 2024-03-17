@@ -8,6 +8,7 @@ import Story from "../pages/Story";
 import Dashboard from "../pages/Dashboard";
 import ResetPassword from "../pages/ResetPassword";
 import PostDetailProView from "../pages/PostDetailProView";
+import CallVideo from "../pages/CallVideo/CallVideo";
 
 
 const routes = [
@@ -54,6 +55,10 @@ const routes = [
     {
         path: '/reset-password',
         element: ResetPassword,
+    },
+    {
+        path: '/call-video/:roomId',
+        element: CallVideo
     }
 ]
 

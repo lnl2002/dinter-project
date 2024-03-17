@@ -1,16 +1,11 @@
-// const express = require('express');
-// const { config } = require('dotenv');
-// const mongoose = require('mongoose');
-// const routes = require('./routes/index');
-// const bodyParser = require("body-parser");
-// const cors = require('cors');
-
 import express from 'express';
 import { config } from 'dotenv';
 import mongoose from 'mongoose';
 import routes from './routes/index.js';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import { ExpressPeerServer } from 'peer';
+import http from 'http'
 config();
 
 
@@ -19,6 +14,10 @@ const app = express();
 app.use('/public',express.static('public'));
 const PORT = process.env.PORT || 3007;
 
+const server = http.Server(app);
+const peerServer = ExpressPeerServer(server, {
+  debug: true
+})
 
 async function main() {
   try {
@@ -26,6 +25,8 @@ async function main() {
     
     app.use(cors());
     
+    app.use('/peerjs', peerServer);
+
     app.use(bodyParser.json());
     routes(app);
 

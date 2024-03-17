@@ -29,7 +29,8 @@ const userSchema = new Schema({
   hobbies: [{ type: Schema.Types.ObjectId, ref: 'Hobbies' }],
   isSetUpProfile: {
     type: Boolean,
-  }
+  },
+  requestMatch: [{ type: Schema.Types.ObjectId, ref: 'Users' }]
 });
 
 const User = mongoose.model('Users', userSchema);
