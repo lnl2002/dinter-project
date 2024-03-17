@@ -9,6 +9,9 @@ import InputEmoji from 'react-input-emoji';
 import api from '../utils/services';
 import { Col, Row, Spinner } from 'react-bootstrap';
 import EmptyConversation from '../components/EmptyConversation/EmptyConversation';
+import { useNavigate } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
+import { BACK_END_HOST } from '../utils/AppConfig';
 
 function MessagePage() {
 
@@ -30,6 +33,8 @@ function MessagePage() {
     const messageContainerRef = useRef();
     const [showLoadMessage, setShowLoadMessage] = useState(false);
     const [skipMessage, setSkipMessage] = useState(0);
+
+    const nav = useNavigate();
 
     // send message
     useEffect(() => {
@@ -247,6 +252,20 @@ function MessagePage() {
         setListConversation(tempList);
     }
 
+    const handleCallVideo = () => {
+        var uuid = uuidv4();
+        sendRoomId(uuid);
+        nav(`/call-video/${uuid}`)
+    }
+
+    const sendRoomId = (uuid) => {
+        socket.emit('sendRoomId', {
+            uuid,
+            receiverId: recipientUser._id,
+            user
+        })
+    }
+
     console.log('currentConversation', currentConversation);
     console.log('recipientUser', recipientUser);
     console.log('listConversation', listConversation);
@@ -276,26 +295,37 @@ function MessagePage() {
                                         }}
                                         key={index}
                                     >
-                                        <Col md={2} className='mp-avartar'>
-                                            <div style={{ position: "relative" }}>
-                                                <img src={conversation.info.avatar} alt='error-img' />
-                                                {
-                                                    onlineUsers.some((u) => u?.userId == conversation.info._id) ?
-                                                        (
-                                                            <div
-                                                                style={{
-                                                                    width: "15px",
-                                                                    height: "15px",
-                                                                    background: "#00FF00",
-                                                                    borderRadius: "99px",
-                                                                    position: "absolute",
-                                                                    right: "-8px",
-                                                                    bottom: "0",
-                                                                }}>
-                                                            </div>
-                                                        ) :
-                                                        (<></>)
-                                                }
+                                        <Col md={2} className='mp-avartar position-relative'>
+                                            {
+                                                onlineUsers.some((u) => u?.userId == conversation.info._id) ?
+                                                    (
+                                                        <div
+                                                            style={{
+                                                                width: "15px",
+                                                                height: "15px",
+                                                                background: "#00FF00",
+                                                                borderRadius: "99px",
+                                                                position: "absolute",
+                                                                right: "0px",
+                                                                bottom: "0",
+                                                            }}>
+                                                        </div>
+                                                    ) :
+                                                    (<></>)
+                                            }
+                                            <div style={{
+                                                width: '60px', height: '60px',
+                                                borderRadius: '50%',
+                                                overflow: 'hidden'
+                                            }}>
+                                                <img src={(BACK_END_HOST + conversation.info.avatar) || (BACK_END_HOST + 'public/images/users/user_blank.png')} alt='error-img'
+                                                    style={{
+                                                        width: '100%',
+                                                        height: 'auto',
+                                                        display: 'block'
+                                                    }}
+                                                />
+
 
                                             </div>
                                         </Col>
@@ -330,7 +360,7 @@ function MessagePage() {
                                     <div className='mg-boxchat-header'>
                                         <div className='mg-user-info'>
                                             <div className='mg-avatar-boxchat avatar'>
-                                                <img src={recipientUser.avatar} alt='error-img' />
+                                                <img src={(BACK_END_HOST + recipientUser.avatar) || (BACK_END_HOST + 'public/images/users/user_blank.png')} alt='error-img' />
                                             </div>
                                             <div>
                                                 <p>{recipientUser.username}</p>
@@ -370,7 +400,7 @@ function MessagePage() {
                                         </div>
                                         <div className='boxchat-option'>
                                             <ion-icon name="call" className="bc-option"></ion-icon>
-                                            <ion-icon name="videocam" className="bc-option"></ion-icon>
+                                            <ion-icon name="videocam" className="bc-option" onClick={handleCallVideo} ></ion-icon>
                                             <ion-icon name="alert-circle" onClick={() => setViewInfo(!viewInfo)}></ion-icon>
                                         </div>
                                     </div>

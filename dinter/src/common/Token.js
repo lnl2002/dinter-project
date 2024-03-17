@@ -5,7 +5,12 @@ const setTokenToCookies = (accessToken, refreshToken) => {
     Cookies.set('access_token', accessToken, { expires: 7 });
 
     // Refresh token
-    Cookies.set('refresh_token', refreshToken, { expires: 7 });
+    Cookies.set('refresh_token', refreshToken, { expires: 365 });
+}
+
+const setAccessToken = async(accessToken) => {
+    // Access token
+    Cookies.set('access_token', accessToken, { expires: 7 });
 }
 
 const getAccessToken = () => {
@@ -25,5 +30,6 @@ export {
     setTokenToCookies, 
     getAccessToken, 
     getRefreshToken,
-    clearToken
+    clearToken,
+    setAccessToken
 }

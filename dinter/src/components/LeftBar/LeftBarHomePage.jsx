@@ -6,6 +6,7 @@ import axios from 'axios';
 import { getAccessToken } from '../../common/Token';
 import { formatDistanceToNow } from 'date-fns';
 import api from '../../utils/services.js';
+import { BACK_END_HOST } from '../../utils/AppConfig.js';
 
 
 function LeftBarHomePage(props) {
@@ -78,9 +79,10 @@ function LeftBarHomePage(props) {
                     token: 'Bearer ' + getAccessToken()
                 }
             })
-            .then(res => nav('/login'))
+            .then(res => nav(link))
             .catch(err => console.log(err));
         }
+        nav(link);
     }
 
     // setnumbernoti when render
@@ -164,10 +166,12 @@ function LeftBarHomePage(props) {
                                         <Col md={2}>
                                             <div style={{
                                                 width: "50px",
-                                                height: "50px"
+                                                height: "50px",
+                                                borderRadius: "50%", 
+                                                overflow: "hidden" 
                                             }}>
-                                                <img src={noti.sender.avatar} alt='avatar' width={"100%"}
-                                                    style={{ borderRadius: "50%", overflow: "hidden" }} />
+                                                <img src={BACK_END_HOST + noti.sender.avatar} alt='avatar' width={"100%"}
+                                                    style={{ width: '100%', height: 'auto'}} />
                                             </div>
                                         </Col>
                                         <Col md={9}>

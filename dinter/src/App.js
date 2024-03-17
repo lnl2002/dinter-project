@@ -5,6 +5,7 @@ import { ToastContainer } from 'react-toastify';
 import { useContext, useEffect } from 'react';
 import { AuthContext } from './context/AuthContext';
 import Login from './pages/Login';
+import CallVideoRequestModal from './components/CallVideoRequest/CallVideoRequestModal';
 
 function App() {
   const {user, setUser} = useContext(AuthContext);
@@ -17,6 +18,7 @@ function App() {
   return (
     <div className="App">
       <ToastContainer />
+      <CallVideoRequestModal/>
       <BrowserRouter>
         <Routes>
           {

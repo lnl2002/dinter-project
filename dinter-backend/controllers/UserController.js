@@ -56,7 +56,7 @@ const refreshToken = async (req, res) => {
   try {
     const token = req.headers.token.split(' ')[1];
     if (!token) {
-      return res.status(404).json({
+      return res.status(401).json({
         status: "ERR",
         message: "Invalid token"
       })
@@ -67,7 +67,7 @@ const refreshToken = async (req, res) => {
 
 
   } catch (error) {
-    return res.status(404).json(error)
+    return res.status(401).json(error)
   }
 }
 

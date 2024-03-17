@@ -35,8 +35,7 @@ body {
 
 .avatar > img {
   width: 100%;
-  border-radius: 50%;
-  overflow: hidden;
+  height: auto;
 }
 
 .circle {
@@ -64,4 +63,8 @@ body {
 
 .message-not-read {
   font-weight: 500;
+}
+
+#caro .carousel-inner {
+  height: 100%;
 }
