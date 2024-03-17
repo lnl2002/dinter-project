@@ -2,7 +2,8 @@ import { postService } from "../services/index.js";
 import fs from 'fs'
 const createPost = async (req, res) => {
     try {
-        const author = req.body.author;
+        // const author = req.body.author;
+        const author = req.userId;
         let images = [];
         if (req.files) {
             req.files.forEach((file) => {
@@ -27,30 +28,10 @@ const getPosts = async (req, res) => {
         const limit = req.query.limit || 12;
         const offset = req.query.offset || 0;
         const userId = req.userId;
-        const post = await postService.getPost(limit, offset);
-        const post2 = post.map((p) => {
-            console.log(p.likes);
-            if (p.likes) {
-                if (p.likes.includes(userId)) {
-                    return {
-                        ...p._doc,
-                        favorited: true
-                    }
-                }
-                return {
-                    ...p._doc,
-                    favorited: false
-                }
-            }
-            return {
-                ...p._doc,
-                favorited: false
-            }
-
-        })
+        const post = await postService.getPost(userId, limit, offset);
         res.status(200).json({
             message: "get posts success",
-            data: post2
+            data: post
         })
     }
     catch (error) {
@@ -116,10 +97,7 @@ const handleDislike = async (req, res) => {
         const postId = req.params.id;
         console.log("userId: " + userId);
         const favoritePost = await postService.handleDislike(postId, userId);
-        res.status(200).json({
-            message: "Dislike successfully",
-            data: favoritePost
-        });
+        res.status(200).json(favoritePost);
     } catch (error) {
         res.status(500).json({
             messages: error.toString()
@@ -149,15 +127,15 @@ const getPostsByUserId = async (req, res) => {
     }
 }
 
-const getPostById = async(req, res) => {
-    try{
+const getPostById = async (req, res) => {
+    try {
         const postId = req.params.postId;
         const post = await postService.getPostById(postId);
         res.status(200).json({
             message: "get post success",
             data: post
         })
-    }catch (error) {
+    } catch (error) {
         res.status(500).json({
             messages: error.toString()
         })
