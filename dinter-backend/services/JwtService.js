@@ -8,7 +8,7 @@ const generalAccessToken = (payload) => {
     const accessToken = jwt.sign({
         ...payload
     }, process.env.PRIVATE_KEY, {
-        expiresIn: '7d',
+        expiresIn: '6h',
         algorithm: "HS256"
     })
     
@@ -43,7 +43,7 @@ const refreshToken = (refreshToken) => {
                 });
 
                 resolve({
-                    status: "OK",
+                    status: "SUCCESS",
                     message: "SUCCESS",
                     accessToken: accessToken
                 })

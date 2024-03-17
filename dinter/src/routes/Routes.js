@@ -9,6 +9,7 @@ import Dashboard from "../pages/Dashboard";
 import ResetPassword from "../pages/ResetPassword";
 import StoryCreation from "../pages/StoryCreation";
 import PostDetailProView from "../pages/PostDetailProView";
+import CallVideo from "../pages/CallVideo/CallVideo";
 
 
 const routes = [
@@ -59,6 +60,10 @@ const routes = [
     {
         path: '/story/create',
         element: StoryCreation,
+    },
+    {
+        path: '/call-video/:roomId',
+        element: CallVideo
     }
 ]
 

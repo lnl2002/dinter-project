@@ -11,7 +11,8 @@ const authMiddleware = (req, res, next) => {
             if(err) {
                 return res.status(401).json({
                     status: "ERR",
-                    message: "The authentication"
+                    message: "The authentication",
+                    err: err.name
                 })
             } else {
                 // console.log(user);

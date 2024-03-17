@@ -7,6 +7,7 @@ export const AuthContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [socket, setSocket] = useState(null);
     const [onlineUsers, setOnlineUsers] = useState([]);
+    const [requestCallVideoInfo, setRequestCallVideoInfo] = useState(null);
 
     //init socket
     useEffect(() => {
@@ -28,6 +29,15 @@ export const AuthContextProvider = ({ children }) => {
         })
     },[socket])
 
+    // receive call-video request
+    useEffect(() => {
+        if(socket === null) return;
+        
+        socket.on("call-video", (res) => {
+            console.log('call-video', res);
+            setRequestCallVideoInfo(res);
+        })
+    },[socket])
     
 
     return (<AuthContext.Provider value={{
@@ -36,7 +46,9 @@ export const AuthContextProvider = ({ children }) => {
         socket,
         setSocket,
         onlineUsers,
-        setOnlineUsers
+        setOnlineUsers,
+        requestCallVideoInfo,
+        setRequestCallVideoInfo
     }}>
         {children}
     </AuthContext.Provider>)
