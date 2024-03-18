@@ -104,6 +104,22 @@ function ProfileScreen(props) {
     LoadContentPage();
   }, [])
 
+  const sendFriendRequest = () => {
+    //send friend request
+    let headers = {
+      token: 'Bearer ' + getAccessToken(),
+      'Content-Type': 'application/json',
+    };
+    axios.post(BACK_END_HOST + "api/v1/user/send-match-request", { targetUserId: userId }, { headers })
+      .then((response) => {
+        console.log(response.data)
+        window.alert("Send friend request")
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
+
   // create new conversation
   const handleSendMessage = () => {
     api.post('/conversation/create-chat', {
@@ -114,141 +130,148 @@ function ProfileScreen(props) {
       .catch(err => console.log(err));
   }
 
+  const checkIsFriend = () => {
+    return userData?.friends?.includes(sessionUser.id);
+  }
+
   return (
     userData && userMediaDisplay ?
-  <div>
-    <HeaderHome/>
-    <div style={{paddingTop: '38px'}}>
-        {
-          userMediaDisplay.length > 0 ?
-            <PostDetail visible={showPostDetail} onHideCallBack={() => setShowPostDetail(false)} post={userMediaDisplay[chosenPostIndex]} user={userData}></PostDetail>
-            :
-            <></>
-        }
-        <ProfileSetting visible={showSettingBox} user={userData} onHideAction={() => setShowSettingBox(false)}></ProfileSetting>
-        <div
-          className="container container-app-p" style={{ minHeight: '100vh' }}
-        >
+      <div>
+        <HeaderHome />
+        <div style={{ paddingTop: '38px' }}>
+          {
+            userMediaDisplay.length > 0 ?
+              <PostDetail visible={showPostDetail} onHideCallBack={() => setShowPostDetail(false)} post={userMediaDisplay[chosenPostIndex]} user={userData}></PostDetail>
+              :
+              <></>
+          }
+          <ProfileSetting visible={showSettingBox} user={userData} onHideAction={() => setShowSettingBox(false)}></ProfileSetting>
+          <div
+            className="container container-app-p" style={{ minHeight: '100vh' }}
+          >
 
-          <div className='row d-flex justify-content-center pt-5'>
+            <div className='row d-flex justify-content-center pt-5'>
 
-            <div className='col-md-3'>
-              <div className="App">
-                <AvatarDiv image={BACK_END_HOST + (userData.avatar || 'user_blank.png')} frame={avatarFrame1} />
-              </div>
-            </div>
-
-            <div className="col-md-5 d-flex flex-column" style={{ gap: 20 }}>
-
-              <div className='name-field d-flex flex-row align-content-center' style={{ gap: 10 }}>
-                <h5>{userData.username}</h5>
-                {
-                  !isSpectatedView ?
-                    <ButtonWeb onClick={() => setShowSettingBox(true)} title={"Edit profile"}></ButtonWeb>
-                    :
-                    <ButtonWeb onClick={() => { }} title={"Add friend +"}></ButtonWeb>
-                }
-                <ButtonWeb onClick={handleSendMessage} title={"Send message"}></ButtonWeb>
-                <button style={{ background: "white" }}>
-                  <svg aria-label="Options" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Options</title><circle cx="12" cy="12" fill="none" r="8.635" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></circle><path d="M14.232 3.656a1.269 1.269 0 0 1-.796-.66L12.93 2h-1.86l-.505.996a1.269 1.269 0 0 1-.796.66m-.001 16.688a1.269 1.269 0 0 1 .796.66l.505.996h1.862l.505-.996a1.269 1.269 0 0 1 .796-.66M3.656 9.768a1.269 1.269 0 0 1-.66.796L2 11.07v1.862l.996.505a1.269 1.269 0 0 1 .66.796m16.688-.001a1.269 1.269 0 0 1 .66-.796L22 12.93v-1.86l-.996-.505a1.269 1.269 0 0 1-.66-.796M7.678 4.522a1.269 1.269 0 0 1-1.03.096l-1.06-.348L4.27 5.587l.348 1.062a1.269 1.269 0 0 1-.096 1.03m11.8 11.799a1.269 1.269 0 0 1 1.03-.096l1.06.348 1.318-1.317-.348-1.062a1.269 1.269 0 0 1 .096-1.03m-14.956.001a1.269 1.269 0 0 1 .096 1.03l-.348 1.06 1.317 1.318 1.062-.348a1.269 1.269 0 0 1 1.03.096m11.799-11.8a1.269 1.269 0 0 1-.096-1.03l.348-1.06-1.317-1.318-1.062.348a1.269 1.269 0 0 1-1.03-.096" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path></svg>
-                </button>
+              <div className='col-md-3'>
+                <div className="App">
+                  <AvatarDiv image={BACK_END_HOST + (userData.avatar || 'user_blank.png')} frame={avatarFrame1} />
+                </div>
               </div>
 
-              <div className='d-flex flex-row col-md-9' style={{ gap: 40 }}>
-                <StatisticNumber number={FormatNumber(userAnalysticData.numberOfPosts)} text={"posts"}></StatisticNumber>
-                <StatisticNumber number={FormatNumber(userAnalysticData.numberOfLikes)} text={"likes"}></StatisticNumber>
-                <StatisticNumber number={FormatNumber(userData.friends?.length || 0)} text={"followers"}></StatisticNumber>
-              </div>
+              <div className="col-md-5 d-flex flex-column" style={{ gap: 20 }}>
 
-              {/* <NameTag nameTag={userData.fullname}></NameTag> */}
+                <div className='name-field d-flex flex-row align-content-center' style={{ gap: 10 }}>
+                  <h5>{userData.username}</h5>
+                  {
+                    !isSpectatedView ?
+                      <ButtonWeb onClick={() => setShowSettingBox(true)} title={"Edit profile"}></ButtonWeb>
+                      :
+                      (
+                        checkIsFriend() ?
+                          <ButtonWeb onClick={handleSendMessage} title={"Send message"}></ButtonWeb> :
+                          <ButtonWeb onClick={() => sendFriendRequest()} title={"Add friend +"}></ButtonWeb>
+                      )
+                  }
+                  <button style={{ background: "white" }}>
+                    <svg aria-label="Options" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Options</title><circle cx="12" cy="12" fill="none" r="8.635" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></circle><path d="M14.232 3.656a1.269 1.269 0 0 1-.796-.66L12.93 2h-1.86l-.505.996a1.269 1.269 0 0 1-.796.66m-.001 16.688a1.269 1.269 0 0 1 .796.66l.505.996h1.862l.505-.996a1.269 1.269 0 0 1 .796-.66M3.656 9.768a1.269 1.269 0 0 1-.66.796L2 11.07v1.862l.996.505a1.269 1.269 0 0 1 .66.796m16.688-.001a1.269 1.269 0 0 1 .66-.796L22 12.93v-1.86l-.996-.505a1.269 1.269 0 0 1-.66-.796M7.678 4.522a1.269 1.269 0 0 1-1.03.096l-1.06-.348L4.27 5.587l.348 1.062a1.269 1.269 0 0 1-.096 1.03m11.8 11.799a1.269 1.269 0 0 1 1.03-.096l1.06.348 1.318-1.317-.348-1.062a1.269 1.269 0 0 1 .096-1.03m-14.956.001a1.269 1.269 0 0 1 .096 1.03l-.348 1.06 1.317 1.318 1.062-.348a1.269 1.269 0 0 1 1.03.096m11.799-11.8a1.269 1.269 0 0 1-.096-1.03l.348-1.06-1.317-1.318-1.062.348a1.269 1.269 0 0 1-1.03-.096" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path></svg>
+                  </button>
+                </div>
 
-              <div className='row d-flex col-md-10'>
-                {
-                  userData.bio && userData.bio != '' ?
-                    <TextWeb text={userData.bio}></TextWeb>
-                    :
-                    <button style={{ backgroundColor: "#ff5464" }}>
-                      <TextWeb style={{ color: "white" }} text={!isSpectatedView ? "Go to profile setting to update bio" : "This user has no bio to shown"}></TextWeb>
-                    </button>
-                }
-              </div>
+                <div className='d-flex flex-row col-md-9' style={{ gap: 40 }}>
+                  <StatisticNumber number={FormatNumber(userAnalysticData.numberOfPosts)} text={"posts"}></StatisticNumber>
+                  <StatisticNumber number={FormatNumber(userAnalysticData.numberOfLikes)} text={"likes"}></StatisticNumber>
+                  <StatisticNumber number={FormatNumber(userData.friends?.length || 0)} text={"followers"}></StatisticNumber>
+                </div>
 
-              <div className='row d-flex col-md-10'>
-                {
-                  userData.hobbies && userData.hobbies.length > 0 ?
-                    <div className='d-flex flex-row flex-wrap'>
-                      {
-                        userData.hobbies.map(ub => <HobbyTag 
-                          style={{background: 'linear-gradient(90deg, rgba(133,88,181,1) 16%, rgba(255,28,78,1) 59%, rgba(241,139,209,1) 100%)'}} 
-                          title={ub.hobbyName}></HobbyTag>)
-                      }
-                    </div>
-                    :
-                    <button style={{ backgroundColor: "#ff5464" }}>
-                      <TextWeb style={{ color: "white" }} text={!isSpectatedView ? "Go to profile setting to update your hobbies list" : "This user has no hobby to shown"}></TextWeb>
-                    </button>
-                }
-              </div>
+                {/* <NameTag nameTag={userData.fullname}></NameTag> */}
 
-            </div>
-          </div>
+                <div className='row d-flex col-md-10'>
+                  {
+                    userData.bio && userData.bio != '' ?
+                      <TextWeb text={userData.bio}></TextWeb>
+                      :
+                      <button style={{ backgroundColor: "#ff5464" }}>
+                        <TextWeb style={{ color: "white" }} text={!isSpectatedView ? "Go to profile setting to update bio" : "This user has no bio to shown"}></TextWeb>
+                      </button>
+                  }
+                </div>
 
-          <div className='row d-flex justify-content-center pt-5'>
-
-            <div className='row d-flex col-md-10 nav-bound'>
-
-              <div className='row justify-content-center navigate-part'>
-
-                <NavButton isChosen={navOptionArr == contentType.post.code} onClick={() => { setNavOptionArr(contentType.post.code); LoadContent(contentType.post.code, userData._id) }} text={contentType.post.name} svg={<svg aria-label="" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="12" role="img" viewBox="0 0 24 24" width="12"><title></title><rect fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="18" x="3" y="3"></rect><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="9.015" x2="9.015" y1="3" y2="21"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="14.985" x2="14.985" y1="3" y2="21"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="21" x2="3" y1="9.015" y2="9.015"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="21" x2="3" y1="14.985" y2="14.985"></line></svg>} />
-
-                <NavButton isChosen={navOptionArr == contentType.video.code} onClick={() => { setNavOptionArr(contentType.video.code); LoadContent(contentType.video.code, userData._id) }} text={contentType.video.name} svg={<svg aria-label="" class="x1lliihq x1n2onr6 x1roi4f4" fill="currentColor" height="12" role="img" viewBox="0 0 24 24" width="12"><title></title><line fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2" x1="2.049" x2="21.95" y1="7.002" y2="7.002"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="13.504" x2="16.362" y1="2.001" y2="7.002"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="7.207" x2="10.002" y1="2.11" y2="7.002"></line><path d="M2 12.001v3.449c0 2.849.698 4.006 1.606 4.945.94.908 2.098 1.607 4.946 1.607h6.896c2.848 0 4.006-.699 4.946-1.607.908-.939 1.606-2.096 1.606-4.945V8.552c0-2.848-.698-4.006-1.606-4.945C19.454 2.699 18.296 2 15.448 2H8.552c-2.848 0-4.006.699-4.946 1.607C2.698 4.546 2 5.704 2 8.552Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M9.763 17.664a.908.908 0 0 1-.454-.787V11.63a.909.909 0 0 1 1.364-.788l4.545 2.624a.909.909 0 0 1 0 1.575l-4.545 2.624a.91.91 0 0 1-.91 0Z" fill-rule="evenodd"></path></svg>} />
+                <div className='row d-flex col-md-10'>
+                  {
+                    userData.hobbies && userData.hobbies.length > 0 ?
+                      <div className='d-flex flex-row flex-wrap'>
+                        {
+                          userData.hobbies.map(ub => <HobbyTag
+                            style={{ background: 'linear-gradient(90deg, rgba(133,88,181,1) 16%, rgba(255,28,78,1) 59%, rgba(241,139,209,1) 100%)' }}
+                            title={ub.hobbyName}></HobbyTag>)
+                        }
+                      </div>
+                      :
+                      <button style={{ backgroundColor: "#ff5464" }}>
+                        <TextWeb style={{ color: "white" }} text={!isSpectatedView ? "Go to profile setting to update your hobbies list" : "This user has no hobby to shown"}></TextWeb>
+                      </button>
+                  }
+                </div>
 
               </div>
             </div>
 
-          </div>
+            <div className='row d-flex justify-content-center pt-5'>
+
+              <div className='row d-flex col-md-10 nav-bound'>
+
+                <div className='row justify-content-center navigate-part'>
+
+                  <NavButton isChosen={navOptionArr == contentType.post.code} onClick={() => { setNavOptionArr(contentType.post.code); LoadContent(contentType.post.code, userData._id) }} text={contentType.post.name} svg={<svg aria-label="" class="x1lliihq x1n2onr6 x5n08af" fill="currentColor" height="12" role="img" viewBox="0 0 24 24" width="12"><title></title><rect fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="18" x="3" y="3"></rect><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="9.015" x2="9.015" y1="3" y2="21"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="14.985" x2="14.985" y1="3" y2="21"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="21" x2="3" y1="9.015" y2="9.015"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="21" x2="3" y1="14.985" y2="14.985"></line></svg>} />
+
+                  <NavButton isChosen={navOptionArr == contentType.video.code} onClick={() => { setNavOptionArr(contentType.video.code); LoadContent(contentType.video.code, userData._id) }} text={contentType.video.name} svg={<svg aria-label="" class="x1lliihq x1n2onr6 x1roi4f4" fill="currentColor" height="12" role="img" viewBox="0 0 24 24" width="12"><title></title><line fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2" x1="2.049" x2="21.95" y1="7.002" y2="7.002"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="13.504" x2="16.362" y1="2.001" y2="7.002"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="7.207" x2="10.002" y1="2.11" y2="7.002"></line><path d="M2 12.001v3.449c0 2.849.698 4.006 1.606 4.945.94.908 2.098 1.607 4.946 1.607h6.896c2.848 0 4.006-.699 4.946-1.607.908-.939 1.606-2.096 1.606-4.945V8.552c0-2.848-.698-4.006-1.606-4.945C19.454 2.699 18.296 2 15.448 2H8.552c-2.848 0-4.006.699-4.946 1.607C2.698 4.546 2 5.704 2 8.552Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M9.763 17.664a.908.908 0 0 1-.454-.787V11.63a.909.909 0 0 1 1.364-.788l4.545 2.624a.909.909 0 0 1 0 1.575l-4.545 2.624a.91.91 0 0 1-.91 0Z" fill-rule="evenodd"></path></svg>} />
+
+                </div>
+              </div>
+
+            </div>
 
 
-          <div className='row d-flex justify-content-center' style={{ padding: 0 }}>
-            <div className='row d-flex col-md-10' style={{ padding: 0 }}>
-              {
-                userMediaDisplay.length > 0 && userMediaDisplay.map((u, index) =>
-                  <ImageItem
-                    onClick={() => (setShowPostDetail(true), setChosenPostIndex(index))}
-                    type={navOptionArr}
-                    image={BACK_END_HOST + u.images[0]}
-                    interaction={{
-                      likes: u.likes.length,
-                      comments: u.comments.length
-                    }} />
-                )
-              }
-              {
-                userMediaDisplay.length > 3 ? '' :
-                  <div className='mt-5 mb-5 d-flex flex-column align-items-center'>
-                    <Lottie options={
-                      {
-                        loop: true,
-                        autoplay: true,
-                        animationData: animationData,
-                        rendererSettings: {
-                          preserveAspectRatio: 'xMidYMid slice'
+            <div className='row d-flex justify-content-center' style={{ padding: 0 }}>
+              <div className='row d-flex col-md-10' style={{ padding: 0 }}>
+                {
+                  userMediaDisplay.length > 0 && userMediaDisplay.map((u, index) =>
+                    <ImageItem
+                      onClick={() => (setShowPostDetail(true), setChosenPostIndex(index))}
+                      type={navOptionArr}
+                      image={BACK_END_HOST + u.images[0]}
+                      interaction={{
+                        likes: u.likes.length,
+                        comments: u.comments.length
+                      }} />
+                  )
+                }
+                {
+                  userMediaDisplay.length > 3 ? '' :
+                    <div className='mt-5 mb-5 d-flex flex-column align-items-center'>
+                      <Lottie options={
+                        {
+                          loop: true,
+                          autoplay: true,
+                          animationData: animationData,
+                          rendererSettings: {
+                            preserveAspectRatio: 'xMidYMid slice'
+                          }
                         }
                       }
-                    }
-                      isClickToPauseDisabled="false"
-                      height={400}
-                      width={400} />
-                    <TextWeb style={{ fontWeight: 'bolder' }} text={"Your profile page seems still quite empty"} />
-                    <TextWeb style={{ fontWeight: 'bolder' }} text={"Let's update some more moments!"} />
-                  </div>
-              }
+                        isClickToPauseDisabled="false"
+                        height={400}
+                        width={400} />
+                      <TextWeb style={{ fontWeight: 'bolder' }} text={"Your profile page seems still quite empty"} />
+                      <TextWeb style={{ fontWeight: 'bolder' }} text={"Let's update some more moments!"} />
+                    </div>
+                }
+              </div>
             </div>
-          </div>
 
+          </div>
         </div>
-      </div> 
-  </div>
+      </div>
       :
       ''
   )

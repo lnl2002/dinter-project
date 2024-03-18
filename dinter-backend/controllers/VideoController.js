@@ -76,6 +76,7 @@ const getStory = async (req, res) => {
                 authorArr.push({
                     userId: story.userId._id.toString(),
                     username: story.userId.username,
+                    avatar: story.userId.avatar,
                     stories: []
                 })
             } else if (story.userId._id.toString() === req.userId && !userIdMap[story.userId._id.toString()]) {
@@ -83,6 +84,7 @@ const getStory = async (req, res) => {
                 authorArr.unshift({
                     userId: story.userId._id.toString(),
                     username: story.userId.username,
+                    avatar: story.userId.avatar,
                     stories: []
                 });
             }
@@ -157,11 +159,35 @@ const getViewer = async (req, res) => {
         })
     }
 }
+
+const getAllStoryOfUser = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+
+        if (!userId) {
+            return res.status(400).json({ error: 'userId is required' });
+        }
+
+        const limit = req.query.limit || 12;
+        const offset = req.query.offset || 0;
+        const post = await videoService.getAllStoryOfUser(limit, offset, userId);
+        res.status(200).json({
+            message: "get posts success",
+            data: post
+        })
+    } catch (error) {
+        res.status(500).json({
+            messages: error.toString()
+        })
+    }
+}
+
 export default {
     uploadStory,
     deleteStory,
     getStory,
     likeVideo,
     viewVideo,
-    getViewer
+    getViewer,
+    getAllStoryOfUser
 }

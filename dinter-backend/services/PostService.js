@@ -1,24 +1,35 @@
 import { notificationController } from "../controllers/index.js";
 import Post from "../models/Post.js";
+import User from "../models/User.js";
 
 
 const createNewPost = async ({ author, content, images }) => {
     try {
         const newPost = await Post.create({ author, content, images });
-        return newPost._doc;
+        const post = await Post.findOne({ _id: newPost._id })
+            .populate('author', 'username avatar')
+            .populate('likes', 'username avatar')
+            .exec();
+        return post;
     } catch (error) {
         throw new Error(error.toString())
     }
 }
 
-const getPost = async (limit, offset) => {
+const getPost = async (userId, limit, offset) => {
     try {
-        const getPosts = await Post.find({})
-        .sort([['createdAt', -1]])
-        .skip(Number(offset))
-        .limit(Number(limit))
-        .populate('author', 'username')
-        .exec();
+        const friends = await User.findOne({ _id: userId }).exec();
+        console.log(friends);
+        console.log('vaoday');
+        const getPosts = await Post.find({ $or: [{ author: { $in: friends.friends } }, { author: userId }] })
+            .sort([['createdAt', -1]])
+            .skip(Number(offset))
+            .limit(Number(limit))
+            .populate('author', 'username avatar')
+            .populate('likes', 'username avatar')
+            .exec();
+        console.log('duoiday');
+        console.log(getPosts);
         return getPosts;
     } catch (error) {
         throw new Error(error.toString());
@@ -37,16 +48,16 @@ const deletePost = async (id) => {
 
 const getPostsByUserId = async (limit, offset, userId) => {
     try {
-        const getPosts = await Post.find({author: userId})
-        .sort([['createdAt', -1]])
-        .skip(Number(offset))
-        .limit(Number(limit))
-        .populate('author', 'username')
-        .populate({
-            path: 'comments.userId',
-            select: 'username',
-        })
-        .exec();
+        const getPosts = await Post.find({ author: userId })
+            .sort([['createdAt', -1]])
+            .skip(Number(offset))
+            .limit(Number(limit))
+            .populate('author', 'username')
+            .populate({
+                path: 'comments.userId',
+                select: 'username',
+            })
+            .exec();
         return getPosts;
     } catch (error) {
         throw new Error(error.toString());
@@ -72,14 +83,11 @@ const handleLike = async (postId, userId) => {
         if (favorited.likes.includes(userId)) {
             throw new Error("The user liked this post!")
         }
-        const favoritePost = await Post.updateOne({ _id: postId }, { $push: { likes: userId } })
-        const notification = await notificationController.insertNotification({
-            receiver: favorited.author,
-            type: 'like',
-            sender: userId,
-            link: '/post/' + postId
-        })
-        return notification;
+        const favoritePost = await Post.findOneAndUpdate({ _id: postId }, { $push: { likes: userId } }, { new: true })
+            .populate('author', 'username avatar')
+            .populate('likes', 'username avatar').exec();
+
+        return favoritePost;
     } catch (error) {
         throw new Error(error.toString())
     }
@@ -88,14 +96,16 @@ const handleLike = async (postId, userId) => {
 const handleDislike = async (postId, userId) => {
     try {
         console.log("disslike");
-        const favoritePost = await Post.updateOne({ _id: postId }, { $pull: { likes: userId } })
+        const favoritePost = await Post.findOneAndUpdate({ _id: postId }, { $pull: { likes: userId } }, { new: true })
+            .populate('author', 'username avatar')
+            .populate('likes', 'username avatar').exec();
         return favoritePost;
     } catch (error) {
         throw new Error(error.toString())
     }
 }
 
-const getPostById = async(postId) =>{
+const getPostById = async (postId) => {
     try {
         const post = Post.findById(postId)
         return post;

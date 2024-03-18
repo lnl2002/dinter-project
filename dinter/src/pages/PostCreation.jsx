@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Button, Modal, Form } from 'react-bootstrap'
 import './style/postcreate.css'
 import axios from 'axios';
-function PostCreation({ show, close, setListPost, listPost, setShowCreate }) {
+function PostCreation({ show, close, setListPost, listPost, setShowCreate, offset, setOffset }) {
     const inputFile = useRef();
     const inputImage = useRef();
     const [stage, setStage] = useState(0);
@@ -53,6 +53,21 @@ function PostCreation({ show, close, setListPost, listPost, setShowCreate }) {
         setCurImg(0);
     }
 
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
     const handleSubmitPost = async () => {
         const formPost = new FormData();
         formPost.append("author", "65df493dcefd9f4e9d99c5e8");
@@ -63,11 +78,17 @@ function PostCreation({ show, close, setListPost, listPost, setShowCreate }) {
         }
         formPost.append("content", caption.current.value || "");
         try {
-            const newPost = await axios.post("http://localhost:3008/api/v1/post", formPost);
+            const newPost = await axios.post("http://localhost:3008/api/v1/post", formPost, {
+                headers: {
+                    token: `Bearer ${getCookie('access_token')}`
+                }
+            });
             const newListPost = [...listPost];
             newListPost.unshift(newPost.data.post);
+            // console.log(newListPost);
             close();
             setListPost(newListPost);
+            // setOffset(offset + 1);
         } catch (error) {
             console.log(error);
         }

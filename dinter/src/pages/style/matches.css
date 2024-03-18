@@ -19,7 +19,8 @@
 }
 
 .user-card-info{
-    background: linear-gradient(180deg, rgba(255,255,255,0) 16%, rgba(0,0,0,1) 100%);    position: absolute;
+    
+    background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(0,0,0,0.7) 40%);    position: absolute;
     bottom: 0;
     width: 100%;
     padding-left: 10px;

@@ -25,7 +25,7 @@ const getStories = async (usreId) => {
         oneDayAgo.setDate(oneDayAgo.getDate() - 1);
         const now = new Date();
         var userFriends = await User.findOne({ _id: usreId });
-        const stories = await Video.find({ $or: [{ userId: { $in: userFriends.friends } }, { userId: usreId }], createdAt: { $gte: oneDayAgo } }).populate('userId', "username");
+        const stories = await Video.find({ $or: [{ userId: { $in: userFriends.friends } }, { userId: usreId }], createdAt: { $gte: oneDayAgo } }).populate('userId', "username avatar");
         return stories;
     } catch (error) {
         throw new Error(error.toString());
@@ -61,11 +61,27 @@ const getViewer = async (storyId) => {
         throw new Error(error.toString());
     }
 }
+
+const getAllStoryOfUser = async (limit, offset, userId) => {
+    try {
+        const getPosts = await Video.find()
+        .sort([['createdAt', -1]])
+        .skip(Number(offset))
+        .limit(Number(limit))
+        .populate('userId', 'username')
+        .exec();
+        return getPosts;
+    } catch (error) {
+        throw new Error(error.toString());
+    }
+}
+
 export default {
     uploadVideo,
     deleteVideo,
     getStories,
     likeStory,
     viewStory,
-    getViewer
+    getViewer,
+    getAllStoryOfUser
 }

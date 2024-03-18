@@ -1,14 +1,14 @@
 import express from 'express';
 const router = express.Router();
-import {postController} from '../controllers/index.js';
+import { postController } from '../controllers/index.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import multer from 'multer';
 
 const storage = multer.diskStorage({
-    destination: function (req, file, cb){
+    destination: function (req, file, cb) {
         cb(null, 'public/images/posts/')
     },
-    filename: function(req, file, cb) {
+    filename: function (req, file, cb) {
         cb(null, req.body.author + Date.now() + file.originalname);
     }
 })
@@ -20,14 +20,14 @@ const upload = multer({
 })
 
 
-router.post('/', upload.array("images", 10), postController.createPost)
-.get('/', authMiddleware, postController.getPosts)
-.delete('/:id', postController.deletePost)
+router.post('/', authMiddleware, upload.array("images", 10), postController.createPost)
+    .get('/', authMiddleware, postController.getPosts)
+    .delete('/:id', postController.deletePost)
 router.get('/all-from/:userId', postController.getPostsByUserId)
-.patch('/:id', postController.editPost)
-.post('/favorite/:id', authMiddleware, postController.handleLike)
-.delete('/favorite/:id', authMiddleware, postController.handleDislike)
-.post('/de-favorite/:id', authMiddleware, postController.handleDislike)
-.get('/:postId', postController.getPostById)
+    .patch('/:id', postController.editPost)
+    .post('/favorite/:id', authMiddleware, postController.handleLike)
+    .delete('/favorite/:id', authMiddleware, postController.handleDislike)
+    .post('/de-favorite/:id', authMiddleware, postController.handleDislike)
+    .get('/:postId', postController.getPostById)
 
 export default router

@@ -58,7 +58,7 @@ function StoryCreation() {
                 <Row>
                     <Col xs={3} style={{ borderRight: "1px solid white", height: "100vh" }}>
                         <div style={{ width: "40px", height: "40px", fontSize: "40px", cursor: "pointer", color: "white" }}>
-                            <ion-icon name="close-circle-outline"></ion-icon>
+                            <ion-icon name="close-circle-outline" onClick={() => nav('/')}></ion-icon>
                         </div>
                         <h3 style={{ marginTop: "50px", color: "white" }}>Your Story</h3>
                         <div className='story-info2'>
