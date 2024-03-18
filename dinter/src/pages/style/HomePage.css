@@ -111,13 +111,16 @@
 
 .feed .photo {
     border-radius: 20px;
-    overflow: hidden;
     margin: 0.7rem 0;
     position: relative;
     height: 400px;
     text-align: center;
 }
-
+#post-img{
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
 .feed .action-buttons {
     display: flex;
     justify-content: space-between;
@@ -381,7 +384,8 @@ main .container .right {
 
 .story-background{
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
 }
 .avatar-story {
     width: 40px;

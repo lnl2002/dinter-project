@@ -198,9 +198,9 @@ function HomePage(props) {
                 {
                   unwatchNews.length === 0 && watchedNews.length === 0 && (
                     <div className="story-item" onClick={() => { nav('/story/create') }}>
-                      <img src="/images/common/avatar.png" alt="error" className="avatar-story" />
+                      <img src={"http://localhost:3008/" + JSON.parse(localStorage.getItem('User')).avatar} alt="error" className="avatar-story" />
                       <p className="story-name">Add Story</p>
-                      <img src={"/images/common/avatar.png"} className="story-background" />
+                      <img src={"/images/common/tinder.png"} className="story-background" />
                     </div>
                   )
                 }
