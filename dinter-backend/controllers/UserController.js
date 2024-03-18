@@ -158,7 +158,42 @@ const sendMatchRequest = async (req, res) => {
   } catch (error) {
     return res.status(404).json(error)
   }
+} 
+const getAllUser = async (req, res) => {
+  try {
+      const result = await UserService.getAllUser();
+      res.status(200).json({
+          message: "Success",
+          user: result
+      })
+  } catch (error) {
+      res.status(500).json({
+          message: error.toString()
+      })
+  }
 }
+const searchUsers = async (req,res) => {
+  try {
+    // Tìm kiếm người dùng dựa trên từ khóa
+    const keyword = req.params.keyword
+    const users = await User.find({
+      $or: [
+        { username: { $regex: keyword, $options: "i" } },
+        // { email: { $regex: keyword, $options: "i" } },
+        // { bio: { $regex: keyword, $options: "i" } },
+        // { address: { $regex: keyword, $options: "i" } },
+      ],
+    });
+
+    return res.status(200).json({
+      users
+    });
+  } catch (error) {
+    console.error("Error searching users:", error);
+    throw error;
+  }
+};
+
 
 const getAllRequestMatches = async(req,res) => {
   try{
@@ -226,6 +261,8 @@ export {
   getUserInfoById,
   getMatchedUsers,
   sendMatchRequest,
+  getAllUser,
+  searchUsers,
   getAllRequestMatches,
   accRequestMatch,
   deleteRequestMatch
@@ -241,6 +278,8 @@ export default {
   getUserInfoById,
   getMatchedUsers,
   sendMatchRequest,
+  getAllUser,
+  searchUsers,
   getAllRequestMatches,
   accRequestMatch,
   deleteRequestMatch
