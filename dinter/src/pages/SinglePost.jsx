@@ -95,7 +95,7 @@ function SinglePost({ post, handleShow, index, listPost }) {
                                         <img src={"http://localhost:3008/" + pst.author.avatar} alt="" width={50} />
                                     </div>
                                     <div className="ingo">
-                                        <button style={{background: 'none'}} onClick={() => nav('/profile/'+ pst.author._id)}><h5>{pst.author.username}</h5></button>
+                                        <button style={{background: 'none'}} onClick={() => nav('/profile/'+ pst.author._id)}><h5>{pst.author.username}</h5></button><br/>
                                         <small>
                                             {
                                                 formatDistanceToNow(pst.createdAt, {

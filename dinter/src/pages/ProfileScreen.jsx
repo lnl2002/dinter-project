@@ -11,6 +11,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { create } from 'zustand'
 import HeaderHome from '../components/HeaderComponents/HeaderHome'
 import api from '../utils/services'
+import { getAccessToken } from '../common/Token'
 
 const contentType = {
   post: {

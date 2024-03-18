@@ -12,6 +12,7 @@ export default function AvatarPicker({
   //zustand user global state 
   const userData = useUserStore((state) => state.userData);
   const setUserData = useUserStore((state) => state.setUserData);
+  const userLocal = JSON.parse(localStorage.getItem('User'));
 
   const onSave = () => {
     console.log(avatarFile)
@@ -31,6 +32,8 @@ export default function AvatarPicker({
           ...userData,
           avatar: response.data.avatar
       })
+      userLocal.avatar = response.data.avatar;
+      localStorage.setItem('User', JSON.stringify(userLocal));
       console.log(response)
       })
       .catch((error) => {

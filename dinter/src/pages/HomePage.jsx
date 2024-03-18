@@ -232,7 +232,7 @@ function HomePage(props) {
             </Row>
 
             {/* Creat Post */}
-            <Form className="create-post" onClick={handleCreateShow} >
+            <Form className="create-post" onClick={handleCreateShow} style={{marginBottom: '20px'}}>
               <div className="profile-photo1">
                 <img src="images/common/avatar.png" alt="" width={40} />
               </div>
