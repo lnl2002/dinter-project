@@ -125,7 +125,7 @@ function SinglePost({ post, handleShow, index, listPost }) {
                                         </div>
                                     )
                                 }
-                                <img src={'http://localhost:3008/' + pst.images[currentImage]} alt="" width={650} />
+                                <img src={'http://localhost:3008/' + pst.images[currentImage]} alt="" id='post-img'/>
                                 {
                                     currentImage < pst.images.length - 1 && (
                                         <div className='sg-next-img' onClick={() => handleSetCurImg(1)}>
