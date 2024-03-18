@@ -10,6 +10,9 @@ import { Button, Modal } from 'react-bootstrap';
 import PostDetail from '../components/PostDetail';
 function SinglePost({ post, handleShow, index, listPost }) {
     const user = JSON.parse(localStorage.getItem('User'));
+
+    const {sendNotification}  = useContext(AuthContext);
+
     const [currentImage, setCurImg] = useState(0);
     const [like, setLike] = useState(post.favorited);
     const handleSetCurImg = (num) => {
@@ -68,6 +71,12 @@ function SinglePost({ post, handleShow, index, listPost }) {
                 })
                 setPost(updatePost.data)
                 setLike(true);
+                sendNotification(
+                    'like', 
+                    `/post/${updatePost.data._id}`, 
+                    updatePost.data.author._id,
+                    user.id
+                )
             }
         } catch (error) {
             console.log(error);

@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from 'react';
 import { io } from "socket.io-client";
+import api from '../utils/services';
 
 export const AuthContext = createContext();
 
@@ -38,7 +39,35 @@ export const AuthContextProvider = ({ children }) => {
             setRequestCallVideoInfo(res);
         })
     },[socket])
-    
+
+    // get new Notification
+    useEffect(() => {
+        if(socket === null) return;
+        
+        socket.emit("addNewUser", user?.id);
+        socket.on("getOnlineUsers", (res) => {
+            setOnlineUsers(res);
+        })
+    },[socket])
+     
+    //send Notification
+    const sendNotification = (type, link, receiver, sender) => {
+        debugger
+        api.post('/notification/add-notification', {
+            receiver,
+            type,
+            link,
+            sender
+        })
+            .then(res => {
+                console.log('sendNotification', res);
+                debugger
+                if(socket === null) return;
+
+                socket.emit('sendNotification', res.data);
+            })
+            .catch(err => console.log('error sending notification', err))
+    }
 
     return (<AuthContext.Provider value={{
         user,
@@ -48,7 +77,8 @@ export const AuthContextProvider = ({ children }) => {
         onlineUsers,
         setOnlineUsers,
         requestCallVideoInfo,
-        setRequestCallVideoInfo
+        setRequestCallVideoInfo,
+        sendNotification
     }}>
         {children}
     </AuthContext.Provider>)

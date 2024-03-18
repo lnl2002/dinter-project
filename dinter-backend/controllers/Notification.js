@@ -5,7 +5,7 @@ const getAllNotifications = async(req, res) => {
     try {
         const notificattions = await Notification.find({
             receiver: userId
-        }).populate('sender', 'username avatar');
+        }).populate('sender', 'username avatar').sort({createdAt: -1});
 
         if(!notificattions) {
             return res.status(404).json({
@@ -26,7 +26,8 @@ const getAllNotifications = async(req, res) => {
     }
 }
 
-const insertNotification = async({type, link, receiver, sender}) => {
+const insertNotification = async(req, res) => {
+    const {type, link, receiver, sender} = req.body;
     try {
         const notificattions = await Notification.create({
             receiver,
@@ -34,8 +35,9 @@ const insertNotification = async({type, link, receiver, sender}) => {
             link,
             sender
         });
+        await notificattions.populate('sender')
 
-        return notificattions;
+        return res.status(200).json(notificattions);
     } catch (err) {
         console.log(err);
     }
