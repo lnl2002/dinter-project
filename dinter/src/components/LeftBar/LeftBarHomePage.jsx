@@ -165,7 +165,7 @@ function LeftBarHomePage(props) {
                             listNoti && listNoti.map(noti =>
                             (
                                 <Row style={{ margin: "14px 0" }} className={`notification-popup-item d-flex align-items-center ${noti.isRead ? 'read' : ''}`}
-                                    onClick={e => handleNotificationIsRead(noti._id, noti.link, noti.isRead)}>
+                                    onClick={e => handleNotificationIsRead(noti._id, noti.link, (noti.isRead ? noti.isRead : false))}>
                                     <Col md={2}>
                                         <div style={{
                                             width: "50px",
@@ -182,7 +182,7 @@ function LeftBarHomePage(props) {
                                             <strong>{noti.sender.username} </strong>
                                             <span>
                                                 {
-                                                    noti.type
+                                                    noti.type !== 'request match' ? `${noti.type} to your post` : `send to you request match`
                                                 }
                                             </span>
                                         </div>
