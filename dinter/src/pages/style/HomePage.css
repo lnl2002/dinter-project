@@ -405,3 +405,59 @@ main .container .right {
     left: 10px;
     font-size: 14px;
 }
+
+/* //// */
+.header-search {
+    position: relative;
+  }
+  
+  #myMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #f0edf5;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 0;
+    margin: 5px 0;
+    list-style-type: none;
+    border-radius: 20px;
+    max-height: 300px; /* Đặt chiều cao tối đa */
+  overflow-y: auto; /* Tạo thanh cuộn khi vượt quá chiều cao tối đa */
+  }
+  
+  #myMenu li {
+    padding: 8px 16px;
+    cursor: pointer;
+  }
+  
+  #myMenu li:hover {
+    background-color: #f5f5f5;
+    border-radius: 20px;
+  }
+  
+  #myMenu li a {
+    color: black;
+    text-decoration: none;
+  }
+  
+  #myMenu li a:hover {
+    text-decoration: underline;
+  }
+  .search-result {
+    display: flex;
+    align-items: center;
+  }
+  
+  .profile-photo3 {
+    margin-right: 10px;
+    width: 2.4rem;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    overflow: hidden;
+        
+  }
+  
+  .search-text {
+    font-weight: bold;
+  }

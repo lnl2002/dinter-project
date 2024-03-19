@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import CommentBox, { UserBox } from '../Comments_box/CommentBox';
 import { motion } from "framer-motion"
@@ -9,6 +9,7 @@ import { BACK_END_HOST } from '../../utils/AppConfig';
 import { getAccessToken } from '../../common/Token';
 import { TextWeb } from '../../pages/ProfileScreen';
 import { usePostDetailStore } from '../PostDetail';
+import { AuthContext } from '../../context/AuthContext';
 
 function CommentsFrameLayout({
   user,
@@ -17,6 +18,9 @@ function CommentsFrameLayout({
   content,
   date
 }) {
+  //get function send notification
+  const { sendNotification } = useContext(AuthContext);
+
   const sessionUser = JSON.parse(localStorage.getItem('User'));
   const [isLiked, setIsLiked] = useState(likes.includes(user._id));
   //zustand user global state 
@@ -49,6 +53,12 @@ function CommentsFrameLayout({
         .then((response) => {
           console.log(response.data)
           setLikesArray([...likes, user._id])
+          sendNotification(
+            'like',
+            `/post/${response.data._id}`,
+            response.data.author._id,
+            sessionUser.id
+          )
         })
         .catch((error) => {
           console.error('Error:', error);
@@ -64,13 +74,13 @@ function CommentsFrameLayout({
         .catch((error) => {
           console.error('Error:', error);
         });
-        let temp = likesArray;
-        const index = temp.indexOf(user._id);
-        if (index > -1) {
-          // Only splice the array when the item is found
-          temp.splice(index, 1); // The second parameter means remove one item only
-        }
-        setLikesArray(temp)
+      let temp = likesArray;
+      const index = temp.indexOf(user._id);
+      if (index > -1) {
+        // Only splice the array when the item is found
+        temp.splice(index, 1); // The second parameter means remove one item only
+      }
+      setLikesArray(temp)
     }
     setIsLiked(!isLiked);
   }
@@ -123,7 +133,14 @@ function CommentsFrameLayout({
           }
         }, ...commentData]
 
-        setCommentData(updatedComment)
+        setCommentData(updatedComment);
+
+        sendNotification(
+          'comment',
+          `/post/${postId}`,
+          user._id,
+          sessionUser.id
+        )
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -159,6 +176,14 @@ function CommentsFrameLayout({
             ...repliedUserData
           }
         });
+
+        sendNotification(
+          'comment',
+          `/post/${postId}`,
+          user._id,
+          sessionUser.id
+        )
+
       })
       .catch((error) => {
         console.error('Error:', error);

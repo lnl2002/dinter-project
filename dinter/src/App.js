@@ -14,6 +14,7 @@ function App() {
       setUser(JSON.parse(localStorage.getItem('User')));
     }
   }, [])
+  const userLocal = JSON.parse(localStorage.getItem('User'));
   console.log(user);
   return (
     <div className="App">
@@ -26,7 +27,7 @@ function App() {
               <Route key={route.path} 
               path={route.path} 
               element={
-              user ? 
+              userLocal ? 
               <route.element/>
               : <Login/>
               } 

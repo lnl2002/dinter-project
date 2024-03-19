@@ -1,22 +1,27 @@
 import { faBookmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useContext, useEffect, useState } from 'react'
-
+import { useNavigate } from 'react-router-dom'
 import './style/singpost.css'
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
 import { Button, Modal } from 'react-bootstrap';
+import PostDetail from '../components/PostDetail';
 function SinglePost({ post, handleShow, index, listPost }) {
     const user = JSON.parse(localStorage.getItem('User'));
+
+    const {sendNotification}  = useContext(AuthContext);
+
     const [currentImage, setCurImg] = useState(0);
     const [like, setLike] = useState(post.favorited);
     const handleSetCurImg = (num) => {
         setCurImg(num + currentImage)
     }
+    const nav = useNavigate();
     const [pst, setPost] = useState(post);
     const [show, setShow] = useState(false);
-
+    const [showPostDetail, setShowPostDetail] = useState(false);
     const handleClose = () => setShow(false);
     const handleShowlike = () => setShow(true);
     useEffect(() => {
@@ -66,6 +71,12 @@ function SinglePost({ post, handleShow, index, listPost }) {
                 })
                 setPost(updatePost.data)
                 setLike(true);
+                sendNotification(
+                    'like', 
+                    `/post/${updatePost.data._id}`, 
+                    updatePost.data.author._id,
+                    user.id
+                )
             }
         } catch (error) {
             console.log(error);
@@ -76,6 +87,7 @@ function SinglePost({ post, handleShow, index, listPost }) {
             {
                 post && (
                     <div className="feeds" key={pst._id}>
+                        <PostDetail visible={showPostDetail} onHideCallBack={() => setShowPostDetail(false)} post={post} user={user}></PostDetail>
                         <div className="feed">
                             <div className="head">
                                 <div className="user">
@@ -83,7 +95,7 @@ function SinglePost({ post, handleShow, index, listPost }) {
                                         <img src={"http://localhost:3008/" + pst.author.avatar} alt="" width={50} />
                                     </div>
                                     <div className="ingo">
-                                        <h5>{pst.author.username}</h5>
+                                        <button style={{background: 'none'}} onClick={() => nav('/profile/'+ pst.author._id)}><h5>{pst.author.username}</h5></button><br/>
                                         <small>
                                             {
                                                 formatDistanceToNow(pst.createdAt, {
@@ -156,7 +168,7 @@ function SinglePost({ post, handleShow, index, listPost }) {
                                     </div>
                                 )
                             }
-                            <div className="text-muted">View all {pst.comments.length} comment</div>
+                            <button onClick={() => setShowPostDetail(true)} style={{ background: 'none' }} className="text-muted">View all {pst.comments.length} comment</button>
                         </div>
                     </div >
                 )
@@ -168,8 +180,8 @@ function SinglePost({ post, handleShow, index, listPost }) {
                         {
                             pst.likes.map((p) => {
                                 return (
-                                    <div style={{marginTop:"20px"}}>
-                                        <img src={`http://localhost:3008/${p.avatar}`} style={{ height: "50px", width: "50px", borderRadius: "50%", marginRight:"20px"}} />
+                                    <div style={{ marginTop: "20px" }}>
+                                        <img src={`http://localhost:3008/${p.avatar}`} style={{ height: "50px", width: "50px", borderRadius: "50%", marginRight: "20px" }} />
                                         {p.username}
                                     </div>
                                 )

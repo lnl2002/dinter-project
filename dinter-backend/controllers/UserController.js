@@ -1,5 +1,6 @@
 import UserService from '../services/UserService.js';
 import JwtService from '../services/JwtService.js';
+import User from '../models/User.js';
 
 
 const createUser = async (req, res) => {
@@ -133,11 +134,12 @@ const getUserAnalysticNumber = async (req, res) => {
 
 const getMatchedUsers = async (req, res) =>{
   try{
+    const {limit, offset} = req.query
     const token = req.headers.token.split(' ')[1];
     const response = await UserService.getUserInfoByAccessToken(token);
     const user = response.data;
     
-    const MatchedUserList = await UserService.getMatchedUsers(user.location, user.hobbies, user.attractedBy, user._id)
+    const MatchedUserList = await UserService.getMatchedUsers(user.location, user.hobbies, user.attractedBy, user._id, limit, offset)
     return res.status(200).json(MatchedUserList)
   } catch (error) {
     return res.status(404).json(error)
@@ -156,6 +158,97 @@ const sendMatchRequest = async (req, res) => {
   } catch (error) {
     return res.status(404).json(error)
   }
+} 
+const getAllUser = async (req, res) => {
+  try {
+      const result = await UserService.getAllUser();
+      res.status(200).json({
+          message: "Success",
+          user: result
+      })
+  } catch (error) {
+      res.status(500).json({
+          message: error.toString()
+      })
+  }
+}
+const searchUsers = async (req,res) => {
+  try {
+    // Tìm kiếm người dùng dựa trên từ khóa
+    const keyword = req.params.keyword
+    const users = await User.find({
+      $or: [
+        { username: { $regex: keyword, $options: "i" } },
+        // { email: { $regex: keyword, $options: "i" } },
+        // { bio: { $regex: keyword, $options: "i" } },
+        // { address: { $regex: keyword, $options: "i" } },
+      ],
+    });
+
+    return res.status(200).json({
+      users
+    });
+  } catch (error) {
+    console.error("Error searching users:", error);
+    throw error;
+  }
+};
+
+
+const getAllRequestMatches = async(req,res) => {
+  try{
+    const { id } = req.params;
+    const requestMatches = await User.findById(id, 'requestMatch').populate('requestMatch', '_id username avatar');
+    
+    return res.status(200).json(requestMatches)
+  } catch (error) {
+    return res.status(404).json(error)
+  }
+}
+
+const accRequestMatch = async(req,res) => {
+  try{
+    const { sender, receiver } = req.body;
+
+    
+    const requestMatches = await User.findByIdAndUpdate(sender, {
+      $addToSet: {
+        friends: receiver
+      },
+      $pull: {
+        requestMatch: receiver
+      }
+    })
+
+    const requestMatchesForReceiver = await User.findByIdAndUpdate(receiver, {
+      $addToSet: {
+        friends: sender
+      },
+      $pull: {
+        requestMatch: sender
+      }
+    })
+    
+    return res.status(200).json(requestMatches)
+  } catch (error) {
+    return res.status(404).json(error)
+  }
+}
+
+const deleteRequestMatch = async(req,res) => {
+  try{
+    const { sender, receiver } = req.body;
+
+    const requestMatches = await User.findByIdAndUpdate(sender, {
+      $pull: {
+        requestMatch: receiver
+      }
+    })
+
+    return res.status(200).json(requestMatches)
+  } catch (error) {
+    return res.status(404).json(error)
+  }
 }
 
 export {
@@ -167,7 +260,12 @@ export {
   updateUserBasicInfo,
   getUserInfoById,
   getMatchedUsers,
-  sendMatchRequest
+  sendMatchRequest,
+  getAllUser,
+  searchUsers,
+  getAllRequestMatches,
+  accRequestMatch,
+  deleteRequestMatch
 };
 
 export default {
@@ -179,5 +277,10 @@ export default {
   updateUserBasicInfo,
   getUserInfoById,
   getMatchedUsers,
-  sendMatchRequest
+  sendMatchRequest,
+  getAllUser,
+  searchUsers,
+  getAllRequestMatches,
+  accRequestMatch,
+  deleteRequestMatch
 };

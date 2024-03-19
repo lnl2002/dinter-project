@@ -1,5 +1,5 @@
 import React, { useEffect, useInsertionEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import HeaderHome from "../components/HeaderComponents/HeaderHome";
 import "./style/HomePage.css";
 import { Col, Container, Form, Modal, Row } from "react-bootstrap";
@@ -176,17 +176,20 @@ function HomePage(props) {
           <Col md={3}>
             <div style={{ position: "fixed", width: "calc(16%)", zIndex: "99" }}>
               <div>
-                <div
-                  className="d-flex bg-white circle w-100 align-items-center"
-                  style={{ padding: "16px" }}
-                >
-                  <div className="avatar">
-                    <img src={BACK_END_HOST + user.avatar} alt="Avatar" />
+                <Link to={"/profile"} style={{ textDecoration: "none", color: "#000" }}>
+                  <div
+                    className="d-flex bg-white circle w-100 align-items-center"
+                    style={{ padding: "16px" }}
+                  >
+                    <div className="avatar">
+                      <img src={BACK_END_HOST + user.avatar} alt="Avatar" />
+                    </div>
+                    <div className="user-infor" style={{ marginLeft: "10px" }}>
+                      <strong>{user.username}</strong>
+                    </div>
                   </div>
-                  <div className="user-infor" style={{ marginLeft: "10px" }}>
-                    <strong>{user.username}</strong>
-                  </div>
-                </div>
+                </Link>
+
                 <LeftBarHomePage />
               </div>
             </div>
@@ -229,7 +232,7 @@ function HomePage(props) {
             </Row>
 
             {/* Creat Post */}
-            <Form className="create-post" onClick={handleCreateShow} >
+            <Form className="create-post" onClick={handleCreateShow} style={{marginBottom: '20px'}}>
               <div className="profile-photo1">
                 <img src="images/common/avatar.png" alt="" width={40} />
               </div>
