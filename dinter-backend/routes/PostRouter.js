@@ -29,5 +29,5 @@ router.get('/all-from/:userId', postController.getPostsByUserId)
     .delete('/favorite/:id', authMiddleware, postController.handleDislike)
     .post('/de-favorite/:id', authMiddleware, postController.handleDislike)
     .get('/:postId', postController.getPostById)
-
+    .post('/mode/:postId', authMiddleware, postController.changePostMode)
 export default router
