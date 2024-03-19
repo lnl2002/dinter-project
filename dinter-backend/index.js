@@ -16,22 +16,23 @@ const PORT = process.env.PORT || 3007;
 
 const server = http.Server(app);
 const peerServer = ExpressPeerServer(server, {
-  debug: true
+  debug: true,
+  path: '/'
 })
-
+app.use('/peerjs', peerServer);
 async function main() {
   try {
     await mongoose.connect(process.env.MONGO_DB_URL);
     console.log("Connect to MongoDB success");
     app.use(cors());
     
-    app.use('/peerjs', peerServer);
+
 
     app.use(bodyParser.json());
     routes(app);
 
 
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log('Dinter running on port ' + PORT);
     })
   } catch(err) {
