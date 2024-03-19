@@ -124,3 +124,20 @@
     padding: 20px;
 }
 
+.mode-post{
+    background-color: #fd297b;
+    color: white;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.mode-option{
+    text-align: center;
+    padding: 0;
+    margin: 0;
+}
+
+.mode-option li {
+    padding: 5px;
+    cursor: pointer;
+}

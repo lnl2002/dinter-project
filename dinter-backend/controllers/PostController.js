@@ -2,15 +2,14 @@ import { postService } from "../services/index.js";
 import fs from 'fs'
 const createPost = async (req, res) => {
     try {
-        // const author = req.body.author;
         const author = req.userId;
+        console.log(author);
         let images = [];
         if (req.files) {
             req.files.forEach((file) => {
                 images.push(file.path);
             })
         }
-        console.log(images);
         const content = req.body.content;
         const newPost = await postService.createNewPost({ author, content, images });
         res.status(200).json({
@@ -61,10 +60,7 @@ const deletePost = async (req, res) => {
 
 const editPost = async (req, res) => {
     try {
-        console.log(req.body.content);
-        console.log(req.params.id);
         const post = await postService.editPost(req.params.id, req.body.content);
-        console.log(post);
         res.status(200).json({
             messages: "Edit post sucessfully!",
             post: post
@@ -79,7 +75,6 @@ const editPost = async (req, res) => {
 const handleLike = async (req, res) => {
     try {
         const userId = req.userId;
-        console.log("userId:" + userId);
         const postId = req.params.id;
         const favoritePost = await postService.handleLike(postId, userId);
         res.status(200).json(favoritePost);
@@ -92,10 +87,8 @@ const handleLike = async (req, res) => {
 
 const handleDislike = async (req, res) => {
     try {
-        console.log("disslike1");
         const userId = req.userId;
         const postId = req.params.id;
-        console.log("userId: " + userId);
         const favoritePost = await postService.handleDislike(postId, userId);
         res.status(200).json(favoritePost);
     } catch (error) {
@@ -142,6 +135,24 @@ const getPostById = async (req, res) => {
     }
 }
 
+const changePostMode = async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        const modeB = req.body.mode;
+        let mode;
+        modeB ? mode = true : mode = false;
+        const post = await postService.changePostMode(postId, mode);
+        res.status(200).json({
+            message: "get post success",
+            data: post
+        })
+    } catch (error) {
+        res.status(500).json({
+            messages: error.toString()
+        })
+    }
+}
+
 export default {
     createPost,
     getPosts,
@@ -150,5 +161,6 @@ export default {
     editPost,
     handleLike,
     handleDislike,
-    getPostById
+    getPostById,
+    changePostMode
 }
