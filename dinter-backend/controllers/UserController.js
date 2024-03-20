@@ -1,5 +1,6 @@
 import UserService from '../services/UserService.js';
 import JwtService from '../services/JwtService.js';
+import User from '../models/User.js';
 
 
 const createUser = async (req, res) => {
@@ -159,6 +160,33 @@ const sendMatchRequest = async (req, res) => {
   }
 }
 
+const findFriendBykeyWord = async(req, res) =>{
+  try{
+    try {
+      const { userId, keyWord } = req.params;
+      const user = await User.findById(userId).populate({
+        path: 'friends',
+        select: 'username _id avatar email'
+      });
+      
+      if (!user) {
+        return res.status(404).send('User not found');
+      }
+      
+      const matchedFriends = user.friends.filter(friend =>
+        friend.username.toLowerCase().includes(keyWord.toLowerCase())
+      ).slice(0, 5);
+      
+      return res.status(200).json(matchedFriends);
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+    
+  } catch (error) {
+    return res.status(404).json(error)
+  }
+}
+
 export {
   createUser,
   login,
@@ -168,7 +196,8 @@ export {
   updateUserBasicInfo,
   getUserInfoById,
   getMatchedUsers,
-  sendMatchRequest
+  sendMatchRequest,
+  findFriendBykeyWord
 };
 
 export default {
@@ -180,5 +209,6 @@ export default {
   updateUserBasicInfo,
   getUserInfoById,
   getMatchedUsers,
-  sendMatchRequest
+  sendMatchRequest,
+  findFriendBykeyWord
 };

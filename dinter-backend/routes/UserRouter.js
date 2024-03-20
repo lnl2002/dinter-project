@@ -38,5 +38,9 @@ router.patch('/user-basic-update', authMiddleware, upload.single('image'), UserC
 router.get('/public-user-info/:userId', UserController.getUserInfoById)
 router.get('/getMatchedUsers', authMiddleware, UserController.getMatchedUsers)
 router.post('/send-match-request', authMiddleware, UserController.sendMatchRequest)
+router.post('/send-match-request', authMiddleware, UserController.sendMatchRequest)
+
+//lite api for prm
+router.get('/findFriendo/:userId/:keyWord', UserController.findFriendBykeyWord)
 
 export default router

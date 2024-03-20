@@ -76,8 +76,8 @@ const updateUserBasicInfo = async (userId, changes) => {
       user.hobbies = changes.hobbies;
     }
     if (changes.location) {
-      user.location.type= 'Point'
-      user.location.coordinates=[changes.location.lng,  changes.location.lat];
+      user.location.type = 'Point'
+      user.location.coordinates = [changes.location.lng, changes.location.lat];
     }
     if (changes.attractedBy) {
       user.attractedBy = changes.attractedBy;
@@ -116,6 +116,13 @@ const login = (userInfo) => {
                   id: user._id,
                   username: user.username,
                   avatar: user.avatar,
+                  email: user.email,
+                  friends: userInfo.friends,
+                  isAdmin: userInfo.isAdmin,
+                  bio: userInfo.bio,
+                  hobbies: userInfo.hobbies,
+                  gender: userInfo.gender,
+                  dateOfBirth: userInfo.dateOfBirth
                 }
               });
             } else {
@@ -167,7 +174,8 @@ const getUserInfoByAccessToken = (accessToken) => {
               hobbies: userInfo.hobbies,
               gender: userInfo.gender,
               location: userInfo.location,
-              attractedBy: userInfo.attractedBy
+              attractedBy: userInfo.attractedBy,
+              dateOfBirth: userInfo.dateOfBirth
             }
           })
         }
@@ -240,66 +248,66 @@ const getUserAnalysticNumber = async (userId) => {
 
 const getMatchedUsers = async (location, hobbies, attractedBy, userId, limit, offset) => {
   try {
-      // Convert string hobby IDs to ObjectId
-      const hobbiesObjectIds = hobbies;
+    // Convert string hobby IDs to ObjectId
+    const hobbiesObjectIds = hobbies;
 
-      // Perform the query to find matching users with limit and offset
-      const matchingUsers = await User.aggregate([
-          {
-              $geoNear: {
-                  near: { type: 'Point', coordinates: [location.coordinates[0], location.coordinates[1]] },
-                  distanceField: 'distance',
-                  spherical: true
-              }
-          },
-          {
-              $match: {
-                  _id: { $ne: userId }, // Exclude the user by their userId
-                  location: { $exists: true, $ne: null },
-                  gender: attractedBy
-              }
-          },
-          {
-              $addFields: {
-                  common_hobbies: {
-                      $size: {
-                          $setIntersection: ['$hobbies', hobbiesObjectIds]
-                      }
-                  }
-              }
-          },
-          {
-              $sort: {
-                  distance: 1,
-                  common_hobbies: -1
-              }
-          },
-          {
-              $skip: Number(offset) // Apply offset
-          },
-          {
-              $limit: Number(limit) // Apply limit
+    // Perform the query to find matching users with limit and offset
+    const matchingUsers = await User.aggregate([
+      {
+        $geoNear: {
+          near: { type: 'Point', coordinates: [location.coordinates[0], location.coordinates[1]] },
+          distanceField: 'distance',
+          spherical: true
+        }
+      },
+      {
+        $match: {
+          _id: { $ne: userId }, // Exclude the user by their userId
+          location: { $exists: true, $ne: null },
+          gender: attractedBy
+        }
+      },
+      {
+        $addFields: {
+          common_hobbies: {
+            $size: {
+              $setIntersection: ['$hobbies', hobbiesObjectIds]
+            }
           }
-      ]);
+        }
+      },
+      {
+        $sort: {
+          distance: 1,
+          common_hobbies: -1
+        }
+      },
+      {
+        $skip: Number(offset) // Apply offset
+      },
+      {
+        $limit: Number(limit) // Apply limit
+      }
+    ]);
 
-      return matchingUsers;
+    return matchingUsers;
   } catch (error) {
-      console.log(error);
-      throw error; // Rethrow the error for proper error handling
+    console.log(error);
+    throw error; // Rethrow the error for proper error handling
   }
 };
 
 const sendMatchRequest = async (targetUserId, userId) => {
-    // Check if the target user already has the request from the same user
-    const user = await User.findOne({ _id: targetUserId, requestMatch: userId });
+  // Check if the target user already has the request from the same user
+  const user = await User.findOne({ _id: targetUserId, requestMatch: userId });
 
-    if (!user) {
-        // If not, push the request
-        await User.updateOne({ _id: targetUserId }, { $addToSet: { requestMatch: userId } });
-        console.log(`Match request sent to user ${targetUserId}`);
-    } else {
-        console.log(`Match request already exists for user ${targetUserId}`);
-    }
+  if (!user) {
+    // If not, push the request
+    await User.updateOne({ _id: targetUserId }, { $addToSet: { requestMatch: userId } });
+    console.log(`Match request sent to user ${targetUserId}`);
+  } else {
+    console.log(`Match request already exists for user ${targetUserId}`);
+  }
 }
 
 export {
