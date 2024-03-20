@@ -118,7 +118,7 @@ const login = (userInfo) => {
                   friends: user.friends,
                   isAdmin: user.isAdmin,
                   bio: user.bio,
-                  hobbies: user.hobbies,
+                  // hobbies: user.hobbies,
                   gender: user.gender,
                   dateOfBirth: user.dateOfBirth,
                   isBan: user.isBan
