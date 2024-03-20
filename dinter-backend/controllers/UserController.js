@@ -1,7 +1,6 @@
 import UserService from '../services/UserService.js';
 import JwtService from '../services/JwtService.js';
 import User from '../models/User.js';
-import User from '../models/User.js';
 
 
 const createUser = async (req, res) => {

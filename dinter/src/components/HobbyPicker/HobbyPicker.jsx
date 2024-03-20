@@ -14,7 +14,6 @@ export const HobbyPicker = ({ style, className, onCancel, onSave, defaultHobby, 
     if (keyword != '') {
       axios.get("http://localhost:3008/api/v1/hobby/" + keyword).then(response => {
         setHobby(response.data.data)
-        console.log(response.data.data)
       })
     } else {
       setHobby()
