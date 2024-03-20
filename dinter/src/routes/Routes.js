@@ -55,14 +55,6 @@ const routes = [
         element: Story
     },
     {
-        path: '/dashboard',
-        element: Dashboard,
-    },
-    {   
-        path: '/reset-password',
-        element: ResetPassword,
-    },
-    {
         path: '/story/create',
         element: StoryCreation,
     },
@@ -72,4 +64,14 @@ const routes = [
     }
 ]
 
-export default routes;
+const routerAdmin = [
+    {
+        path: '/dashboard',
+        element: Dashboard,
+    }
+]
+
+export default {
+    routes,
+    routerAdmin
+};

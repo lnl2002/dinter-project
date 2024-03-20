@@ -9,7 +9,11 @@ const postSchema = new Schema({
         type: String,
         required: true
     }],
-    comments: [Comment.schema]
+    comments: [Comment.schema],
+    isHide: {
+        type: Boolean,
+        default: false
+    }
 }, { timestamps: true });
 
 const Post = mongoose.model('Posts', postSchema);

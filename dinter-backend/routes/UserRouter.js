@@ -37,7 +37,16 @@ router.get('/analytic/:userId', UserController.getUserAnalysticNumber);
 router.patch('/user-basic-update', authMiddleware, upload.single('image'), UserController.updateUserBasicInfo);
 router.get('/public-user-info/:userId', UserController.getUserInfoById)
 router.get('/getMatchedUsers', authMiddleware, UserController.getMatchedUsers)
-router.post('/send-match-request', authMiddleware, UserController.sendMatchRequest)
+router.post('/send-match-request', authMiddleware, UserController.sendMatchRequest);
+router.get('/user-search/:keyword', UserController.searchUsers);
+router.get('/request-matches/:id', authMiddleware, UserController.getAllRequestMatches)
+router.post('/request-matches', authMiddleware, UserController.accRequestMatch)
+router.post('/delete-request-matches', authMiddleware, UserController.deleteRequestMatch)
+router.get('/get-friends-list/:userId', authMiddleware, UserController.getAllFriends)
+router.get('/admin-get-all-user', UserController.getAllUserAdmin)
+router.post('/admin-ban-user', UserController.updateIsBan)
+router.post('/reset-password', UserController.insertUuid)
+router.post('/update-password', UserController.updatePassword)
 router.post('/send-match-request', authMiddleware, UserController.sendMatchRequest)
 
 //lite api for prm

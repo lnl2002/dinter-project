@@ -23,11 +23,11 @@ const upload = multer({
 router.post('/', authMiddleware, upload.array("images", 10), postController.createPost)
     .get('/', authMiddleware, postController.getPosts)
     .delete('/:id', postController.deletePost)
-router.get('/all-from/:userId', postController.getPostsByUserId)
+router.get('/all-from/:userId/:isUserLogin', postController.getPostsByUserId)
     .patch('/:id', postController.editPost)
     .post('/favorite/:id', authMiddleware, postController.handleLike)
     .delete('/favorite/:id', authMiddleware, postController.handleDislike)
     .post('/de-favorite/:id', authMiddleware, postController.handleDislike)
     .get('/:postId', postController.getPostById)
-
+    .post('/mode/:postId', authMiddleware, postController.changePostMode)
 export default router

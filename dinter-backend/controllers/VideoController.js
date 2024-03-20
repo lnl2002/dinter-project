@@ -76,6 +76,7 @@ const getStory = async (req, res) => {
                 authorArr.push({
                     userId: story.userId._id.toString(),
                     username: story.userId.username,
+                    avatar: story.userId.avatar,
                     stories: []
                 })
             } else if (story.userId._id.toString() === req.userId && !userIdMap[story.userId._id.toString()]) {
@@ -83,6 +84,7 @@ const getStory = async (req, res) => {
                 authorArr.unshift({
                     userId: story.userId._id.toString(),
                     username: story.userId.username,
+                    avatar: story.userId.avatar,
                     stories: []
                 });
             }

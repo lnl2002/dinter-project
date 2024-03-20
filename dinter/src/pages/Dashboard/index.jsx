@@ -1,9 +1,12 @@
 import { Button, Col, Input, Row, Select, Space, Table } from "antd";
 import HeaderHome from "../../components/HeaderComponents/HeaderHome";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ButtonCircle from "../../components/ButtonCircle";
 import { AiFillEdit, AiOutlineWarning, AiTwotoneDelete } from "react-icons/ai";
 import { styledSelect } from "./styled";
+import api from "../../utils/services";
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import userCommon from '../../common/User.js';
 
 const Dashboard = () => {
   const [total, setTotal] = useState(0);
@@ -14,17 +17,35 @@ const Dashboard = () => {
     PageSize: 10,
     Role: 1,
   });
+  const [dataSource, setDataSource] = useState([]);
+  const [isBan, setIsBan] = useState(false);
 
-  const RoleName = [
-    {
-      Name: "User",
-      Id: 1,
-    },
-    {
-      Name: "User",
-      Id: 2,
-    },
-  ];
+  useEffect(() => {
+    api.get('/user/admin-get-all-user')
+      .then(res => setDataSource(res.data))
+      .catch(error => console.error(error))
+  }, [isBan])
+
+  const handleBan = (userId, isBan) => {
+    api.post('/user/admin-ban-user', {
+      userId,
+      isBan
+    })
+      .then(res => {
+        setIsBan(!isBan);
+        toast.success('User Banned!', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+      })
+  }
 
   const StatusName = [
     {
@@ -37,57 +58,7 @@ const Dashboard = () => {
     },
   ];
 
-  const dataSource = [
-    {
-      Name: "Lai Ngoc Lam",
-      Email: "abc@gmail.com",
-      Role: 1,
-      CreateDate: "22 Jan, 2024",
-      Status: 1,
-    },
-    {
-      Name: "Lai Ngoc Lam",
-      Email: "abc@gmail.com",
-      Role: 1,
-      CreateDate: "22 Jan, 2024",
-      Status: 2,
-    },
-    {
-      Name: "Lai Ngoc Lam",
-      Email: "abc@gmail.com",
-      Role: 1,
-      CreateDate: "22 Jan, 2024",
-      Status: 1,
-    },
-    {
-      Name: "Lai Ngoc Lam",
-      Email: "abc@gmail.com",
-      Role: 1,
-      CreateDate: "22 Jan, 2024",
-      Status: 1,
-    },
-    {
-      Name: "Lai Ngoc Lam",
-      Email: "abc@gmail.com",
-      Role: 1,
-      CreateDate: "22 Jan, 2024",
-      Status: 1,
-    },
-    {
-      Name: "Lai Ngoc Lam",
-      Email: "abc@gmail.com",
-      Role: 1,
-      CreateDate: "22 Jan, 2024",
-      Status: 1,
-    },
-    {
-      Name: "Lai Ngoc Lam",
-      Email: "abc@gmail.com",
-      Role: 1,
-      CreateDate: "22 Jan, 2024",
-      Status: 1,
-    },
-  ];
+
 
   const column = [
     {
@@ -99,42 +70,35 @@ const Dashboard = () => {
     {
       title: "Name",
       align: "center",
-      dataIndex: "Name",
+      dataIndex: "username",
       key: "Name",
       width: 100,
+      render: (_, record, index) => (
+        <div className="d-flex justify-content-left align-items-center">
+          <div className="avatar" style={{ marginRight: '10px' }}>
+            <img src={userCommon.getOtherImage(record.avatar)} alt="" />
+          </div>
+          <div>
+            {record.username}
+          </div>
+        </div>
+      ),
     },
     {
       title: "Email",
       align: "center",
-      dataIndex: "Email",
+      dataIndex: "email",
       key: "Email",
       width: 100,
-    },
-    {
-      title: "Role",
-      align: "center",
-      width: 170,
-      dataIndex: "Role",
-      key: "Role",
-      render: (_, record) => (
-        <div>{RoleName.find((i) => i.Id === record.Role)?.Name}</div>
-      ),
-    },
-    {
-      title: "Create Date",
-      align: "center",
-      width: 170,
-      dataIndex: "CreateDate",
-      key: "CreateDate",
     },
     {
       title: "Status",
       align: "center",
       width: 170,
-      dataIndex: "Status",
+      dataIndex: "isBan",
       key: "Status",
       render: (_, record) => (
-        <div>{StatusName.find((i) => i.value === record.Role)?.label}</div>
+        <div>{record.isBan ? 'Ban' : 'Active'}</div>
       ),
     },
     {
@@ -147,19 +111,19 @@ const Dashboard = () => {
             className="normal"
             title="Edit"
             icon={<AiFillEdit />}
-            // onClick={}
+          // onClick={}
           />
           <ButtonCircle
             className="normal"
             title="Ban"
             icon={<AiOutlineWarning />}
-            // onClick={}
+            onClick={() => handleBan(record._id, true)}
           />
           <ButtonCircle
             className="normal"
             title="Delete"
             icon={<AiTwotoneDelete />}
-            // onClick={}
+          // onClick={}
           />
         </Space>
       ),
@@ -168,6 +132,7 @@ const Dashboard = () => {
 
   return (
     <Row gutter={[16, 16]}>
+      <ToastContainer />
       <Col span={24}>
         <HeaderHome />
       </Col>
@@ -197,36 +162,10 @@ const Dashboard = () => {
                   >
                     <ion-icon name="home-outline"></ion-icon>
                     <span style={{ marginLeft: "20px", fontWeight: "700" }}>
-                      Home
+                      User Management
                     </span>
                   </div>
-                  <div
-                    className="d-flex align-items-center"
-                    style={{ padding: "30px 35px" }}
-                  >
-                    <ion-icon name="home-outline"></ion-icon>
-                    <span style={{ marginLeft: "20px", fontWeight: "700" }}>
-                      <a href="/messages">Message</a>
-                    </span>
-                  </div>
-                  <div
-                    className="d-flex align-items-center"
-                    style={{ padding: "30px 35px" }}
-                  >
-                    <ion-icon name="home-outline"></ion-icon>
-                    <span style={{ marginLeft: "20px", fontWeight: "700" }}>
-                      Messagse
-                    </span>
-                  </div>
-                  <div
-                    className="d-flex align-items-center"
-                    style={{ padding: "30px 35px" }}
-                  >
-                    <ion-icon name="home-outline"></ion-icon>
-                    <span style={{ marginLeft: "20px", fontWeight: "700" }}>
-                      Setting
-                    </span>
-                  </div>
+
                 </div>
               </div>
             </div>

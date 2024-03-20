@@ -3,6 +3,7 @@ import { Button, Col, Container, Row } from 'react-bootstrap'
 import './style/storycreation.css'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
+import { BACK_END_HOST } from '../utils/AppConfig';
 function StoryCreation() {
     const inputFile = useRef();
     const videosrc = useRef();
@@ -31,7 +32,7 @@ function StoryCreation() {
                     "Token": `Bearer ${getCookie('access_token')}`
                 }
             })
-            nav('/');
+            window.location.href = '/';
         } catch (error) {
             console.log(error);
         }
@@ -58,12 +59,12 @@ function StoryCreation() {
                 <Row>
                     <Col xs={3} style={{ borderRight: "1px solid white", height: "100vh" }}>
                         <div style={{ width: "40px", height: "40px", fontSize: "40px", cursor: "pointer", color: "white" }}>
-                            <ion-icon name="close-circle-outline"></ion-icon>
+                            <ion-icon name="close-circle-outline" onClick={() => nav('/')}></ion-icon>
                         </div>
                         <h3 style={{ marginTop: "50px", color: "white" }}>Your Story</h3>
                         <div className='story-info2'>
-                            <img src='images/common/avatar.png' alt='error-img' />
-                            <p>Khai Dao</p>
+                            <img src={BACK_END_HOST + JSON.parse(localStorage.getItem('User')).avatar} alt='error-img' />
+                            <p>{JSON.parse(localStorage.getItem('User')).username}</p>
                         </div>
                         <input type='file' style={{ display: "none" }} ref={inputFile} accept='video/*' onChange={(e) => handleVideoChange(e)} />
                         <Button id='choose-video' onClick={handleChooseFile}>Input video</Button>
@@ -71,7 +72,9 @@ function StoryCreation() {
                         <Button className='option-video' style={{
                             background: "#494949", borderColor: "#494949", marginLeft: "10px"
                             , marginRight: "20px"
-                        }}>Cancel</Button>
+                        }}
+                        onClick={() => nav('/')}
+                        >Cancel</Button>
                         <Button className='option-video' style={{ background: "#ff655b", borderColor: "#ff655b" }} onClick={handlePostStory}>Post</Button>
                     </Col>
                     <Col xs={9} style={{ height: "100vh", background: "rgb(36, 36, 36)", display: "flex", justifyContent: "center", alignItems: "center" }}>

@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useContext, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-import { Peer } from "https://esm.sh/peerjs@1.5.2?bundle-deps"
+import { Peer } from 'peerjs'
 import { Spinner } from 'react-bootstrap';
 import './style.css'
 import Lottie from 'react-lottie';
@@ -16,7 +16,11 @@ function CallVideo(props) {
 
     const [isEndCall, setIsEndCall] = useState(false);
     const peerConnections = {};
-    const peer = new Peer();
+    var peer = new Peer({
+        port: 3008,
+        host: 'localhost',
+        path: '/peerjs'
+    });
     const [myVideoStream, setMyVideoStream] = useState(null);
     const [myId, setMyId] = useState(null);
     const [newUserJoined, setNewUserJoined] = useState(null);
@@ -27,22 +31,21 @@ function CallVideo(props) {
     const { roomId } = useParams();
     const { socket } = useContext(AuthContext);
     const nav = useNavigate();
-    console.log('roomId', roomId);
 
     useEffect(() => {
         let timer;
         if (startCountdown && count > 0) {
-          timer = setTimeout(() => {
-            setCount(count - 1);
-          }, 1000);
+            timer = setTimeout(() => {
+                setCount(count - 1);
+            }, 1000);
         } else if (count === 0) {
-          // Reset countdown when it reaches 0
-          setCount(5);
-          setStartCountdown(false);
+            // Reset countdown when it reaches 0
+            setCount(5);
+            setStartCountdown(false);
         }
-    
+
         return () => clearTimeout(timer);
-      }, [count, startCountdown]);
+    }, [count, startCountdown]);
 
     useEffect(() => {
 
@@ -51,6 +54,8 @@ function CallVideo(props) {
                 video: true,
                 audio: true
             }).then((stream) => {
+                if (!myVideoRef.current) return;
+
                 setMyVideoStream(stream);
                 myVideoRef.current.srcObject = stream;
                 peer.on('call', call => {
@@ -62,7 +67,6 @@ function CallVideo(props) {
                         friendVideoRef.current.autoplay = true;
                     })
                     call.on('error', (err) => {
-                        console.log('errr1', err);
                         alert(err);
                     })
 
@@ -70,63 +74,64 @@ function CallVideo(props) {
                         console.log(friendVideoRef.current);
                     })
 
-                    console.log('call.peer', call.peer);
-                    console.log('call1', call);
                     peerConnections[call.peer] = call;
-                    console.log('peerConnections', peerConnections);
                 })
             }).catch(err => {
-                console.log('errr2', err);
                 alert(err.message)
             })
-
-            peer.on('open', (id) => {
-                setMyId(id);
-                console.log('test', id, roomId);
-                socket.emit("newUser", { id, roomId });
-            })
-
-            peer.on('error', (err) => {
-                console.log('errr3', err);
-                alert(err);
-            });
-
 
         } catch (error) {
             console.error('Error accessing user media:', error);
         }
 
 
-    }, [socket, roomId]);
-
+    }, [socket, roomId, myVideoRef]);
 
     useEffect(() => {
+        if (socket === null) return;
         socket.on('userJoined', (id) => {
-            setNewUserJoined(id);
-            const call = peer.call(id, myVideoStream);
-            const vid = friendVideoRef.current;
-            console.log('callerr', call);
-            if (call) {
-                call.on('error', (err) => {
-                    console.log('errr4', err);
-                    alert(err);
-                })
-                call.on('stream', userStream => {
-                    console.log('stream', userStream);
-                    vid.srcObject = userStream;
-                })
-                call.on('close', () => {
-                    console.log("user disconect")
-                })
-                peerConnections[id] = call;
+            if (myVideoStream) {
+                setTimeout(() => {
+                    setNewUserJoined(id);
+                    const call = peer.call(id, myVideoStream);
+                    const vid = friendVideoRef.current;
+                    if (call) {
+                        call.on('error', (err) => {
+                            alert(err);
+                        })
+                        call.on('stream', userStream => {
+                            vid.srcObject = userStream;
+                        })
+                        call.on('close', () => {
+                            console.log("user disconect")
+                        })
+                        peerConnections[id] = call;
+                    }
+                }, 3000)
             }
-
         })
     }, [socket, myVideoStream, roomId])
 
     useEffect(() => {
+        if (socket === null) return;
+        peer.on('open', (id) => {
+            setMyId(id);
+            socket.emit("newUser", { id, roomId });
+        })
+
+        peer.on('error', (err) => {
+            alert(err.type);
+        });
+
+    }, [socket])
+
+
+
+
+
+    useEffect(() => {
+        if (socket === null) return;
         socket.on('userDisconnect', id => {
-            console.log('userDisconnect1', id);
             if (peerConnections[id]) {
                 peerConnections[id].close();
             }
@@ -135,6 +140,7 @@ function CallVideo(props) {
 
     //send end call video
     const handleCloseCall = () => {
+        if (socket === null) return;
         socket.emit('endCallVideo', {
             id: myId,
             roomId
@@ -143,10 +149,10 @@ function CallVideo(props) {
 
     //close call
     useEffect(() => {
+        if (socket === null) return;
         socket.on('closeCall', (id) => {
             // Lấy tất cả các track đang hoạt động
             if (myVideoStream) {
-                console.log('myVideoStream', myVideoStream);
                 const tracks = myVideoStream.getTracks();
 
                 tracks.forEach(track => {
@@ -170,7 +176,6 @@ function CallVideo(props) {
     }, [socket, myVideoStream, roomId])
 
 
-    console.log('peerConnections', peerConnections);
 
     return (
         <div className='position-relative'>
@@ -239,10 +244,10 @@ function CallVideo(props) {
             </div>
 
             <div hidden={!isEndCall} style={{
-                        position: 'absolute',
-                        top: '20%',
-                        left: '40%'
-                    }}>
+                position: 'absolute',
+                top: '20%',
+                left: '40%'
+            }}>
                 <Lottie options={
                     {
                         loop: true,
@@ -256,11 +261,11 @@ function CallVideo(props) {
                     isClickToPauseDisabled="false"
                     height={400}
                     width={400}
-                    
+
                 />
                 {
                     startCountdown && (
-                        <h3 style={{color: 'white', marginTop: '20px'}}>End call. Dinter will redirect in {count}s</h3>
+                        <h3 style={{ color: 'white', marginTop: '20px' }}>End call. Dinter will redirect in {count}s</h3>
                     )
                 }
             </div>

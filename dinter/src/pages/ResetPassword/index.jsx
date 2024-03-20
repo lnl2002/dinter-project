@@ -1,4 +1,8 @@
 import { Button, Col, Form, Input, Row, Space } from "antd";
+import axios from "axios";
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 import styled from "styled-components";
 
 const StyledLabel = styled.div`
@@ -17,6 +21,38 @@ const StyledLabel = styled.div`
 
 const ResetPassword = () => {
   const [form] = Form.useForm();
+  const { token } = useParams();
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const nav = useNavigate();
+
+  const separatorIndex = token.indexOf('-');
+  const email = token.slice(0, separatorIndex);
+  const uuid = token.slice(separatorIndex + 1);
+  console.log(email, uuid);
+
+  const handleResetPassword = () => {
+    axios.post('http://localhost:3008/api/v1/user/update-password', {
+      email,
+      password, 
+      confirmPassword,
+      uuid
+    })
+      .then(res => {
+        console.log('res================', res);
+        toast.success(res.data.message);
+        setPassword('');
+        setConfirmPassword('');
+        nav('/')
+      })
+      .catch(err => {
+        console.log('res================', err);
+        setPassword('');
+        setConfirmPassword('');
+        toast.error(err.response.data.message);
+      })
+
+  }
 
   return (
     <div
@@ -27,6 +63,7 @@ const ResetPassword = () => {
         justifyContent: "center",
       }}
     >
+      <ToastContainer/>
       <Row
         gutter={[16, 16]}
         style={{
@@ -50,7 +87,7 @@ const ResetPassword = () => {
                 name="password"
                 rules={[{ required: true }]}
               >
-                <Input />
+                <Input type="password" onChange={(e) => setPassword(e.target.value)} />
               </Form.Item>
 
               {/* Field */}
@@ -76,7 +113,7 @@ const ResetPassword = () => {
                   }),
                 ]}
               >
-                <Input />
+                <Input type="password" onChange={(e) => setConfirmPassword(e.target.value)} />
               </Form.Item>
               <div
                 style={{
@@ -85,7 +122,7 @@ const ResetPassword = () => {
                   justifyContent: "center",
                 }}
               >
-                <Button type="primary">Submit</Button>
+                <Button type="primary" onClick={() => handleResetPassword()}>Submit</Button>
               </div>
             </Form>
           </StyledLabel>
