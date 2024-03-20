@@ -2,15 +2,15 @@ import React, { useContext, useState } from 'react';
 import axios from 'axios'
 import { Bounce, toast } from 'react-toastify';
 import { setTokenToCookies } from '../../common/Token';
-import {Form} from 'react-bootstrap'
+import { Form } from 'react-bootstrap'
 import { AuthContext } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 
-function Login({handleShow}) {
+function Login({ handleShow }) {
     const nav = useNavigate();
-    const {setUser} = useContext(AuthContext);
-    
+    const { setUser } = useContext(AuthContext);
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [validated, setValidated] = useState(false);
@@ -24,15 +24,29 @@ function Login({handleShow}) {
             event.stopPropagation();
         } else {
             event.preventDefault();
-            axios.post('http://localhost:3008/api/v1/user/login', {email, password})
+            axios.post('http://localhost:3008/api/v1/user/login', { email, password })
                 .then(response => {
-                    setTokenToCookies(response.data.accessToken, response.data.refreshToken);
-                    localStorage.setItem('User', JSON.stringify(response.data.data)); 
-                    setUser(response.data.data);
-                    nav('/');
+                    if (response.data.data.isBan) {
+                        toast.error('Your account had been banned!', {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                            theme: "light",
+                            transition: Bounce,
+                        });
+                    } else {
+                        setTokenToCookies(response.data.accessToken, response.data.refreshToken);
+                        localStorage.setItem('User', JSON.stringify(response.data.data));
+                        setUser(response.data.data);
+                        nav('/');
+                    }
                 })
                 .catch(error => {
-                    if(error.response.status === 404) {
+                    if (error.response.status === 404) {
                         toast.error(error.response.data.message, {
                             position: "top-right",
                             autoClose: 5000,
@@ -43,14 +57,14 @@ function Login({handleShow}) {
                             progress: undefined,
                             theme: "light",
                             transition: Bounce,
-                            });
+                        });
                     }
                 });
         }
 
         setValidated(true);
 
-    }   
+    }
 
     return (
         <div className="form-container sign-in-container">
@@ -61,40 +75,40 @@ function Login({handleShow}) {
                     <a className='login-a social' href="#" ><ion-icon name="logo-google"></ion-icon></a>
                 </div>
                 <span className='login-span'>or use your account</span>
-                <Form.Group style={{width: "100%"}}>
-                    <Form.Control 
-                        className='login-input' 
-                        type="email" 
-                        placeholder="Email" 
-                        onChange={e => setEmail(e.target.value)} 
+                <Form.Group style={{ width: "100%" }}>
+                    <Form.Control
+                        className='login-input'
+                        type="email"
+                        placeholder="Email"
+                        onChange={e => setEmail(e.target.value)}
                         required
                         style={{
                             backgroundColor: "#eee",
                             border: "none",
                             padding: "12px 15px",
-                            margin:" 8px 0",
+                            margin: " 8px 0",
                             width: "100%"
                         }}
                     />
                 </Form.Group>
 
-                <Form.Group style={{width: "100%"}}>
-                    <Form.Control 
-                        className='login-input' 
+                <Form.Group style={{ width: "100%" }}>
+                    <Form.Control
+                        className='login-input'
                         type="password"
                         placeholder="Password"
-                        onChange={e => setPassword(e.target.value)} 
+                        onChange={e => setPassword(e.target.value)}
                         required
                         style={{
                             backgroundColor: "#eee",
                             border: "none",
                             padding: "12px 15px",
-                            margin:" 8px 0",
+                            margin: " 8px 0",
                             width: "100%"
                         }}
                     />
                 </Form.Group>
-                
+
                 <a className='login-a' href="#" onClick={handleShow}>Forgot your password?</a>
                 <button type='submit' className='login-button'>Sign In</button>
             </Form>

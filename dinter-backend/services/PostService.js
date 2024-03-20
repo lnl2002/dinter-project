@@ -19,17 +19,13 @@ const createNewPost = async ({ author, content, images }) => {
 const getPost = async (userId, limit, offset) => {
     try {
         const friends = await User.findOne({ _id: userId }).exec();
-        console.log(friends);
-        console.log('vaoday');
-        const getPosts = await Post.find({ $or: [{ author: { $in: friends.friends } }, { author: userId }] })
+        const getPosts = await Post.find({ $or: [{ $and: [{ author: { $in: friends.friends } }, { isHide: false }] }, { author: userId }] })
             .sort([['createdAt', -1]])
             .skip(Number(offset))
             .limit(Number(limit))
             .populate('author', 'username avatar')
             .populate('likes', 'username avatar')
             .exec();
-        console.log('duoiday');
-        console.log(getPosts);
         return getPosts;
     } catch (error) {
         throw new Error(error.toString());
@@ -46,18 +42,39 @@ const deletePost = async (id) => {
     }
 }
 
-const getPostsByUserId = async (limit, offset, userId) => {
+const getPostsByUserId = async (limit, offset, userId, isUserLogin) => {
+    var getPosts = null;
     try {
-        const getPosts = await Post.find({ author: userId })
-            .sort([['createdAt', -1]])
-            .skip(Number(offset))
-            .limit(Number(limit))
-            .populate('author', 'username')
-            .populate({
-                path: 'comments.userId',
-                select: 'username',
+        if (isUserLogin == 'true') {
+            getPosts = await Post.find({
+                author: userId
             })
-            .exec();
+                .sort([['createdAt', -1]])
+                .skip(Number(offset))
+                .limit(Number(limit))
+                .populate('author', 'username')
+                .populate({
+                    path: 'comments.userId',
+                    select: 'username',
+                })
+                .exec();
+        } else {
+            getPosts = await Post.find({
+                author: userId,
+                isHide: {
+                    $ne: true
+                }
+            })
+                .sort([['createdAt', -1]])
+                .skip(Number(offset))
+                .limit(Number(limit))
+                .populate('author', 'username')
+                .populate({
+                    path: 'comments.userId',
+                    select: 'username',
+                })
+                .exec();
+        }
         return getPosts;
     } catch (error) {
         throw new Error(error.toString());
@@ -77,9 +94,7 @@ const editPost = async (id, content) => {
 
 const handleLike = async (postId, userId) => {
     try {
-        console.log(postId);
         const favorited = await Post.findOne({ _id: postId }).exec();
-        console.log(favorited);
         if (favorited.likes.includes(userId)) {
             throw new Error("The user liked this post!")
         }
@@ -95,7 +110,6 @@ const handleLike = async (postId, userId) => {
 
 const handleDislike = async (postId, userId) => {
     try {
-        console.log("disslike");
         const favoritePost = await Post.findOneAndUpdate({ _id: postId }, { $pull: { likes: userId } }, { new: true })
             .populate('author', 'username avatar')
             .populate('likes', 'username avatar').exec();
@@ -113,6 +127,17 @@ const getPostById = async (postId) => {
         throw new Error(error.toString())
     }
 }
+
+const changePostMode = async (postId, mode) => {
+    try {
+        const post = Post.findOneAndUpdate({ _id: postId }, { $set: { isHide: mode } }, { new: true })
+            .populate('author', 'username avatar')
+            .populate('likes', 'username avatar').exec();;
+        return post;
+    } catch (error) {
+        throw new Error(error.toString())
+    }
+}
 export default {
     createNewPost,
     getPost,
@@ -122,4 +147,5 @@ export default {
     handleLike,
     handleDislike,
     getPostById,
+    changePostMode
 }

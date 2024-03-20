@@ -1,10 +1,10 @@
-import React, { useEffect, useInsertionEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useEffect, useInsertionEffect, useRef, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import HeaderHome from "../components/HeaderComponents/HeaderHome";
 import "./style/HomePage.css";
 import { Col, Container, Form, Modal, Row } from "react-bootstrap";
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faBookmark, faComments, faEdit, faEllipsis, faHeader, faHeart, faSearch, faShare, faShareAlt } from '@fortawesome/free-solid-svg-icons';
+import { faBookmark, faComments, faEdit, faEllipsis, faHeader, faHeart, faMessage, faSearch, faShare, faShareAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import LeftBarHomePage from "../components/LeftBar/LeftBarHomePage";
 import axios from 'axios'
@@ -14,9 +14,13 @@ import PostEdition from "./PostEdition";
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import "react-loading-skeleton/dist/skeleton.css";
 import { BACK_END_HOST } from "../utils/AppConfig";
-library.add(faEllipsis, faHeart, faComments, faShareAlt, faBookmark, faEdit, faSearch);
+import { AuthContext } from "../context/AuthContext";
+import api from "../utils/services";
+import userCommon from '../common/User.js';
+library.add(faEllipsis, faHeart, faComments, faShareAlt, faBookmark, faMessage, faSearch);
 function HomePage(props) {
-  
+
+  const { onlineUsers } = useContext(AuthContext);
   const user = JSON.parse(localStorage.getItem('User'));
   const [listPost, setListPost] = useState([]);
   const [isLoad, setIsLoad] = useState();
@@ -29,6 +33,7 @@ function HomePage(props) {
   const [story, setStory] = useState([]);
   const [unwatchNews, setUnWatchNews] = useState([]);
   const [watchedNews, setWatchedNews] = useState([]);
+  const [listFriends, setListFriends] = useState([]);
   const middle = useRef();
   const pageContent = useRef();
   const modal = useRef();
@@ -166,7 +171,40 @@ function HomePage(props) {
   const handleNavStory = (id) => {
     nav('/story/' + id);
   }
-  console.log(offset);
+  console.log(unwatchNews);
+
+  useEffect(() => {
+    if (user) {
+      api.get(`/user/get-friends-list/${user.id}`)
+        .then(res => {
+          // console.log('res.data.friends', res.data.friends);
+          // console.log('online', onlineUsers);
+          // console.log('intersection ==============', 
+          // removeDuplicates(intersection(res.data.friends, onlineUsers))
+          // );
+          setListFriends(res.data.friends);
+
+        })
+
+    }
+  }, [onlineUsers, user])
+
+  function intersection(arr1, arr2) {
+    return arr1.filter(obj => arr2.some(otherObj => (otherObj.userId === obj._id && otherObj.userId !== user.id)));
+  }
+
+  function removeDuplicates(arr) {
+    const uniqueIds = new Set();
+    return arr.filter(obj => {
+      if (!uniqueIds.has(obj._id)) {
+        uniqueIds.add(obj._id);
+        return true;
+      }
+      return false;
+    });
+  }
+
+
   return (
     <div ref={pageContent} className="home-page">
       <HeaderHome />
@@ -176,18 +214,21 @@ function HomePage(props) {
           <Col md={3}>
             <div style={{ position: "fixed", width: "calc(16%)", zIndex: "99" }}>
               <div>
-                <div
-                  className="d-flex bg-white circle w-100 align-items-center"
-                  style={{ padding: "16px" }}
-                >
-                  <div className="avatar">
-                    <img src={BACK_END_HOST + user.avatar} alt="Avatar" />
+                <Link to={"/profile"} style={{ textDecoration: "none", color: "#000" }}>
+                  <div
+                    className="d-flex bg-white circle w-100 align-items-center"
+                    style={{ padding: "16px" }}
+                  >
+                    <div className="avatar">
+                      <img src={BACK_END_HOST + user.avatar} alt="Avatar" />
+                    </div>
+                    <div className="user-infor" style={{ marginLeft: "10px" }}>
+                      <strong>{user.username}</strong>
+                    </div>
                   </div>
-                  <div className="user-infor" style={{ marginLeft: "10px" }}>
-                    <strong>{user.username}</strong>
-                  </div>
-                </div>
-                <LeftBarHomePage/>
+                </Link>
+
+                <LeftBarHomePage />
               </div>
             </div>
           </Col>
@@ -197,10 +238,10 @@ function HomePage(props) {
               <Col xs={12} className="story-container">
                 {
                   unwatchNews.length === 0 && watchedNews.length === 0 && (
-                    <div className="story-item" onClick={() => {nav('/story/create')}}>
-                      <img src="/images/common/avatar.png" alt="error" className="avatar-story" />
+                    <div className="story-item" onClick={() => { nav('/story/create') }}>
+                      <img src={"http://localhost:3008/" + JSON.parse(localStorage.getItem('User')).avatar} alt="error" className="avatar-story" />
                       <p className="story-name">Add Story</p>
-                      <img src={"/images/common/avatar.png"} className="story-background"/>
+                      <img src={"/images/common/tinder.png"} className="story-background" />
                     </div>
                   )
                 }
@@ -208,7 +249,7 @@ function HomePage(props) {
                   unwatchNews && unwatchNews.map((str) => {
                     return (
                       <div className="story-item" onClick={() => handleNavStory(str.userId)}>
-                        <img src="images/common/avatar.png" alt="error" className="avatar-story" />
+                        <img src={"http://localhost:3008/" + str.avatar} alt="error" className="avatar-story" />
                         <p className="story-name">{JSON.parse(localStorage.getItem("User")).username === str.username ? "Your story" : str.username}</p>
                         <img src={"http://localhost:3008/" + str.stories[0].thumbnail} alt="error" />
                       </div>
@@ -218,7 +259,7 @@ function HomePage(props) {
                   watchedNews && watchedNews.map((str) => {
                     return (
                       <div className="story-item" onClick={() => handleNavStory(str.userId)}>
-                        <img src="images/common/avatar.png" alt="error" className="avatar-story" />
+                        <img src={"http://localhost:3008/" + str.avatar} alt="error" className="avatar-story" />
                         <p className="story-name">{JSON.parse(localStorage.getItem("User")).username === str.username ? "Your story" : str.username}</p>
                         <img src={"http://localhost:3008/" + str.stories[0].thumbnail} alt="error" />
                       </div>
@@ -229,7 +270,7 @@ function HomePage(props) {
             </Row>
 
             {/* Creat Post */}
-            <Form className="create-post" onClick={handleCreateShow} >
+            <Form className="create-post" onClick={handleCreateShow} style={{ marginBottom: '20px' }}>
               <div className="profile-photo1">
                 <img src="images/common/avatar.png" alt="" width={40} />
               </div>
@@ -271,118 +312,52 @@ function HomePage(props) {
             <div className="right">
               <div className="messages">
                 <div className="heading">
-                  <h5>Messages</h5><i><FontAwesomeIcon icon={faEdit} /></i>
+                  <h5>Online User</h5><i><FontAwesomeIcon icon={faMessage} /></i>
                 </div>
                 {/* search bar*/}
                 <div className="search-bar">
                   <FontAwesomeIcon icon={faSearch} />
                   <input type="search" placeholder="Search messages" id="message-search" />
                 </div>
-                {/* mess category*/}
-                <div className="category">
-                  <h6 className="actives">Primary</h6>
-                  <h6>General</h6>
-                  <h6 className="message-requests">Requests(1)</h6>
-                </div>
+
                 {/* messagaes*/}
-                <div className="message">
-                  <div className="profile-photo1">
-                    <img src="images/common/avatar.png" alt="" width={50} />
-                  </div>
-                  <div className="message-body">
-                    <h6>Edem Quist <br /><span className="text-muted">Just woke up bruh</span></h6>
+                {
+                  listFriends && listFriends.map(friend => (
+                    <Link to={`/messages`} style={{ textDecoration: "none", color: '#000' }}>
+                      <div className="message d-flex align-items-center" style={{margin: '10px 0'}}>
+                        <div className="position-relative">
+                          <div className="avatar" style={{ width: '50px', height: '50px' }}>
+                            <img src={userCommon.getOtherImage(friend.avatar)} alt="" />
+                          </div>
+                          {
+                            onlineUsers.some((u) => u?.userId == friend._id) ?
+                              (
+                                <div
+                                  style={{
+                                    width: "15px",
+                                    height: "15px",
+                                    background: "#00FF00",
+                                    borderRadius: "99px",
+                                    position: "absolute",
+                                    right: "0px",
+                                    bottom: "0",
+                                  }}>
+                                </div>
+                              ) :
+                              (<></>)
+                          }
 
-                  </div>
-                </div><div className="message">
-                  <div className="profile-photo1">
-                    <img src="images/common/avatar.png" alt="" width={50} />
-                    <div className="actives"></div>
-                  </div>
-                  <div className="message-body">
-                    <h6>Edem Quist <br /><span className="text-bold">Just woke up bruh</span></h6>
+                        </div>
+                        <div className="message-body">
+                          <h6>{friend.username}</h6>
+                        </div>
+                      </div>
+                    </Link>
 
-                  </div>
-                </div>
-                <div className="message">
-                  <div className="profile-photo1">
-                    <img src="images/common/avatar.png" alt="" width={50} />
-                  </div>
-                  <div className="message-body">
-                    <h6>Edem Quist <br /><span className="text-bold">Just woke up bruh</span></h6>
+                  ))
+                }
 
-                  </div>
-                </div>
-                <div className="message">
-                  <div className="profile-photo1">
-                    <img src="images/common/avatar.png" alt="" width={50} />
-                  </div>
-                  <div className="message-body">
-                    <h6>Edem Quist <br /><span className="text-muted">Just woke up bruh</span></h6>
 
-                  </div>
-                </div>
-              </div>
-
-              {/* Friend Accept */}
-              <div className="friend-requests">
-                <h5>Requests</h5>
-                <div className="request">
-                  <div className="info">
-                    <div className="profile-photo1">
-                      <img src="images/common/avatar.png" alt="" width={50} />
-                    </div>
-                    <div>
-                      <h6>Tuan Joker</h6>
-                      <p className="text-muted">8 mutual friends</p>
-                    </div>
-                  </div>
-                  <div className="action">
-                    <button className="btn btn-primary">
-                      Accept
-                    </button>
-                    <button className="btn">
-                      Decline
-                    </button>
-                  </div>
-                </div>
-                <div className="request">
-                  <div className="info">
-                    <div className="profile-photo1">
-                      <img src="images/common/avatar.png" alt="" width={50} />
-                    </div>
-                    <div>
-                      <h6>Tuan Joker</h6>
-                      <p className="text-muted">8 mutual friends</p>
-                    </div>
-                  </div>
-                  <div className="action">
-                    <button className="btn btn-primary">
-                      Accept
-                    </button>
-                    <button className="btn">
-                      Decline
-                    </button>
-                  </div>
-                </div>
-                <div className="request">
-                  <div className="info">
-                    <div className="profile-photo1">
-                      <img src="images/common/avatar.png" alt="" width={50} />
-                    </div>
-                    <div>
-                      <h6>Tuan Joker</h6>
-                      <p className="text-muted">8 mutual friends</p>
-                    </div>
-                  </div>
-                  <div className="action">
-                    <button className="btn btn-primary">
-                      Accept
-                    </button>
-                    <button className="btn">
-                      Decline
-                    </button>
-                  </div>
-                </div>
               </div>
             </div>
           </Col>
@@ -395,8 +370,8 @@ function HomePage(props) {
           </ul>
         </Modal>
       </Container>
-      <PostCreation show={showCreate} close={handleCreateClose} setListPost={setListPost} listPost={listPost} setShowCreate={setShowCreate} 
-          offset={offset} setOffset={setOffset}/>
+      <PostCreation show={showCreate} close={handleCreateClose} setListPost={setListPost} listPost={listPost} setShowCreate={setShowCreate}
+        offset={offset} setOffset={setOffset} />
       <PostEdition show={showEdit} setShow={setShowEdit} post={listPost[indexPost]} setListPost={setListPost} listPost={listPost} />
     </div>
   );

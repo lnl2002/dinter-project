@@ -10,6 +10,9 @@ import { Button, Modal } from 'react-bootstrap';
 import PostDetail from '../components/PostDetail';
 function SinglePost({ post, handleShow, index, listPost }) {
     const user = JSON.parse(localStorage.getItem('User'));
+
+    const { sendNotification } = useContext(AuthContext);
+
     const [currentImage, setCurImg] = useState(0);
     const [like, setLike] = useState(post.favorited);
     const handleSetCurImg = (num) => {
@@ -18,9 +21,13 @@ function SinglePost({ post, handleShow, index, listPost }) {
     const nav = useNavigate();
     const [pst, setPost] = useState(post);
     const [show, setShow] = useState(false);
+    const [showPrivate, setShowPrivate] = useState(false);
     const [showPostDetail, setShowPostDetail] = useState(false);
     const handleClose = () => setShow(false);
     const handleShowlike = () => setShow(true);
+    const handlePrivate = () => {
+        setShowPrivate(false);
+    }
     useEffect(() => {
         if (post) {
             post.likes.forEach((l) => {
@@ -68,12 +75,38 @@ function SinglePost({ post, handleShow, index, listPost }) {
                 })
                 setPost(updatePost.data)
                 setLike(true);
+                sendNotification(
+                    'like',
+                    `/post/${updatePost.data._id}`,
+                    updatePost.data.author._id,
+                    user.id
+                )
             }
         } catch (error) {
             console.log(error);
         }
     }
-    console.log(pst);
+    const handleChangeMode = async (modeB) => {
+        try {
+            let mode;
+            modeB === 1 ? mode = false : mode = true;
+            if (pst.isHide === mode) {
+                return;
+            }
+            const updatePost = await axios.post(`http://localhost:3008/api/v1/post/mode/${pst._id}`, {
+                mode: mode
+            }, {
+                headers: {
+                    "Token": `Bearer ${getCookie('access_token')}`
+                }
+            })
+            setPost(updatePost.data.data);
+            console.log(updatePost.data);
+            setShowPrivate(false);
+        } catch (error) {
+            console.log(error);
+        }
+    }
     return (
         <>
             {
@@ -87,7 +120,23 @@ function SinglePost({ post, handleShow, index, listPost }) {
                                         <img src={"http://localhost:3008/" + pst.author.avatar} alt="" width={50} />
                                     </div>
                                     <div className="ingo">
-                                        <button style={{background: 'none'}} onClick={() => nav('/profile/'+ pst.author._id)}><h5>{pst.author.username}</h5></button>
+                                        <button style={{ background: 'none' }} onClick={() => nav('/profile/' + pst.author._id)}><h5>{pst.author.username}</h5></button>
+                                        {
+                                            pst.isHide === false ? (
+                                                <ion-icon name="earth" style={{ marginLeft: "10px", fontSize: "20px", cursor: "pointer" }} onClick={() => {
+                                                    if(pst.author._id === user.id) {
+                                                        setShowPrivate(true)
+                                                    }
+                                                }}></ion-icon>
+                                            ) : (
+                                                <ion-icon name="lock-closed" style={{ marginLeft: "10px", fontSize: "20px", cursor: "pointer" }} onClick={() => {
+                                                    if(pst.author._id === user.id) {
+                                                        setShowPrivate(true)
+                                                    }
+                                                }}></ion-icon>
+                                            )
+                                        }
+                                        <br />
                                         <small>
                                             {
                                                 formatDistanceToNow(pst.createdAt, {
@@ -117,7 +166,7 @@ function SinglePost({ post, handleShow, index, listPost }) {
                                         </div>
                                     )
                                 }
-                                <img src={'http://localhost:3008/' + pst.images[currentImage]} alt="" width={650} />
+                                <img src={'http://localhost:3008/' + pst.images[currentImage]} alt="" id='post-img' />
                                 {
                                     currentImage < pst.images.length - 1 && (
                                         <div className='sg-next-img' onClick={() => handleSetCurImg(1)}>
@@ -180,6 +229,15 @@ function SinglePost({ post, handleShow, index, listPost }) {
                             })
                         }
                     </div>
+                </Modal.Body>
+            </Modal>
+            <Modal show={showPrivate} onHide={handlePrivate} centered>
+                <Modal.Body style={{ padding: "0" }}>
+                    <ul className="mode-option">
+                        <li className={!pst.isHide && 'mode-post'} onClick={() => handleChangeMode(1)}>Public Post</li>
+                        <hr style={{ margin: "0" }}></hr>
+                        <li className={pst.isHide && 'mode-post'} onClick={() => handleChangeMode(2)}>Private Post</li>
+                    </ul>
                 </Modal.Body>
             </Modal>
         </>
