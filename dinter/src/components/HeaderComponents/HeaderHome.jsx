@@ -20,10 +20,10 @@ function HeaderHome(props) {
     clearToken();
     localStorage.removeItem('User');
     setUser(null);
-    nav('/login');
+    window.location.href = '/login';
   }
   const handleViewProfile = () => {
-    nav('/profile');
+    window.location.href = '/profile'
   }
   const handleSearch = async (value) => {
     try {

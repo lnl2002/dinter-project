@@ -123,9 +123,17 @@ function SinglePost({ post, handleShow, index, listPost }) {
                                         <button style={{ background: 'none' }} onClick={() => nav('/profile/' + pst.author._id)}><h5>{pst.author.username}</h5></button>
                                         {
                                             pst.isHide === false ? (
-                                                <ion-icon name="earth" style={{ marginLeft: "10px", fontSize: "20px", cursor: "pointer" }} onClick={() => setShowPrivate(true)}></ion-icon>
+                                                <ion-icon name="earth" style={{ marginLeft: "10px", fontSize: "20px", cursor: "pointer" }} onClick={() => {
+                                                    if(pst.author._id === user.id) {
+                                                        setShowPrivate(true)
+                                                    }
+                                                }}></ion-icon>
                                             ) : (
-                                                <ion-icon name="lock-closed" style={{ marginLeft: "10px", fontSize: "20px", cursor: "pointer" }} onClick={() => setShowPrivate(true)}></ion-icon>
+                                                <ion-icon name="lock-closed" style={{ marginLeft: "10px", fontSize: "20px", cursor: "pointer" }} onClick={() => {
+                                                    if(pst.author._id === user.id) {
+                                                        setShowPrivate(true)
+                                                    }
+                                                }}></ion-icon>
                                             )
                                         }
                                         <br />

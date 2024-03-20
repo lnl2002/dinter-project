@@ -107,7 +107,7 @@ function CallVideo(props) {
                         })
                         peerConnections[id] = call;
                     }
-                }, 1000)
+                }, 3000)
             }
         })
     }, [socket, myVideoStream, roomId])
