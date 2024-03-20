@@ -54,11 +54,6 @@ const routes = [
         path: '/story/:storyId',
         element: Story
     },
-    
-    {   
-        path: '/reset-password',
-        element: ResetPassword,
-    },
     {
         path: '/story/create',
         element: StoryCreation,

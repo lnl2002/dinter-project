@@ -42,7 +42,8 @@ const userSchema = new Schema({
   isBan: {
     type: Boolean,
     default: false
-  }
+  },
+  uuid: String
 });
 
 // Create a 2dsphere index on the location field

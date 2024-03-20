@@ -45,5 +45,7 @@ router.post('/delete-request-matches', authMiddleware, UserController.deleteRequ
 router.get('/get-friends-list/:userId', authMiddleware, UserController.getAllFriends)
 router.get('/admin-get-all-user', UserController.getAllUserAdmin)
 router.post('/admin-ban-user', UserController.updateIsBan)
+router.post('/reset-password', UserController.insertUuid)
+router.post('/update-password', UserController.updatePassword)
 
 export default router

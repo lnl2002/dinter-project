@@ -302,6 +302,40 @@ const sendMatchRequest = async (targetUserId, userId) => {
     }
 }
 
+const updatePassword = (newUser) => {
+  return new Promise(async (resolve, reject) => {
+    const {email, password, uuid } = newUser;
+    try {
+      const checkUser = await User.findOne({
+        uuid: uuid,
+      });
+      console.log('checkUser', checkUser);
+
+      if (checkUser === null) {
+        reject({
+          status: "ERR",
+          message: "Please click the right link",
+        });
+      }
+
+      const hash = bcrypt.hashSync(password, 10);
+      const updatedUser = await User.findOneAndUpdate( {email: email},{
+        password: hash,
+        uuid: null
+      });
+      if (updatedUser) {
+        resolve({
+          status: "OK",
+          message: "Update successfully!",
+          data: updatedUser,
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 export {
   createUser,
   login,
@@ -316,5 +350,6 @@ export default {
   updateUserBasicInfo,
   getUserInfoById,
   getMatchedUsers,
-  sendMatchRequest
+  sendMatchRequest,
+  updatePassword
 };

@@ -7,6 +7,7 @@ import { AuthContext } from './context/AuthContext';
 import Login from './pages/Login';
 import CallVideoRequestModal from './components/CallVideoRequest/CallVideoRequestModal';
 import Page404 from './pages/404Page';
+import ResetPassword from './pages/ResetPassword';
 
 function App() {
   const {user, setUser} = useContext(AuthContext);
@@ -47,6 +48,7 @@ function App() {
               />
             ))
           }
+          <Route path={'/reset-password/:token'} element={<ResetPassword/>}/>
         </Routes>
       </BrowserRouter>
     </div>

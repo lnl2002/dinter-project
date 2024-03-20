@@ -287,6 +287,46 @@ const updateIsBan = async(req,res) => {
   }
 }
 
+const insertUuid = async(req,res) => {
+  try{
+    const { email, uuid} = req.body;
+    const users = await User.findOneAndUpdate({email: email}, {
+      uuid: uuid
+    });
+
+    return res.status(200).json(users);
+  } catch (error) {
+    return res.status(404).json(error)
+  }
+}
+
+const updatePassword = async (req, res) => {
+  try {
+    //checkemail
+    console.log('abc', req.body);
+    const { email, password, confirmPassword, uuid } = req.body;
+    const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    const isCheckEmail = reg.test(email);
+
+    if ( !email || !password || !confirmPassword || !uuid) {
+      return res.status(404).json({
+        status: "ERR",
+        message: "The input is required",
+      });
+    } else if (password !== confirmPassword) {
+      return res.status(404).json({
+        status: "ERR",
+        message: "Password and Confirm Password do not match",
+      });
+    }
+    const response = await UserService.updatePassword(req.body);
+    console.log('response', response);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(404).json(error);
+  }
+};
+
 export {
   createUser,
   login,
@@ -304,7 +344,9 @@ export {
   deleteRequestMatch,
   getAllFriends,
   getAllUserAdmin,
-  updateIsBan
+  updateIsBan,
+  insertUuid,
+  updatePassword
 };
 
 export default {
@@ -324,5 +366,7 @@ export default {
   deleteRequestMatch,
   getAllFriends,
   getAllUserAdmin,
-  updateIsBan
+  updateIsBan,
+  insertUuid,
+  updatePassword
 };
