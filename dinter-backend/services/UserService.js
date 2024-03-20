@@ -114,6 +114,8 @@ const login = (userInfo) => {
                   id: user._id,
                   username: user.username,
                   avatar: user.avatar,
+                  isAdmin: user.isAdmin,
+                  isBan: user.isBan
                 }
               });
             } else {
