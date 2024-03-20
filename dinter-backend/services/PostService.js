@@ -19,7 +19,7 @@ const createNewPost = async ({ author, content, images }) => {
 const getPost = async (userId, limit, offset) => {
     try {
         const friends = await User.findOne({ _id: userId }).exec();
-        const getPosts = await Post.find({ $or: [{$and: [{author: { $in: friends.friends }}, {isHide: false}] }, { author: userId }] })
+        const getPosts = await Post.find({ $or: [{ $and: [{ author: { $in: friends.friends } }, { isHide: false }] }, { author: userId }] })
             .sort([['createdAt', -1]])
             .skip(Number(offset))
             .limit(Number(limit))
@@ -42,18 +42,39 @@ const deletePost = async (id) => {
     }
 }
 
-const getPostsByUserId = async (limit, offset, userId) => {
+const getPostsByUserId = async (limit, offset, userId, isUserLogin) => {
+    var getPosts = null;
     try {
-        const getPosts = await Post.find({ author: userId })
-            .sort([['createdAt', -1]])
-            .skip(Number(offset))
-            .limit(Number(limit))
-            .populate('author', 'username')
-            .populate({
-                path: 'comments.userId',
-                select: 'username',
+        if (isUserLogin == 'true') {
+            getPosts = await Post.find({
+                author: userId
             })
-            .exec();
+                .sort([['createdAt', -1]])
+                .skip(Number(offset))
+                .limit(Number(limit))
+                .populate('author', 'username')
+                .populate({
+                    path: 'comments.userId',
+                    select: 'username',
+                })
+                .exec();
+        } else {
+            getPosts = await Post.find({
+                author: userId,
+                isHide: {
+                    $ne: true
+                }
+            })
+                .sort([['createdAt', -1]])
+                .skip(Number(offset))
+                .limit(Number(limit))
+                .populate('author', 'username')
+                .populate({
+                    path: 'comments.userId',
+                    select: 'username',
+                })
+                .exec();
+        }
         return getPosts;
     } catch (error) {
         throw new Error(error.toString());

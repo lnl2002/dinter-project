@@ -56,9 +56,9 @@ function ProfileScreen(props) {
     })
   }
 
-  const LoadUserPosts = async (userId) => {
+  const LoadUserPosts = async (userId, isUserLogin) => {
     if (userData) {
-      axios.get(BACK_END_HOST + "api/v1/post/all-from/" + userId).then(res => {
+      axios.get(BACK_END_HOST + "api/v1/post/all-from/" + userId + "/" + isUserLogin).then(res => {
         setUserMediaDisplay(res.data.data);
       });
     }
@@ -72,11 +72,11 @@ function ProfileScreen(props) {
     }
   }
 
-  const LoadContent = async (type, userId) => {
+  const LoadContent = async (type, userId, isUserLogin) => { // check user login -> display all pic, if not display public post
     switch (type) {
-      case contentType.post.code: LoadUserPosts(userId); break;
+      case contentType.post.code: LoadUserPosts(userId, isUserLogin); break;
       case contentType.video.code: LoadUserVideos(userId); break
-      default: LoadUserPosts(userId); break;
+      default: LoadUserPosts(userId, isUserLogin); break;
     }
   }
 
@@ -91,12 +91,12 @@ function ProfileScreen(props) {
     if (!isSpectatedView) { //if is user go to page
       if (sessionUser) {
         LoadUserAnalyticNumber(sessionUser.id)
-        LoadContent(contentType.post.code, sessionUser.id);
+        LoadContent(contentType.post.code, sessionUser.id, true); // if session user
         LoadUserPublicInfo(sessionUser.id);
       }
     } else {
       LoadUserAnalyticNumber(userId)
-      LoadContent(contentType.post.code, userId);
+      LoadContent(contentType.post.code, userId, false); // if not session user
       LoadUserPublicInfo(userId);
     }
   }

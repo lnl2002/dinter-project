@@ -101,6 +101,7 @@ const handleDislike = async (req, res) => {
 const getPostsByUserId = async (req, res) => {
     try {
         const userId = req.params.userId;
+        const isUserLogin = req.params.isUserLogin;
 
         if (!userId) {
             return res.status(400).json({ error: 'userId is required' });
@@ -108,7 +109,7 @@ const getPostsByUserId = async (req, res) => {
 
         const limit = req.query.limit || 12;
         const offset = req.query.offset || 0;
-        const post = await postService.getPostsByUserId(limit, offset, userId);
+        const post = await postService.getPostsByUserId(limit, offset, userId, isUserLogin);
         res.status(200).json({
             message: "get posts success",
             data: post
