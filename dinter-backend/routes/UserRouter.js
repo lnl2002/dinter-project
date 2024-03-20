@@ -42,5 +42,8 @@ router.get('/user-search/:keyword', UserController.searchUsers);
 router.get('/request-matches/:id', authMiddleware, UserController.getAllRequestMatches)
 router.post('/request-matches', authMiddleware, UserController.accRequestMatch)
 router.post('/delete-request-matches', authMiddleware, UserController.deleteRequestMatch)
+router.get('/get-friends-list/:userId', authMiddleware, UserController.getAllFriends)
+router.get('/admin-get-all-user', UserController.getAllUserAdmin)
+router.post('/admin-ban-user', UserController.updateIsBan)
 
 export default router

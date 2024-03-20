@@ -251,6 +251,42 @@ const deleteRequestMatch = async(req,res) => {
   }
 }
 
+const getAllFriends = async(req,res) => {
+  try{
+    const { userId } = req.params;
+
+    const friends = await User.findById(userId, 'friends').populate('friends', 'username avatar');
+
+    return res.status(200).json(friends);
+  } catch (error) {
+    return res.status(404).json(error)
+  }
+}
+
+const getAllUserAdmin = async(req,res) => {
+  try{
+
+    const users = await User.find({isAdmin: {$ne: true}}, 'username avatar isBan email');
+
+    return res.status(200).json(users);
+  } catch (error) {
+    return res.status(404).json(error)
+  }
+}
+
+const updateIsBan = async(req,res) => {
+  try{
+    const { userId, isBan} = req.body;
+    const users = await User.findByIdAndUpdate(userId, {
+      isBan: isBan
+    });
+
+    return res.status(200).json(users);
+  } catch (error) {
+    return res.status(404).json(error)
+  }
+}
+
 export {
   createUser,
   login,
@@ -265,7 +301,10 @@ export {
   searchUsers,
   getAllRequestMatches,
   accRequestMatch,
-  deleteRequestMatch
+  deleteRequestMatch,
+  getAllFriends,
+  getAllUserAdmin,
+  updateIsBan
 };
 
 export default {
@@ -282,5 +321,8 @@ export default {
   searchUsers,
   getAllRequestMatches,
   accRequestMatch,
-  deleteRequestMatch
+  deleteRequestMatch,
+  getAllFriends,
+  getAllUserAdmin,
+  updateIsBan
 };

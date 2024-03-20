@@ -25,7 +25,10 @@ const userSchema = new Schema({
   bio: String,
   address: String,
   friends: [{ type: Schema.Types.ObjectId, ref: 'Users' }],
-  isAdmin: Boolean,
+  isAdmin: {
+    type: Boolean,
+    default: false
+  },
   hobbies: [{ type: Schema.Types.ObjectId, ref: 'Hobbies' }],
   isSetUpProfile: {
     type: Boolean,
@@ -35,6 +38,10 @@ const userSchema = new Schema({
   location: {
     type: { type: String, enum: ['Point']},
     coordinates: { type: [Number]}
+  },
+  isBan: {
+    type: Boolean,
+    default: false
   }
 });
 
