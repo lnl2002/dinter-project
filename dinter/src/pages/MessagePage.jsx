@@ -48,12 +48,13 @@ function MessagePage() {
         if (socket === null) return;
 
         socket.on("getMessage", (res) => {
-            console.log("getMessage", res);
-            updateUpdatedAtConversations(listConversation, res.conversationId, res.createdAt, {
-                message: res.text,
-                senderId: res.senderId
-            });
-            updateNotRead(res.conversationId, res.recipientId);
+            console.log("getMessage mobile", res, currentConversationId, res.conversationId);
+
+            // updateUpdatedAtConversations(listConversation, res.conversationId, res.createdAt, {
+            //     message: res.text,
+            //     senderId: res.senderId
+            // });
+            // updateNotRead(res.conversationId, res.recipientId);
             if (currentConversationId == res.conversationId) {
                 setCurrentConversation([res, ...currentConversation]);
             }
@@ -266,7 +267,7 @@ function MessagePage() {
         })
     }
 
-    console.log('currentConversation', currentConversation);
+    console.log('currentConversationId', currentConversationId);
     console.log('recipientUser', recipientUser);
     console.log('listConversation', listConversation);
     return (

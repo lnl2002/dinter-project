@@ -115,7 +115,9 @@ const login = (userInfo) => {
                   username: user.username,
                   avatar: user.avatar,
                   isAdmin: user.isAdmin,
-                  isBan: user.isBan
+                  isBan: user.isBan,
+                  dateOfBirth: user.dateOfBirth,
+                  bio: user.bio
                 }
               });
             } else {

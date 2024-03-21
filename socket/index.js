@@ -21,8 +21,11 @@ io.on("connection", (socket) => {
 
     // add messsage
     socket.on("sendMessage", (message) => {
+        if(typeof message === "string") {
+            message = JSON.parse(message);
+        }
         console.log('message', message);
-        const user = onlineUsers.find(user => user.userId === message.recipientId);
+        const user = onlineUsers.find(user => user.userId == message.recipientId);
         console.log('onlineUsers', onlineUsers);
         console.log('user', user);
         if (user) {

@@ -9,7 +9,7 @@ import { authMiddleware } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/create-message', authMiddleware, MessageController.createMessage);
-router.get('/get-messages/:conversationId', authMiddleware, MessageController.getMessages);
+router.post('/create-message', MessageController.createMessage);
+router.get('/get-messages/:conversationId', MessageController.getMessages);
 
 export default router;
