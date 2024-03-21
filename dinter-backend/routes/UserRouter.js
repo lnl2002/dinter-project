@@ -47,5 +47,9 @@ router.get('/admin-get-all-user', UserController.getAllUserAdmin)
 router.post('/admin-ban-user', UserController.updateIsBan)
 router.post('/reset-password', UserController.insertUuid)
 router.post('/update-password', UserController.updatePassword)
+router.post('/send-match-request', authMiddleware, UserController.sendMatchRequest)
+
+//lite api for prm
+router.get('/findFriendo/:userId/:keyWord', UserController.findFriendBykeyWord)
 
 export default router
