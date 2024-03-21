@@ -38,16 +38,12 @@ const createMessage = async (req, res) => {
 //getMessagess
 const getMessages = async (req, res) => {
     const {conversationId} = req.params;
-    const {limit, skip} = req.query;
-    
-    console.log(conversationId, limit, skip);
+   
     try {
         const messages = await message.find({
             conversationId: conversationId
         })
-            .sort({createdAt: -1})
-            .limit(Number(limit))
-            .skip(Number(skip));
+        console.log('messages', messages);
         return res.status(200).json(messages);
     } catch (error) {
         res.status(500).json(error);
